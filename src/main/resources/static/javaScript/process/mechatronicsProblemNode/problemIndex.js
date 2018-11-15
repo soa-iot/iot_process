@@ -169,7 +169,7 @@ function searchUnfinishTaskSuccessFunction( jsonData ){
 						'   <div class="w25 pull-left text-center"> ' + 
 								item.reportTime + 
 						'   </div> ' +
-						'   <div remark="remark" name="piid" style="display:none"> ' +
+						'   <div remark="remark" name="currentPiid" style="display:none"> ' +
 								item.piid +
 						'   </div> ' +
 						'   <div remark="remark" name="currentTsid" style="display:none"> ' +
@@ -206,12 +206,11 @@ function dealUnfinisdedTask( obj ){
 	 */
 	//设置piid
 	currentDealPiid =$.trim( $( obj ).parent().siblings( 'div[name=currentPiid]' ).text() );
-	currentDealTsid = $.trim( $( obj ).parent().siblings( 'div[name=currentPiid]' ).text() );	
-	var currentPrid =$.trim( $( obj ).parent().siblings( 'div[name=currentTsid]' ).text() );
+	currentDealTsid = $.trim( $( obj ).parent().siblings( 'div[name=currentTsid]' ).text() );	
+	var currentPrid =$.trim( $( obj ).parent().siblings( 'div[name=currentPrid]' ).text() );
 	console.log( '处理代办任务-单击事件……currentPiid:' + currentDealPiid );
 	console.log( '处理代办任务-单击事件……currentDealTsid:' + currentDealTsid );
-	console.log( '处理代办任务-单击事件……currentPiid:' + currentPiid );
-	console.log( currentPrid );
+	console.log( '处理代办任务-单击事件……currentPiid:' + currentPrid );
 	var searchDealUrl = searchBaseDealProblemUrl + "/" + currentPrid;
 	ajaxByGet( searchDealUrl, {}, searchDealUrlSuccessFunction );	
 }
@@ -280,12 +279,12 @@ function searchDealUrlSuccessFunction( jsonData ){
 			
 			//跳转页面
 			var wholeUrl = 
-				baseDealProblemUrl + "/" + urlName + ".html?currentPiid=" + currentPiid ;
+				baseDealProblemUrl + "/" + urlName + ".html?currentPiid=" + currentDealPiid ;
 			var dataJson = {
 				"currentDealPiid" : currentDealPiid	
 			}
 			$( '#indexContent' )
-				.load( wholeUrl + ' #body', dataJson, function( returnDom ){
+				.load( wholeUrl + ' #body', function( returnDom ){
 				$( returnDom ).find( 'script' ).appendTo( '#indexContent' );
 			}); 
 				

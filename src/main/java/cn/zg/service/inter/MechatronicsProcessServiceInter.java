@@ -44,4 +44,22 @@ public interface MechatronicsProcessServiceInter {
 	 */  
 	public String getDealUrlNameService( String currentPrid );
 	
+	/**   
+	 * @Title: getProblemReportInfo   
+	 * @Description: 问题评估节点查询问题上报信息      
+	 * @param: @param currentDealPiid
+	 * @param: @return      
+	 * @return: ProblemInspection        
+	 */  
+	public ProblemInspection getProblemReportInfoService( String currentDealPiid );
+	
+	
+	/**   
+	 * @Title: saveProblemReportController   
+	 * @Description: 问题评估节点-问题上报更新 
+	 * @param: @return      
+	 * @return: ProblemInspection        
+	 */  
+	public ProblemInspection saveProblemReportService( ProblemInspection _problemInspection);
+	
 }

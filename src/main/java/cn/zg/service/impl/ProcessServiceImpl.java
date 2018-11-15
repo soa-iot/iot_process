@@ -8,17 +8,21 @@ import java.util.List;
 import java.util.Map;
 import java.util.regex.Pattern;
 
+import org.activiti.engine.HistoryService;
 import org.activiti.engine.RepositoryService;
 import org.activiti.engine.RuntimeService;
 import org.activiti.engine.TaskService;
+import org.activiti.engine.history.HistoricActivityInstance;
 import org.activiti.engine.impl.persistence.entity.ProcessDefinitionEntity;
 import org.activiti.engine.impl.persistence.entity.TaskEntity;
 import org.activiti.engine.impl.pvm.PvmTransition;
 import org.activiti.engine.impl.pvm.process.ActivityImpl;
 import org.activiti.engine.impl.pvm.process.ProcessDefinitionImpl;
+import org.activiti.engine.impl.pvm.process.TransitionImpl;
 import org.activiti.engine.repository.Deployment;
 import org.activiti.engine.repository.ProcessDefinition;
 import org.activiti.engine.runtime.ProcessInstance;
+import org.activiti.engine.task.Comment;
 import org.activiti.engine.task.Task;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -52,6 +56,9 @@ public class ProcessServiceImpl implements ProcessServiceInter {
 	
     @Autowired
     private RuntimeService runtimeService;
+    
+    @Autowired
+    private HistoryService historyService;
     
     @Autowired
     private TaskService taskService;
@@ -128,15 +135,19 @@ public class ProcessServiceImpl implements ProcessServiceInter {
         logger.debug( "流程实例ID" + processId );
         
         /*
-         * 保存流程实例ID到业务表
+         * 保存流程实例ID、当前流程任务ID到业务表
          */
+        Task ativeTask = taskService.createTaskQuery()
+        		.processInstanceId( processId )
+        		.singleResult();
+        logger.debug( "当前流程任务ID" + ativeTask.getId() );
         try {
         	problemInspection.setCurrentPrid( processId ); 
+        	problemInspection.setCurrentTsid( ativeTask.getId() );
         	processInsectionRepository.saveAndFlush( problemInspection );
 		} catch (Exception e) {
 			logger.debug( "保存流程实例ID的prid失败" );
 		}
-        
         return processId;
 	}
 	
@@ -151,10 +162,66 @@ public class ProcessServiceImpl implements ProcessServiceInter {
 	public void startMechatronicsProcess( 
 			String mechatronicsProcesskey, Map<String,Object> vars,
 			ProblemInspection problemInspection ){
-		runtimeService.startProcessInstanceByKey( 
+		ProcessInstance processInstance = runtimeService.startProcessInstanceByKey( 
 				mechatronicsProcesskey, 
 				problemInspection.getPiid(), 
 				vars );
+	}
+	
+	/**   
+	 * @Title: compeletCandidateTask   
+	 * @Description: 完成组任务节点
+	 * @param: @param taskId
+	 * @param: @param userId
+	 * @param: @param nextNodeExecutor      
+	 * @return: void        
+	 */  
+	public void compeletCandidateTask( 
+			String taskId, String userId, String nextNodeExecutor ) {
+		//认领任务
+		taskService.claim( taskId, userId );
+		
+		//完成任务
+		Map<String,Object> var = new HashMap<String,Object>();
+		var.put( "pureArrangeExecutor", nextNodeExecutor );
+		taskService.complete( taskId, var );
+	}
+	
+	/**   
+	 * @Title: compeletTask   
+	 * @Description: 完成个人任务节点  
+	 * @param: @param taskId
+	 * @param: @param nextNodeExecutor      
+	 * @return: void        
+	 */  
+	public void compeletTask( String taskId, String nextNodeExecutor ) {
+		Map<String,Object> var = new HashMap<String,Object>();
+		var.put( "repairArrangeExecutor" , nextNodeExecutor.trim() );
+		taskService.complete( taskId, var );
+	}
+	
+	/**   
+	 * @Title: transCanTaskToPer   
+	 * @Description: 根据taskID，转办组任务 
+	 * @param: @param taskId
+	 * @param: @param userId      
+	 * @return: void        
+	 */  
+	public void transCanTaskToPer( String taskId, String userId ) {
+		//认领任务
+		taskService.claim( taskId, userId );
+	}
+	
+	/**   
+	 * @Title: transTask   
+	 * @Description: 根据taskID，转办任务   
+	 * @param: @param taskId
+	 * @param: @param userId      
+	 * @return: void        
+	 */  
+	public void transTask( String taskId, String userId ) {
+		//转办任务
+		taskService.setAssignee( taskId, userId );
 	}
 	
 	/**   
@@ -177,8 +244,15 @@ public class ProcessServiceImpl implements ProcessServiceInter {
 		Task activeTask = 
 				taskService.createTaskQuery().taskId( task.getId() ).active().singleResult();
 		String activeTaskId = activeTask.getId();
-		//根据流程实例id获取业务主键id
+		System.out.println( "S-activeTaskId : " + activeTaskId );
+		//更新tsid到业务表中
 		problemInspection.setCurrentTsid( activeTaskId );
+		try {
+			processInsectionRepository.save( problemInspection );
+		} catch (Exception e) {
+			logger.debug( "更新tsid到业务表中失败" );
+		}
+		
 	}
 	
 	/**   
@@ -448,8 +522,26 @@ public class ProcessServiceImpl implements ProcessServiceInter {
 		return activityImpl;
 	}
 	
-	public void saveComment( String taskId, String _comment ){
-		
+	/**   
+	 * @Title: saveComment   
+	 * @Description: 保存该任务节点备注信息   
+	 * @param: @param taskId
+	 * @param: @param _comment
+	 * @param: @return      
+	 * @return: boolean        
+	 */  
+	public Comment saveCommentService( String taskId, String _comment ){
+		Task task = taskService.createTaskQuery()
+				.taskId( taskId )
+				.singleResult();
+		if( task == null ) {
+			logger.debug( "S-查询任务失败，为null" );
+			return null;
+		}
+		String processInstanceId = task.getProcessInstanceId();
+		Comment comment = 
+				taskService.addComment( taskId, processInstanceId, "String", _comment);
+		return comment;		
 	}
 	
 	
@@ -552,5 +644,173 @@ public class ProcessServiceImpl implements ProcessServiceInter {
 		idName = idName +  "," + activityImpl.getProperty( "name" );
 		logger.debug( "根据流程实例ID，获取活动节点ID和名称 ：" + prid );
 		return idName;
+	}
+	
+	/**   
+	 * @Title: endProcess   
+	 * @Description: 终止流程   
+	 * @param: @param taskId
+	 * @param: @param vars      
+	 * @return: void        
+	 */  
+	public void endProcess( String taskId, Map<String, Object> vars) {
+		/*
+		 * 获取流程的end节点
+		 */
+		ActivityImpl actiImpl = getEndNode( taskId );
+		
+		/*
+		 * 流程跳转
+		 */
+		try {
+			transferProcess( taskId, actiImpl.getId(), vars );
+		} catch (Exception e) {
+			logger.debug( "S-流程转向失败-" );
+		}
+				
+		/*
+		 * 完成流程
+		 */
+		taskService.complete( taskId );
+	}
+	
+	/**   
+	 * @Title: getEndNode   
+	 * @Description: 根据taskId，获取当前流程的终点节点   
+	 * @param: @param taskId
+	 * @param: @return      
+	 * @return: ActivityImpl        
+	 */  
+	public ActivityImpl getEndNode( String taskId ) {
+		Task task = taskService.createTaskQuery().taskId( taskId ).singleResult();
+		if( task == null ) {
+			logger.debug( "S-终止流程-task为null" );
+		}
+		ProcessDefinitionEntity processDefEntity = ( ProcessDefinitionEntity )
+				repositoryService.createProcessDefinitionQuery()
+				.processDefinitionId( task.getProcessDefinitionId() )
+				.singleResult();
+		for (ActivityImpl activityImpl : processDefEntity.getActivities() ) {  
+			List<PvmTransition> pvmTransitionList = activityImpl  
+				.getOutgoingTransitions();  
+			if ( pvmTransitionList.isEmpty() ) {  
+				return activityImpl;  
+			}  
+		}  
+		return null;
+	}
+	
+	
+	/**   
+	 * @Title: transferProcess   
+	 * @Description: 流程转向 
+	 * @param: @param taskId
+	 * @param: @param actId
+	 * @param: @param vars      
+	 * @return: void        
+	 */  
+	public void transferProcess( 
+			String taskId, String actId, Map<String, Object> vars) {
+		/*
+		 * 当前节点、目标节点
+		 */
+		ActivityImpl startAct = findActivityImplByTaskId( taskId );
+		ActivityImpl targetAct = findActivityImplByTaskActId( taskId, actId );
+		
+		/*
+		 * 重建流向
+		 */
+		//清空当前流向,返回流向集
+		List<PvmTransition> oriPvmTransitionList = clearTransition( startAct );
+		//创建新流向
+		TransitionImpl newTransition = startAct.createOutgoingTransition(); 
+		//设置新流向
+		newTransition.setDestination( targetAct ); 
+		
+		/*
+		 * 完成转向
+		 */
+		 taskService.complete( taskId, vars );  
+		
+		/*
+		 * 还原流向
+		 */
+		// 删除目标节点新流入  
+		 targetAct.getIncomingTransitions().remove( newTransition );  	  
+	    // 还原以前流向  
+	    restoreTransition( startAct, oriPvmTransitionList);  
+	}
+	
+	/**   
+	 * @Title: restoreTransition   
+	 * @Description: 还原以前流向     
+	 * @param: @param startAct
+	 * @param: @param oriPvmTransitionList      
+	 * @return: void        
+	 */  
+	private void restoreTransition( 
+			ActivityImpl startAct, List<PvmTransition> oriPvmTransitionList) {
+		 // 清空现有流向  
+        List<PvmTransition> pvmTransitionList = startAct.getOutgoingTransitions();  
+        pvmTransitionList.clear();  
+        // 还原以前流向  
+        for (PvmTransition pvmTransition : oriPvmTransitionList) {  
+            pvmTransitionList.add(pvmTransition);  
+        }  		
+	}
+
+	/**   
+	 * @Title: clearTransition   
+	 * @Description: 清空当前流程节点的流向  
+	 * @param: @param activityImpl
+	 * @param: @return      
+	 * @return: List<PvmTransition>        
+	 */  
+	private List<PvmTransition> clearTransition( ActivityImpl activityImpl ) {  
+        // 存储当前节点所有流向临时变量  
+        List<PvmTransition> oriPvmTransitionList = new ArrayList<PvmTransition>();  
+        // 获取当前节点所有流向，存储到临时变量，然后清空  
+        List<PvmTransition> pvmTransitionList = activityImpl  
+                .getOutgoingTransitions();  
+        for ( PvmTransition pvmTransition : pvmTransitionList ) {  
+            oriPvmTransitionList.add( pvmTransition );  
+        }  
+        pvmTransitionList.clear();  
+  
+        return oriPvmTransitionList;  
+    }  
+	
+	/**   
+	 * @Title: getHistoryAct   
+	 * @Description: 根据流程piid,获取流程历史节点 
+	 * @param: @param piid
+	 * @param: @return      
+	 * @return: List<HistoricActivityInstance>        
+	 */  
+	public List<HistoricActivityInstance> getHisActByPiid( String piid ) {
+		List<HistoricActivityInstance> lists = historyService
+				.createHistoricActivityInstanceQuery()
+				.processInstanceId( piid )
+				.orderByHistoricActivityInstanceStartTime()
+				.list();
+		return lists;
+	}
+	
+	/**   
+	 * @Title: getHisActBytaskId   
+	 * @Description: 根据流程taskId,获取流程历史节点   
+	 * @param: @param taskId
+	 * @param: @return      
+	 * @return: List<HistoricActivityInstance>        
+	 */  
+	public List<HistoricActivityInstance> getHisActBytaskId( String taskId ) {
+		Task task = taskService.createTaskQuery().taskId( taskId ).singleResult();
+		String piid = task.getProcessInstanceId();
+		List<HistoricActivityInstance> lists = historyService
+				.createHistoricActivityInstanceQuery()
+				.processInstanceId( piid )
+				.orderByHistoricActivityInstanceStartTime()
+				.list();
+		return lists;
 	}
 }

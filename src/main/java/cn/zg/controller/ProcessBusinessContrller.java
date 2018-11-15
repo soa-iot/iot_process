@@ -5,6 +5,7 @@ import java.util.List;
 
 import javax.validation.constraints.NotBlank;
 
+import org.activiti.engine.task.Comment;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,6 +20,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import cn.zg.entity.daoEntity.Emploee;
 import cn.zg.entity.daoEntity.ProblemInspection;
 import cn.zg.entity.dataExchange.ResultJson;
 import cn.zg.service.impl.MechatronicsProcessServiceImpl;
@@ -109,15 +111,7 @@ public class ProcessBusinessContrller {
 		return new ResultJson<ProblemInspection>( returnProblemInspection );
 	}
 	
-	/**   
-	 * @Title: executorProblemEstimate   
-	 * @Description: 问题评估处理  
-	 * @param: @return      
-	 * @return: ResultJson<String>        
-	 */  
-	@PostMapping( "/problemDealInfo/problemEstimate" )
-	public ResultJson<String> executorProblemEstimate(
-			@RequestParam( "comment" ) String comment ){
+	public ResultJson<Emploee> findEstimateNextNodePersons(){
 		
 		return null;
 	}
@@ -133,7 +127,7 @@ public class ProcessBusinessContrller {
 			@PathVariable( "userName" ) String userName ) {
 		//去掉名字的双引号
 		userName = userName.substring( 1, userName.length() -1 );
-		logger.debug( "获取用户代办信息   …userName:" + userName );
+		logger.debug( "C-获取用户代办信息 -userName:" + userName );
 		List<ProblemInspection> problemInspectionList = mechatronicsProcessServiceImpl
 				.getUnfinishedMechatronicsTask( userName );
 		return 
@@ -180,10 +174,89 @@ public class ProcessBusinessContrller {
 		return new ResultJson<String>( 1, "查询失败", null );
 	}
 	
-	@GetMapping( "/problemDealInfo/problemEstimate/problemReportInfo/{currentDealPiid}" )
-	public ResultJson<ProblemInspection> getProblemReportInfo(
-		@PathVariable( "currentDealPiid" ) String currentDealPiid ){
+	/**   
+	 * @Title: executorProblemEstimate   
+	 * @Description: 问题评估处理  
+	 * @param: @return      
+	 * @return: ResultJson<String>        
+	 */  
+	@PostMapping( "/problemDealInfo/problemEstimate/{currentTsid}/{nextNodeExecutor}" )
+	public ResultJson<String> executorProblemEstimate(
+			@RequestParam( "comment" ) String _comment,
+			@PathVariable( "currentTsid" ) @NotBlank String currentTsid,
+			@PathVariable( "nextNodeExecutor" ) @NotBlank String nextNodeExecutor,
+			@CookieValue( value="userName" , required=true ) @NotBlank String _userName ){
+		logger.debug( "C-问题评估处理   -comment-currentTsid:" + _comment + "-" + currentTsid );
+		logger.debug( "C-问题评估处理   -_userName:" + _userName );
 		
-		return null;
+		/*
+		 * 保存备注信息
+		 */
+		Comment comment = processServiceInter.saveCommentService( currentTsid, _comment);
+		if( comment == null ) {
+			return new ResultJson<String>( 1, "保存备注信息失败", null );
+		}
+		
+		/*
+		 * 认领任务，完成任务
+		 */
+		processServiceInter.compeletCandidateTask( currentTsid, _userName, nextNodeExecutor );
+		return new ResultJson<String>( 0, "完成本节点成功", comment.toString() );
 	}
+	
+	/**   
+	 * @Title: getProblemReportInfo   
+	 * @Description: 问题评估节点查询问题上报信息   
+	 * @param: @param currentDealPiid
+	 * @param: @return      
+	 * @return: ResultJson<ProblemInspection>        
+	 */  
+	@GetMapping( "/problemDealInfo/problemEstimate/problemReportInfo/{currentDealPiid}" )
+	public ResultJson<ProblemInspection> getProblemReportInfoController(
+		@PathVariable( "currentDealPiid" ) @NotBlank String currentDealPiid ){
+		logger.debug( "问题评估节点查询问题上报信息   …currentDealPiid:" + currentDealPiid );
+		ProblemInspection problemInspection = 
+				mechatronicsProcessServiceImpl.getProblemReportInfoService( currentDealPiid );
+		return new ResultJson<ProblemInspection>( problemInspection );
+	}
+	
+	/**   
+	 * @Title: saveProblemReport   
+	 * @Description: 问题评估节点-问题上报更新
+	 * @param: @return      
+	 * @return: ResultJson<String>        
+	 * @throws FileNotFoundException 
+	 */  
+	@RequestMapping( value = "/problemDealInfo/problemEstimate/problemReportInfo", 
+			method = RequestMethod.POST )	
+	public ResultJson<ProblemInspection> saveProblemReportController( 
+			@RequestBody @Validated ProblemInspection _problemInspection ){
+		logger.debug( "C-问题评估节点-问题上报更新 -ProblemInspection：" + _problemInspection.toString() );
+		ProblemInspection problemInspection = 
+				mechatronicsProcessServiceImpl.saveProblemReportService( _problemInspection );
+		if( problemInspection == null ) {
+			return new ResultJson<ProblemInspection>( 1, "问题上报信息更新失败", null );
+		}
+		return new ResultJson<ProblemInspection>( 0, "问题上报信息更新成功", problemInspection );
+	}
+	
+	/**   
+	 * @Title: getExecutorPA   
+	 * @Description: 获取问题评估下一步-净化分配节点执行人 （净化技干）
+	 * @param: @return      
+	 * @return: ResultJson<ProblemInspection>        
+	 */  
+	@GetMapping( "/executor/problemPA" )
+	public ResultJson<List<Emploee>> getExecutorPAContr(){
+		logger.debug( "C-获取问题评估下一步-净化分配节点执行人 （净化技干）" );
+		String roleName = "净化技干";
+		List<Emploee> emploeeList =
+				mechatronicsProcessServiceImpl.getExecutorPAService( roleName );
+		if( emploeeList == null ) {
+			return new ResultJson<List<Emploee>>( 1, "失败", null );
+		}
+		return new ResultJson<List<Emploee>>( 0, "成功", emploeeList );
+	}
+	
+	
 }

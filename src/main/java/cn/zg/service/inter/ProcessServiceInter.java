@@ -4,9 +4,11 @@ package cn.zg.service.inter;
 import java.util.List;
 import java.util.Map;
 
+import org.activiti.engine.history.HistoricActivityInstance;
 import org.activiti.engine.impl.pvm.process.ActivityImpl;
 import org.activiti.engine.repository.Deployment;
 import org.activiti.engine.repository.ProcessDefinition;
+import org.activiti.engine.task.Comment;
 import org.activiti.engine.task.Task;
 import org.springframework.stereotype.Service;
 
@@ -162,4 +164,70 @@ public interface ProcessServiceInter {
 	 * @return: String        
 	 */  
 	public String getActivityIdByPridService( String prid );
+	
+	/**   
+	 * @Title: saveComment   
+	 * @Description: 保存该任务节点备注信息   
+	 * @param: @param taskId
+	 * @param: @param _comment
+	 * @param: @return      
+	 * @return: boolean        
+	 */  
+	public Comment saveCommentService( String taskId, String _comment );
+	
+	/**   
+	 * @Title: compeletCandidateTask   
+	 * @Description: 完成组任务节点
+	 * @param: @param taskId
+	 * @param: @param userId
+	 * @param: @param nextNodeExecutor      
+	 * @return: void        
+	 */  
+	public void compeletCandidateTask( 
+			String taskId, String userId, String nextNodeExecutor );
+	
+	/**   
+	 * @Title: compeletTask   
+	 * @Description: 完成个人任务节点  
+	 * @param: @param taskId
+	 * @param: @param nextNodeExecutor      
+	 * @return: void        
+	 */  
+	public void compeletTask( String taskId, String nextNodeExecutor );
+	
+	/**   
+	 * @Title: transCanTaskToPer   
+	 * @Description: 根据taskID，转办组任务 
+	 * @param: @param taskId
+	 * @param: @param userId      
+	 * @return: void        
+	 */  
+	public void transCanTaskToPer( String taskId, String userId );
+	
+	/**   
+	 * @Title: transTask   
+	 * @Description: 根据taskID，转办任务   
+	 * @param: @param taskId
+	 * @param: @param userId      
+	 * @return: void        
+	 */  
+	public void transTask( String taskId, String userId );
+	
+	/**   
+	 * @Title: getHisActBytaskId   
+	 * @Description: 根据流程taskId,获取流程历史节点   
+	 * @param: @param taskId
+	 * @param: @return      
+	 * @return: List<HistoricActivityInstance>        
+	 */  
+	public List<HistoricActivityInstance> getHisActBytaskId( String taskId );
+	
+	/**   
+	 * @Title: getHistoryAct   
+	 * @Description: 根据流程piid,获取流程历史节点 
+	 * @param: @param piid
+	 * @param: @return      
+	 * @return: List<HistoricActivityInstance>        
+	 */  
+	public List<HistoricActivityInstance> getHisActByPiid( String piid );
 }

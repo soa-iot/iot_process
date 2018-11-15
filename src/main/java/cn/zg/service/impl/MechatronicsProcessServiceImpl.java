@@ -17,6 +17,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import cn.zg.controller.ProcessBusinessContrller;
+import cn.zg.dao.inter.EmployeeRepository;
 import cn.zg.dao.inter.ProcessInsectionRepository;
 import cn.zg.entity.daoEntity.Emploee;
 import cn.zg.entity.daoEntity.ProblemInspection;
@@ -40,6 +41,9 @@ public class MechatronicsProcessServiceImpl implements MechatronicsProcessServic
 	
 	@Autowired
 	private ProcessServiceInter processServiceInter;
+	
+	@Autowired
+	private EmployeeRepository employeeRepository;
 	
 	@Override
 	public ProblemInspection saveProblemInspect( ProblemInspection problemInspection ) {		
@@ -70,7 +74,7 @@ public class MechatronicsProcessServiceImpl implements MechatronicsProcessServic
 	 * @param problemReportRole
 	 * @param problemInspection
 	 * @param nextNodeExecutor   
-	 * @see cn.zg.service.inter.MechatronicsProcessServiceInter#startMechatronicsProcess(java.lang.String, cn.zg.entity.daoEntity.ProblemInspection, java.lang.String)   
+	 * @see   
 	 */ 
 	public void startMechatronicsProcess( 
 			String problemReportRole, ProblemInspection problemInspection,
@@ -162,6 +166,53 @@ public class MechatronicsProcessServiceImpl implements MechatronicsProcessServic
 		String idName = new String();
 		idName = processServiceInter.getActivityIdByPridService( currentPrid );		
 		return idName;
+	}
+	
+	/**   
+	 * @Title: getProblemReportInfo   
+	 * @Description: 问题评估节点查询问题上报信息      
+	 * @param: @param currentDealPiid
+	 * @param: @return      
+	 * @return: ProblemInspection        
+	 */  
+	public ProblemInspection getProblemReportInfoService( String currentDealPiid ) {
+		logger.debug( "查询问题上报信息   ……currentDealPiid：" + currentDealPiid );
+		ProblemInspection problemInspection = 
+				processInsectionRepository.findByPiid( currentDealPiid );
+		return problemInspection;		
+	}
+	
+	/**   
+	 * @Title: saveProblemReportController   
+	 * @Description: 问题评估节点-问题上报更新 
+	 * @param: @return      
+	 * @return: ProblemInspection        
+	 */  
+	public ProblemInspection saveProblemReportService( ProblemInspection _problemInspection) {
+		logger.debug( "S-问题上报更新-ProblemInspection：" + _problemInspection.toString() );
+		//设置不需要更新的字段CURRENT_PROCESS_PRID、CURRENT_PROCESS_TSID、REPORTTIME
+		ProblemInspection pIns =
+				processInsectionRepository.findByPiid( _problemInspection.getPiid() );
+		_problemInspection.setCurrentPrid( pIns.getCurrentPrid() );
+		_problemInspection.setReportTime( pIns.getReportTime() );
+		_problemInspection.setCurrentTsid( pIns.getCurrentTsid() );
+		_problemInspection.setCurrentProgress( pIns.getCurrentProgress() );
+		
+		//更新
+		ProblemInspection problemInspection = 
+				processInsectionRepository.saveAndFlush( _problemInspection );
+		return problemInspection;
+	}
+	
+	/**   
+	 * @Title: getExecutorPAService   
+	 * @Description:  获取问题评估下一步-净化分配节点执行人 （净化技干）   
+	 * @param: @return      
+	 * @return: List<Emploee>        
+	 */  
+	public List<Emploee> getExecutorPAService( String roleName ){		
+		List<Emploee> emploees = employeeRepository.findByRoleNameEqu( roleName );
+		return emploees;
 	}
 
 }

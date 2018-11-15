@@ -38,4 +38,13 @@ public interface ProcessInsectionRepository extends JpaRepository<ProblemInspect
 	@Transactional
 	public List<ProblemInspection> findAllByReporterAndProblemTypeIn( 
 			String userName, List<String> problemTypes, Sort sort );
+	
+	/**   
+	 * @Title: findByPiid   
+	 * @Description: 根据piid,查询问题上报信息      
+	 * @param: @param currentDealPiid      
+	 * @return: void        
+	 */  
+	@Transactional
+	public ProblemInspection findByPiid( String currentDealPiid );
 }

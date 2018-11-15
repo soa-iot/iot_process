@@ -27,7 +27,7 @@ public interface EmployeeRepository extends JpaRepository<Emploee, String> {
 	
 	/**   
 	 * @Title: findByRoleName   
-	 * @Description: 根据指定角色，查询角色下用户 
+	 * @Description: 根据指定角色，查询角色下用户 -like
 	 * @param: @param roleNameLike
 	 * @param: @return      
 	 * @return: List<Emploee>        
@@ -39,4 +39,19 @@ public interface EmployeeRepository extends JpaRepository<Emploee, String> {
 					+ " ON per.ROL_ID=pr.ROL_ID "
 					+ " WHERE pr.ROL_NAME like :roleNameLike " )
 	List<Emploee> findByRoleName( @Param("roleNameLike") String roleNameLike  );
+	
+	/**   
+	 * @Title: findByRoleNameEqu   
+	 * @Description: 根据指定角色，查询角色下用户 - ==
+	 * @param: @param roleName
+	 * @param: @return      
+	 * @return: List<Emploee>        
+	 */  
+	@Query( nativeQuery = true, 
+			value = " SELECT pe.* "
+					+ " FROM process_employee pe LEFT JOIN process_employee_role per  "
+					+ " ON pe.EMP_ID=per.EMP_ID  LEFT JOIN process_role pr "
+					+ " ON per.ROL_ID=pr.ROL_ID "
+					+ " WHERE pr.ROL_NAME = :roleName " )
+	List<Emploee> findByRoleNameEqu( @Param("roleName") String roleName  );
 }

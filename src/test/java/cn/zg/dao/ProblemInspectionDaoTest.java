@@ -11,14 +11,14 @@ import org.springframework.data.domain.Sort;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
 
+import cn.zg.InternetOfThingsApplication;
 import cn.zg.dao.inter.ProcessInsectionRepository;
 import cn.zg.dao.inter.PurificationSchemeDao;
 import cn.zg.entity.daoEntity.ProblemInspection;
 import cn.zg.entity.daoEntity.Schemeposition;
-import cn.zg.start.H5PageGenerateApplication;
 
 @RunWith(SpringRunner.class)
-@SpringBootTest(classes = { H5PageGenerateApplication.class })
+@SpringBootTest(classes = { InternetOfThingsApplication.class })
 @WebAppConfiguration
 public class ProblemInspectionDaoTest {
 	@Autowired

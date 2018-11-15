@@ -78,7 +78,7 @@ var getFullLastMonthDate = function(seperator){
       url相关方法
 -----------------------------------*/
 /**
- * 根据浏览器urlf的参数名，获取参数值
+ * 根据浏览器url的参数名，获取参数值
  */
 function getUrlParamValueByName ( name ) {
     var reg = new RegExp( "(^|&)" + name + "=([^&]*)(&|$)", "i" );
@@ -234,33 +234,7 @@ Math.uuid = function (len, radix) {
 };
 
 /**
- * get方式的ajax请求(异步)
- * @type 
- */
-var ajaxByGet = function(url, data, successGetMethod){
-	 $.ajax({
-	     type: "GET",
-	     url: url,
-	     data: data,
-	     async: true, //默认
-	     cache: true, //默认
-	     contentType: "application/x-www-form-urlencoded",//默认
-	     dataType: "json",//必须指定，否则根据后端判断
-	     beforeSend:  function(XMLHttpRequest){//在beforeSend中如果返回false可以取消本次ajax请求
-	         //this;   //调用本次ajax请求时传递的options参数
-	     },
-	     complete:   function(XMLHttpRequest, textStatus){//请求完成后调用的回调函数（请求成功或失败时均调用）
-	        //this;    //调用本次ajax请求时传递的options参数
-	     },
-	     success: successGetMethod,
-	     error:function(){
-	    	 layer.msg('请求失败');
-	     }		       
-	});
-}
-
-/**
- * get方式的ajax请求(同步)-重写
+ * get方式的ajax请求(同步)-js原生没有重载和重写
  * @type 
  */
 var ajaxByGet = function(url, data, successGetMethod, requestType){
@@ -268,7 +242,7 @@ var ajaxByGet = function(url, data, successGetMethod, requestType){
 	     type: "GET",
 	     url: url,
 	     data: data,
-	     async: requestType, //默认
+	     async: requestType && true, //默认
 	     cache: true, //默认
 	     contentType: "application/x-www-form-urlencoded",//默认
 	     dataType: "json",//必须指定，否则根据后端判断
@@ -286,32 +260,6 @@ var ajaxByGet = function(url, data, successGetMethod, requestType){
 }
 
 /**
- * post方式的ajax请求(异步)
- * @type 
- */
-var ajaxByPost = function(url, data, successPostMethod){
-	 $.ajax({
-	     type: "POST",
-	     url: url,
-	     data: data,
-	     async: true, //默认
-	     cache: true, //默认
-	     contentType: "application/x-www-form-urlencoded",//默认
-	     dataType: "json",//必须指定，否则根据后端判断
-	     beforeSend:  function(XMLHttpRequest){//在beforeSend中如果返回false可以取消本次ajax请求
-	         //this;   //调用本次ajax请求时传递的options参数
-	     },
-	     complete:   function(XMLHttpRequest, textStatus){//请求完成后调用的回调函数（请求成功或失败时均调用）
-	        //this;    //调用本次ajax请求时传递的options参数
-	     },
-	     success: successPostMethod,
-	     error:function(){
-	    	 layer.msg('请求失败');
-	     }		       
-	});
-}
-
-/**
  * post方式的ajax请求(同步)-重写
  * @type 
  */
@@ -320,7 +268,7 @@ var ajaxByPost = function(url, data, successPostMethod, requestType){
 	     type: "POST",
 	     url: url,
 	     data: data,
-	     async: requestType, //默认
+	     async: requestType && true, //默认
 	     cache: true, //默认
 	     contentType: "application/x-www-form-urlencoded",//默认
 	     dataType: "json",//必须指定，否则根据后端判断
@@ -477,7 +425,7 @@ function formToJson( data ) {
  * 获取浏览器中url中的参数
  */
 (function ($) {
-    $.getUrlParam = function (name) {
+    $.getUrlParam = function ( name ) {
         var reg = new RegExp("(^|&)" + name + "=([^&]*)(&|$)");
         var r = window.location.search.substr(1).match(reg);
         if (r != null) return unescape(r[2]); return null;
