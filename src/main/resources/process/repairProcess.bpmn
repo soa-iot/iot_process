@@ -1,10 +1,24 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <definitions xmlns="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:activiti="http://activiti.org/bpmn" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:omgdc="http://www.omg.org/spec/DD/20100524/DC" xmlns:omgdi="http://www.omg.org/spec/DD/20100524/DI" typeLanguage="http://www.w3.org/2001/XMLSchema" expressionLanguage="http://www.w3.org/1999/XPath" targetNamespace="http://www.activiti.org/test">
   <process id="mechatronicsProcess" name="mechatronicsProcess" isExecutable="true">
-    <startEvent id="problemReport" name="问题上报"></startEvent>
-    <userTask id="problemEstimate" name="问题跟踪" activiti:candidateUsers="${problemEstimateExecutors}"></userTask>
-    <userTask id="pureAssign" name="净化分配" activiti:assignee="${pureArrangeExecutor}"></userTask>
-    <userTask id="repairAssign" name="维修分配" activiti:assignee="${repairArrangeExecutor}"></userTask>
+    <startEvent id="problemReport" name="问题上报">
+      <extensionElements>
+        <activiti:executionListener event="end" class="cn.soa.service.impl.activity.Test1">
+          <activiti:field name="type">
+            <activiti:string><![CDATA[1]]></activiti:string>
+          </activiti:field>
+          <activiti:field name="userVar">
+            <activiti:string><![CDATA[key2]]></activiti:string>
+          </activiti:field>
+          <activiti:field name="importVar">
+            <activiti:expression><![CDATA[${key}]]></activiti:expression>
+          </activiti:field>
+        </activiti:executionListener>
+      </extensionElements>
+    </startEvent>
+    <userTask id="problemEstimate" name="问题评估" activiti:assignee="wo"></userTask>
+    <userTask id="pureAssign" name="净化分配" activiti:assignee="wo"></userTask>
+    <userTask id="repairAssign" name="维修分配" activiti:assignee="wo"></userTask>
     <sequenceFlow id="mechatronicsFlow21" sourceRef="problemEstimate" targetRef="pureAssign"></sequenceFlow>
     <sequenceFlow id="mechatronicsFlow31" sourceRef="pureAssign" targetRef="repairAssign"></sequenceFlow>
     <userTask id="jobArrange" name="作业安排" activiti:assignee="张丹"></userTask>
@@ -24,16 +38,27 @@
       <conditionExpression xsi:type="tFormalExpression"><![CDATA[${problemReportRole==1}]]></conditionExpression>
     </sequenceFlow>
     <sequenceFlow id="mechatronicsFlow10" sourceRef="priblemReview" targetRef="endevent"></sequenceFlow>
-    <exclusiveGateway id="branchNode1" name="分支节点1"></exclusiveGateway>
+    <exclusiveGateway id="branchNode1" name="分支节点1">
+      <extensionElements>
+        <activiti:executionListener event="start" class="cn.soa.service.impl.activity.ExecFindUsersByRoleId">
+          <activiti:field name="impVar">
+            <activiti:string><![CDATA[reporter]]></activiti:string>
+          </activiti:field>
+          <activiti:field name="expVar">
+            <activiti:string><![CDATA[firstnode]]></activiti:string>
+          </activiti:field>
+        </activiti:executionListener>
+      </extensionElements>
+    </exclusiveGateway>
     <sequenceFlow id="problemReportflow" name="问题上报流向" sourceRef="problemReport" targetRef="branchNode1"></sequenceFlow>
     <sequenceFlow id="mechatronicsFlow11" name="非机电仪专业非技干" sourceRef="branchNode1" targetRef="problemEstimate">
-      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${problemReportRole=='非维修非技干'}]]></conditionExpression>
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${firstnode=='净化操作工'}]]></conditionExpression>
     </sequenceFlow>
     <sequenceFlow id="mechatronicsFlow12" name="非机电仪技干" sourceRef="branchNode1" targetRef="pureAssign">
-      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${problemReportRole==非维修技干}]]></conditionExpression>
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${firstnode==‘净化技干’}]]></conditionExpression>
     </sequenceFlow>
     <sequenceFlow id="mechatronicsFlow13" name="维修专业人员" sourceRef="branchNode1" targetRef="repairAssign">
-      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${problemReportRole==维修}]]></conditionExpression>
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${firstnode=='净化操作工2'}]]></conditionExpression>
     </sequenceFlow>
   </process>
   <bpmndi:BPMNDiagram id="BPMNDiagram_mechatronicsProcess">
@@ -120,7 +145,7 @@
         <omgdi:waypoint x="200.0" y="257.0"></omgdi:waypoint>
         <omgdi:waypoint x="350.0" y="257.0"></omgdi:waypoint>
         <bpmndi:BPMNLabel>
-          <omgdc:Bounds height="42.0" width="100.0" x="200.0" y="257.0"></omgdc:Bounds>
+          <omgdc:Bounds height="42.0" width="100.0" x="189.0" y="257.0"></omgdc:Bounds>
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge bpmnElement="mechatronicsFlow12" id="BPMNEdge_mechatronicsFlow12">
@@ -129,7 +154,7 @@
         <omgdi:waypoint x="632.0" y="132.0"></omgdi:waypoint>
         <omgdi:waypoint x="632.0" y="230.0"></omgdi:waypoint>
         <bpmndi:BPMNLabel>
-          <omgdc:Bounds height="14.0" width="72.0" x="180.0" y="237.0"></omgdc:Bounds>
+          <omgdc:Bounds height="14.0" width="100.0" x="180.0" y="237.0"></omgdc:Bounds>
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge bpmnElement="mechatronicsFlow13" id="BPMNEdge_mechatronicsFlow13">
@@ -138,7 +163,7 @@
         <omgdi:waypoint x="833.0" y="358.0"></omgdi:waypoint>
         <omgdi:waypoint x="833.0" y="285.0"></omgdi:waypoint>
         <bpmndi:BPMNLabel>
-          <omgdc:Bounds height="14.0" width="72.0" x="180.0" y="277.0"></omgdc:Bounds>
+          <omgdc:Bounds height="14.0" width="100.0" x="180.0" y="277.0"></omgdc:Bounds>
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
     </bpmndi:BPMNPlane>

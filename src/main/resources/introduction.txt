@@ -1,7 +1,7 @@
-公司本项目gitlab地址： http://192.168.18.21/zhugang/InternetOfThings.git
+公司本项目gitlab地址：
 
 #####################################################################################################
-http访问链接
+http请求
 #####################################################################################################
 1、生产报表：
  	1.1  动态生成表格表头
@@ -10,217 +10,25 @@ http访问链接
 		/productionReport/purificationScheme/tableData
 		
 		
-2、登录：
-	2.1   登录
-		process/employee/{userPassword} - get
-		
-		
-3、 主页：
-    3.1  主页地址：
-    		/html/process/index.html
-    	  问题上报页面：
-    	 	/html/process/problemReport.html
-    	   问题历史处理页面：
-    	   	/html/process/problemHistoryDeal.html
-    3.2  查询代办事项：
-    	 	/process/runtimeTask/{userName} - get
-    	   查询历史已办事项：
-    	   	/process/historyTask/{userName} - get
-    	   	
-    	   	
-4、流程各节点处理：
-	4.1     问题评估页面：
-			/html/process/problemNodeDeal/problemEstimate.html
-		  净化分配页面：
-			/html/process/problemNodeDeal/pureAssign.html
-		  维修分配页面：
-			/html/process/problemNodeDeal/repairAssign.html
-		  作业安排页面：
-			/html/process/problemNodeDeal/jobArrange.html
-		  作业处理页面：
-			/html/process/problemNodeDeal/jobDeal.html
-		  作业验收页面：
-			/html/process/problemNodeDeal/jobCheck.html
-		  问题处理页面：
-			/html/process/problemNodeDeal/problemDeal.html
-	4.2    节点处理api：
-		历史当前处理：
-			/totalHisCurrNode/processNode/id/name/{piid} - get  -获取历史节点id\name
-	
-		问题上报：
-			processBusiness/problemDealInfo/problemReport - post
-		问题评估api：
-			processBusiness/problemDealInfo/problemEstimate/{currentTsid}/{nextNodeExecutor} - post    -完成问题评估
-			processBusiness/problemDealInfo/problemEstimate/problemReportInfo/{currentPiid} - get    -初始化获取问题上报信息
-			processBusiness/problemDealInfo/problemEstimate/problemReportInfo - post    -更新问题上报信息
-			problemEstimate/exector/{userName} post   -任务转移执行人
-			problemEstimate/exector/{parentId} - get   -获取人员组织关系
-			problemEstimate/process/end - put   -终止流程
-		净化分配：
-			/pureAssign/{piid} - post - 净化分配节点处理
-			
-		维修分配：
-			process/problemDealInfo/repairAssign - post
-		作业安排：
-			process/problemDealInfo/jobArrange - post
-		作业处理：
-			process/problemDealInfo/jobDeal - post
-		作业检查：
-			process/problemDealInfo/jobCheck - post
-		问题处理：
-			process/problemDealInfo/problemDeal - post
-		
-		组织结构：
-			/processBusiness/executor/problemPA - GET - 净化分配可执行人
-			/pureAssign/executor/problemRA - GET - 维修分配可执行人
-5 需求描述
-	5.1
-	5.2
-  	5.3 净化分配
-  		5.3.1  页面动态展示
-  		5.3.2  判断事故事件、隐患事件
-  		5.3.3  下一步操作，下一步操作选择维修技干，保存流程处理信息
-  		5.3.4  回退操作，如果自己上报则不能回退，其他可回退到问题跟踪节点
-  		5.3.5  特送操作，把任务传递给指定执行人
-  		5.3.6  闭环流程操作
-  		
-  		
+
 
 
 #####################################################################################################
-数据库（mysql）
+数据库(oracle)
 #####################################################################################################
 
-1、方案和巡检点表：
-	1.1   方案配置表
-		create table SCHEMEPOSITION (
-			ID CHAR(36) primary Key,
-			INSPECTIONNAME VARCHAR(30) NOT NULL DEFAULT '' ,
-			CHECKPOSITON VARCHAR(20) NOT NULL DEFAULT '' ,
-			FIRSTCOLSPAN INT(2) NOT NULL DEFAULT 2,
-			PROJECTNAME1 VARCHAR(20) NOT NULL DEFAULT '' ,
-			SECONDCOLSPAN1 INT(2) NOT NULL DEFAULT 2,
-			PROJECTNAME2 VARCHAR(20) NOT NULL DEFAULT '' ,
-			SECONDCOLSPAN2 INT(2) NOT NULL DEFAULT 2,
-			POSITIONNUM  VARCHAR(20) NOT NULL DEFAULT '' ,
-			UNIT  VARCHAR(10) NOT NULL DEFAULT '' ,
-			FOURTHCOLSPAN INT(2) NOT NULL DEFAULT 2,
-			DATARANGE  VARCHAR(20) NOT NULL DEFAULT '' ,
-			FIVTHCOLSPAN INT(2) NOT NULL DEFAULT 2
+1、流程配置表：
+	1.1   流程变量的配置表
+		CREATE TABLE IOT_PROCESS_VARS_CONFIG(
+			VCID CHAR(36 BYTE) DEFAULT SYS_GUID() PRIMARY KEY ,
+			VARNAME VARCHAR2(68 CHAR)  NOT NULL UNIQUE ,
+			VARVALUE VARCHAR2(68 CHAR) DEFAULT '' NOT NULL ,
+			NAMETYPE NUMBER(3) DEFAULT 0 NOT NULL ,
+			VALUETYPE NUMBER(3) DEFAULT 0 NOT NULL ,
+			NOTE VARCHAR2(48 CHAR) DEFAULT '' NOT NULL ,
+			REMARK1 VARCHAR2(18 CHAR) DEFAULT '' NOT NULL ,
+			REMARK2 VARCHAR2(38 CHAR) DEFAULT '' NOT NULL 
 		)
-	1.2    方案值记录表 
-		create sequence sequence_ctiv
-			increment by 10
-			start with 10;
-			
-		create table CZ_TASK_INSPECTION_VALUE(
-			ivid Integer primary key,	
-			plan_id char(36)  not null,
-			record_time Date not null ,
-			position_num varchar2(16 char) not null,
-			remark1 varchar2(6 char) default '' not null,
-			remark2 varchar2(16 char) default '' not null
-		) partition by range(record_time) interval( numbertodsinterval( 7, 'Day') )
-		(
-			partition partition_one values less than ( to_date('2018.11.10','YYYY-MM-DD')) 	
-		)
-		comment on table  "CZ_TASK_INSPECTION_VALUE"                is '电子巡检记录值表';
-		comment on column "CZ_TASK_INSPECTION_VALUE"."IVID"         is '主键';
-		comment on column "CZ_TASK_INSPECTION_VALUE"."PLAN_ID"      is '方案id';
-		comment on column "CZ_TASK_INSPECTION_VALUE"."RECORD_TIME"  is '记录时间';
-		comment on column "CZ_TASK_INSPECTION_VALUE"."POSITION_NUM" is '记录点位';
-		comment on column "CZ_TASK_INSPECTION_VALUE"."REMARK1"      is '备注1';
-		comment on column "CZ_TASK_INSPECTION_VALUE"."REMARK2"      is '备注2';
-
-2、流程人员相关表：
-	2.1  人员表：
-		create table PROCESS_EMPLOYEE
-		(
-			EMP_ID CHAR(36) PRIMARY KEY,
-			EMP_NAME VARCHAR(10) NOT NULL DEFAULT '',
-			EMP_PASSWORD VARCHAR(20) NOT NULL DEFAULT '',
-			EMP_TELEPHONE_NUM CHAR(11) NOT NULL DEFAULT '',
-			EMP_SEX Bit NOT NULL DEFAULT 1
-		)
-		
-	2.2  组织表
-		create table PROCESS_ORGANIZATION
-		(
-			ORG_ID CHAR(36) PRIMARY KEY,
-			ORG_NAME VARCHAR(20) NOT NULL DEFAULT '',
-			ORG_PARENTID CHAR(36) NOT NULL DEFAULT ''
-		)
-		
-	2.3  人员组织关系表
-		create table PROCESS_EMPLOYEE_ORGANIZATION
-		(
-			EMP_ORG_ID CHAR(36) PRIMARY KEY,
-			EMP_ID CHAR(36) NOT NULL UNIQUE,
-			ORG_ID CHAR(36) NOT NULL UNIQUE
-		)
-		
-	2.4  角色表
-		create table PROCESS_ROLE
-		(
-			ROL_ID CHAR(36) PRIMARY KEY,
-			ROL_NAME VARCHAR(20) NOT NULL DEFAULT ''
-		)
-	
-	2.5  人员角色关系表
-		create table PROCESS_EMPLOYEE_ROLE
-			(
-				EMP_ROL_ID CHAR(36) PRIMARY KEY,
-				EMP_ID CHAR(36) NOT NULL UNIQUE,
-				ROL_ID CHAR(36) NOT NULL UNIQUE
-			)
-		
-	2.6 权限表
-		create table PROCESS_AUTHORITY
-		(
-			AUT_ID CHAR(36) PRIMARY KEY,
-			AUT_NAME VARCHAR(20) NOT NULL DEFAULT '',
-			AUT_URL VARCHAR(200) NOT NULL DEFAULT '',
-			AUT_NOTE VARCHAR(20) NOT NULL DEFAULT ''
-		)
-	
-	2.5 角色权限关系表
-		create table PROCESS_ROLE_AUTHORITY
-		(
-			ROL_AUT_ID CHAR(36) PRIMARY KEY,
-			ROL_ID CHAR(36) NOT NULL UNIQUE,
-			AUT_ID CHAR(36) NOT NULL UNIQUE
-		)	
-		
-	2.6  函数
-		DROP FUNCTION IF EXISTS queryChildrenOrgan;
-		CREATE FUNCTION queryChildrenOrgan(parentid INT)
-		RETURNS VARCHAR(4000)
-		BEGIN
-		DECLARE sTemp VARCHAR(4000);
-		DECLARE sTempChd VARCHAR(4000);
-		
-		SET sTemp='$';
-		SET sTempChd = CAST(parentid AS CHAR);
-		
-		WHILE sTempChd IS NOT NULL DO
-		SET sTemp= CONCAT(sTemp,',',sTempChd);
-		SELECT GROUP_CONCAT(ORG_ID) INTO sTempChd FROM process_organization
-		WHERE FIND_IN_SET(ORG_PARENTID,sTempChd)>0;
-		END WHILE;
-		RETURN sTemp;
-		END;
-					
-		SELECT * FROM process_organization 
-		WHERE FIND_IN_SET(ORG_PARENTID,queryChildrenOrgan('0'));
-		
-	2.7 视图
-		create view process_tree as 
-		SELECT 
-			ORG_ID as id,ORG_PARENTID as pid, ORG_NAME as name,
-			"true" as open,"false" as isParent
-		FROM 
-			process_organization WHERE FIND_IN_SET(ORG_PARENTID,queryChildrenOrgan('0')) 
-		
 3 流程业务表
 	3.1  检维修问题表
 		create table PROCESS_INSPECTION_PROBLEM
