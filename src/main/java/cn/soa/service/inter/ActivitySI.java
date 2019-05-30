@@ -192,6 +192,34 @@ public interface ActivitySI {
 	 */  
 	List<Map<String, Object>> getAllHistoryInfos(String tsid);
 
+	/**   
+	 * @Title: getPersonalTasksByUsername   
+	 * @Description: 根据用户姓名，查询该用户个人待办任务   
+	 * @return: List<Task>        
+	 */  
+	List<Task> getPersonalTasksByUsername(String userName);
+
+	/**   
+	 * @Title: getCandidateTasksByUsername   
+	 * @Description:  根据用户姓名，查询该用户组待办任务 
+	 * @return: List<Task>        
+	 */  
+	List<Task> getCandidateTasksByUsername(String userName);
+
+	/**   
+	 * @Title: getAllTasksByUsername   
+	 * @Description: 根据用户姓名，查询用户的所有待办任务（个人任务+组任务）  
+	 * @return: List<Task>        
+	 */  
+	List<Task> getAllTasksByUsername(String userName);
+
+	/**   
+	 * @Title: getProcessDefinitions   
+	 * @Description:  获取流程所有流程定义   
+	 * @return: List<ProcessDefinition>        
+	 */  
+	List<ProcessDefinition> getProcessDefinitions();
+
 	
 	
 }

@@ -78,7 +78,7 @@ var getFullLastMonthDate = function(seperator){
       url相关方法
 -----------------------------------*/
 /**
- * 根据浏览器urlf的参数名，获取参数值
+ * 根据浏览器url的参数名，获取参数值
  */
 function getUrlParamValueByName ( name ) {
     var reg = new RegExp( "(^|&)" + name + "=([^&]*)(&|$)", "i" );

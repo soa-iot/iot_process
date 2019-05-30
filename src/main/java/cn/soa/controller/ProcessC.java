@@ -7,6 +7,8 @@ import java.util.Map;
 import javax.validation.constraints.NotBlank;
 
 import org.activiti.engine.repository.Deployment;
+import org.activiti.engine.repository.ProcessDefinition;
+import org.activiti.engine.task.Task;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -94,6 +96,21 @@ public class ProcessC {
 			return new ResultJson<List<Map<String,Object>>>( 0, "获取文件成功", files );
 		}
 		return new ResultJson<List<Map<String,Object>>>( 1, "获取文件失败", files );
+	}
+	
+	/**   
+	 * @Title: getConfigFileBPMN   
+	 * @Description:  获取流程所有流程定义对象 
+	 * @return: ResultJson<List<Map<String,Object>>>        
+	 */  
+	@GetMapping("/processdefinitions")
+	public ResultJson<List<ProcessDefinition>> getProcessDefinitionsC() {
+		logger.debug( "--C----------获取流程所有流程定义对象---------------" );
+		List<ProcessDefinition> processDefinitions = activityS.getProcessDefinitions();
+		if( processDefinitions != null ) {
+			return new ResultJson<List<ProcessDefinition>>( 0, "获取所有流程定义对象成功", processDefinitions );
+		}
+		return new ResultJson<List<ProcessDefinition>>( 1, "获取所有流程定义对象失败", processDefinitions );
 	}
 	
 	/**   
@@ -247,5 +264,22 @@ public class ProcessC {
 			return new ResultJson<Boolean>( 0, "流程返回到上一个节点成功", true );
 		}
 		return new ResultJson<Boolean>( 0, "流程返回到上一个节点失败", null );
+	}
+	
+	/**   
+	 * @Title: getAllTasksByUsernameC   
+	 * @Description:  根据用户姓名，查询用户的所有待办任务（个人任务+组任务）   
+	 * @return: ResultJson<Task>        
+	 */ 
+	@GetMapping("/tasks")
+	public ResultJson<List<Task>> getAllTasksByUsernameC(
+			@RequestParam("userName") @NotBlank String userName ){
+		logger.debug( "--C-------- 根据用户姓名，查询用户的所有待办任务（个人任务+组任务）     -------------" );
+		logger.debug( userName );
+		List<Task> tasks = activityS.getAllTasksByUsername( userName );
+		if( tasks != null ) {
+			return new ResultJson<List<Task>>( 0, "流程返回到上一个节点成功", tasks );
+		}
+		return new ResultJson<List<Task>>( 0, "流程返回到上一个节点失败", tasks );
 	}
 }

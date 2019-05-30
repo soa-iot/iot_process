@@ -120,6 +120,23 @@ public class ActivityS implements ActivitySI{
 	}
     
     /**   
+     * @Title: getProcessDefinitions   
+     * @Description: 获取流程所有流程定义对象  
+     * @return: List<ProcessDefinition>        
+     */ 
+    @Override
+    public List<ProcessDefinition> getProcessDefinitions(){
+    	try {
+    		List<ProcessDefinition> processDefinitions = 
+    				repositoryService.createProcessDefinitionQuery().list();
+    		return processDefinitions;
+		} catch (Exception e) {
+			e.printStackTrace();
+			return null;
+		}
+    }
+    
+    /**   
      * @Title: startProcess   
      * @Description: 启动流程  
      * @return: void        
@@ -768,5 +785,75 @@ public class ActivityS implements ActivitySI{
 		}
 	}
 	
+    /**   
+     * @Title: getPersonalTasksByUsername   
+     * @Description:  根据用户姓名，查询该用户个人待办任务 
+     * @return: List<Task>        
+     */  
+    @Override
+    public List<Task> getPersonalTasksByUsername( String userName ){
+    	try {
+    		List<Task> tasks = taskService.createTaskQuery()
+    				.taskAssignee( userName )
+    				.orderByTaskCreateTime()
+    				.desc()
+    				.list();
+    		return tasks;
+		} catch (Exception e) {
+			e.printStackTrace();
+			return null;
+		}
+		
+	}
 	
+	
+	/**   
+	 * @Title: getCandidateTasksByUsername   
+	 * @Description: 根据用户姓名，查询该用户组待办任务   
+	 * @return: List<Task>        
+	 */  
+    @Override
+	public List<Task> getCandidateTasksByUsername( String userName ){
+		try {
+			List<Task> tasks = taskService.createTaskQuery()
+					.taskCandidateUser( userName )
+					.orderByTaskCreateTime()
+					.desc()
+					.list();
+			return tasks;
+		} catch (Exception e) {
+			e.printStackTrace();
+			return null;
+		}		
+	}
+	
+	/**   
+	 * @Title: getCanPerTasksByAssignee   
+	 * @Description:  根据用户姓名，查询用户的所有待办任务（个人任务+组任务）
+	 * @param: @param userId
+	 * @param: @return      
+	 * @return: List<Task>        
+	 */  
+    @Override
+	public List<Task> getAllTasksByUsername( String userName ){
+		List<Task> allTasks = new ArrayList<Task>();
+		try {
+			List<Task> personalTasks = taskService.createTaskQuery()
+					.taskAssignee( userName )
+					.orderByTaskCreateTime()
+					.desc()
+					.list();
+			allTasks.addAll( personalTasks );
+			List<Task> candidatetasks = taskService.createTaskQuery()
+					.taskCandidateUser( userName )
+					.orderByTaskCreateTime()
+					.desc()
+					.list();
+			allTasks.addAll( candidatetasks );				
+			return allTasks;
+		} catch (Exception e) {
+			e.printStackTrace();		
+			return allTasks;
+		}				
+	}	
 }

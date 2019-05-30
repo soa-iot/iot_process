@@ -20,7 +20,7 @@ public class ActivitySTest {
 	
 	@Test
 	public void deployProcess() {
-		String name = "净化厂机电仪检维修流程";
+		String name = "净化二厂闭环流程";
 		String xmlUrl = "process/repairProcess.bpmn";
 		String pngUrl = "process/repairProcess.png";
 		Deployment deployObj = asi.deployProcess( name, xmlUrl, pngUrl );
