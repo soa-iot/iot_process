@@ -1,0 +1,125 @@
+.layui-this {
+    color: #fff !important;
+    background-color: #1e9fff;
+}
+
+.layui-tab-title li {
+    font-family: 'Arial Negreta', 'Arial Normal', 'Arial';
+    font-weight: 700;
+    font-style: normal;
+    font-size: 20px;
+}
+
+.layui-tab-title {
+    border-bottom-width: 3px !important;
+    border-bottom-color: #1e9fff !important;
+}
+
+.layui-this:after {
+    border-bottom-color: #1e9fff !important;
+}
+
+.layui-form-select dl dd.layui-this {
+    background-color: #1e9fff;
+}
+
+.layui-form-checked[lay-skin=primary] i {
+    border-color: #1e9fff;
+    background-color: #1e9fff;
+    color: #fff;
+}
+
+.layui-form-checkbox[lay-skin=primary] i:hover, .layui-form-checkbox span:hover {
+    border-color: #1e9fff !important;
+}
+
+.layui-form-radio > i:hover, .layui-form-radioed > i {
+    color: #1e9fff;
+}
+
+#addImg, #addZmImg, #addImgdz, #addImgpz, #addImgyy {
+    margin-left: 0 !important;
+    font-size: 144px;
+    line-height: 104px;
+    color: darkgrey
+}
+
+#imgList, #imgZmList, #imgListdz, #imgListpz, #imgListyy {
+    width: 860px;
+    position: relative;
+    margin: 0px auto;
+    min-height: 80px;
+}
+
+    #imgList li, #imgZmList li, #imgListdz li #imgListpz li #imgListyy li {
+        width: 110px;
+        height: 80px;
+        float: left;
+        list-style: none;
+        list-style-type: none;
+        display: inline-block;
+        position:absolute;
+    }
+
+        #imgList li:hover, #imgZmList li:hover, #imgListdz li:hover, #imgListpz li:hover, #imgListyy li:hover {
+            border-color: #9a9fa4;
+            box-shadow: 0 0 6px 0 rgba(0, 0, 0, 0.85);
+        }
+
+    #imgList .active, #imgZmList .active, #imgListdz .active, #imgListpz .active, #imgListyy .active {
+        border: 1px dashed red;
+    }
+
+.title_cover {
+    height: 30px;
+    background-color: rgba(0,0,0,.5);
+    position: absolute;
+    bottom: 0;
+    width: 140px;
+    color: #fff;
+    line-height: 30px;
+    font-size: 14px;
+    padding-left: 10px;
+    overflow: hidden; /*超出部分隐藏*/
+    white-space: nowrap; /*不换行*/
+    text-overflow: ellipsis; /*超出部分文字以...显示*/
+}
+
+    .title_cover:hover {
+        cursor: pointer;
+    }
+
+.img_close {
+    height: 20px;
+    background-color: rgba(0,0,0,.5);
+    position: absolute;
+    top: 0;
+    right: 0px;
+    width: 20px;
+    color: #fff;
+    line-height: 18px;
+    font-size: 14px;
+    text-align: center;
+}
+
+    .img_close:hover {
+        cursor: pointer;
+    }
+
+.img_edit {
+    height: 20px;
+    background-color: rgba(0,0,0,.5);
+    position: absolute;
+    top: 0;
+    left: 0px;
+    width: 20px;
+    color: #fff;
+    line-height: 18px;
+    font-size: 14px;
+    text-align: center;
+}
+
+.img_edit:hover {
+        cursor: pointer;
+}
+
