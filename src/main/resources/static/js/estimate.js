@@ -42,7 +42,90 @@ layui.use([ 'element', 'layer' ], function() {
         	 
         }  
    });
+	
+	//图片
+	$.ajax({  
+    	url : "/iot_process/problemreportpho/",  
+        type : "get",
+        data : {piid : "13"},
+        dataType : "json",  
+        success: function( json) {
+        	if (json.state == 0) {
+				var imgs = json.data;
+				var mode = imgs.length%3;
+				var img_id = 0;
+				//alert(img[i]);
+				
+				for (var j = 0; j < Math.ceil(imgs.length/3); j++) {
+					var img_div='<div>';
+					if (mode != 0 && j == (Math.ceil(imgs.length/3) - 1) ) {
+						//img_div = '';
+							
+						for (var i = 0; i < mode; i++) {
+							img_div = img_div+'<img alt="图片1" src="'+imgs[img_id].phoAddress+imgs[img_id].phoDispiayName+'">';
+							img_id++;
+						}
+						
+					}else{
+						
+						for (var i = 0; i < 3; i++) {
+							img_div = img_div+'<img alt="图片1" src="'+imgs[img_id].phoAddress+imgs[img_id].phoDispiayName+'">';
+							img_id++;
+						}
+						
+					}
+					img_div = img_div+'</div>'
+					alert(img_div);
+					$("#imag").append(img_div);
+				}
+			}
+        	 
+        }  
+   });
+	
+	
 
+	//组内处理
+	function groupprocess() {
+		
+		layer.confirm(
+				'<table class="layui-hide" id="test"></table>', 
+				{
+			  btn: ['确认','取消'] //按钮
+			}, function(){
+			  layer.msg('提交成功');
+			}/*, function(){
+			  layer.msg('确认取消？', {
+			    btn: ['是', '否']
+			  });
+			}*/);
+		
+		layui.use('table', function(){
+			  var table = layui.table;
+			  
+			  table.render({
+			    elem: '#test'
+			    ,url:'http://localhost:10238/iot_usermanager/groupprocess/?roleName=3591A0F744F49EFBABA6959917139CE'
+			    ,parseData: function(josn) { //josn 即为原始返回的数据
+			        return {
+			            "code": josn.state, //解析接口状态
+			            "msg": josn.message, //解析提示文本
+			            "count": josn.data.size, //解析数据长度
+			            "data": josn.data //解析数据列表
+			        }
+			    }
+			    ,cols: [[
+			      {type:'checkbox'}
+			      ,{field:'usernum', width:80, title: '编号'}
+			      ,{field:'nname', width:80, title: '姓名'}
+			    ]]
+			    ,page: false
+			  });
+			});
+		
+		
+	}
+	
 	//判断‘不安全行为’是否隐藏
 	/*if($("#prob").val() == "不安全行为/状态"){
 		$("#remark").show();
