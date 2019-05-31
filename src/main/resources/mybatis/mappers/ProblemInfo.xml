@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+ 
+<mapper namespace="cn.soa.dao.ProblemInfoMapper">
+
+	<!-- ===========================1、查询===============================  -->
+	
+	<select id="findByPiid"  resultType="cn.soa.entity.ProblemInfo">
+		select 
+			t_problem_rep_id tProblemRepId,
+			piid,
+			tas_id tasId,
+			problemtype,
+			wel_id welId,
+			wel_name welName,
+			adress,
+			impacts,
+			problemdescribe,
+			resavepeople,
+			applypeople,
+			applydate,
+			problemstate,
+			remark,
+			remarkone,
+			remarktwo,
+			remarkthree,
+			supervisoryperson,
+			maintenanceman,
+			rectificationmeasures,
+			rectificationperiod,
+			is_sms isSms,
+			sms_conment smsConment,
+			sms_date sDate,
+			task_piid taskPiid,
+			processtype,
+			supervisorydate,
+			supervisorydesc,
+			tas_distribute tasDistribute,
+			depart_or_central departOrCentral,
+			ter_beginwork_date terBeginworkDate,
+			ter_endwork_date terEndworkDate,
+			ter_place terPlace,
+			sp_id spId,
+			sp_name spName,
+			organization_site_officE organizationSiteOffice,
+			office_problem officeProblem,
+			materials_application materialsApplication,
+			application_remark applicationRemark,
+			controle_application controleApplication,
+			ope_cm_id opeCmId,
+			ope_card_no opecardNo,
+			handle_ticket handleTicket,
+			ticket_no ticketNo,
+			corrective_action correctiveAction,
+			action,
+			others,
+			remarkfive,
+			remarksix,
+			remarkseven,
+			rfid,
+			isdownload,
+			problemnum,
+			pho_name phoName,
+			process_desc processDesc,
+			pho_dispiay_name phoDispiayName,
+			rectif_instruction rectifInstruction,
+			pho_address phoAddress,
+			gd_name gdName,
+			work_permit workPermit,
+			work_permit_number workPermitNumber,
+			problemclass,
+			profession,
+			depet,
+			inter_or_outer interOrOuter,
+			outer_deal_describe outerDealDescribe
+		from 
+			cz_task_problem_report 
+		where 
+			piid = #{piid}
+	</select>
+
+</mapper>
+ 
+

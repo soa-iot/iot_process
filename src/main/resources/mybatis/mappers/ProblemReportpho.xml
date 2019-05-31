@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+ 
+<mapper namespace="cn.soa.dao.ProblemReportphoMapper">
+
+	<!-- ProblemReportpho===========================1、查询===============================  -->
+	
+	<select id="findByPiid"  resultType="cn.soa.entity.ProblemReportpho">
+		select 
+			t_problem_pho_id tProblemPhoId,
+			t_problem_rep_id tProblemRepId,
+			problemnum,
+			pho_name phoName,
+			pho_address phoAddress,
+			pho_dispiay_name phoDispiayName,
+			pho_upload_date phoUploadDate,
+			pho_upload_people phoUploadPeople,
+			remark,
+			remarkone,
+			remarktwo,
+			remarkthree,
+			piid
+		from 
+			cz_task_problem_reportpho 
+		where 
+			piid = #{piid}
+	</select>
+
+</mapper>
+ 
+

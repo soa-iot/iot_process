@@ -1,0 +1,47 @@
+.layui-input-top {
+		padding: 6px;
+	}
+	
+	.layui-input-one {
+		width: 181px;
+		height: 25px;
+	}
+	
+	.pbtn {
+		background-color: #FF00FF;
+		width: 150px;
+		margin-left: 60px;
+		margin-right: 50px;
+	}
+	
+	.btn-div {
+		width: 100%;
+		margin:20px;
+		/* padding: 0px,50px; */
+	}
+	
+	.tdp td {
+		padding: 0px;
+	}
+	
+	.right-marg{
+		margin-right: 10%;
+	}
+	/* .pro-div{
+			width: 800px;
+			margin-left: 50px;
+		} */
+	img{
+		width: 181px;
+		height: 182px;
+		margin-top: 50px;
+		margin-left: 10px;
+	}
+	.bott{
+		margin-bottom: 30px;
+	}
+	.h2c{
+		background-color: #b2b2b2;
+	}
+		
+	
