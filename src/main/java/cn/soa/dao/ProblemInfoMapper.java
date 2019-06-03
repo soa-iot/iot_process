@@ -37,8 +37,8 @@ public interface ProblemInfoMapper {
 	
 	/**   
 	 * @Title: findByRepId
-	 * @Description: 根据问题报告主键id查找问题报告  
-	 * @return: ProblemInfo  问题报告对象       
+	 * @Description: 根据问题报告主键id查找暂存状态的问题报告  
+	 * @return: ProblemInfo 暂存状态的问题报告对象       
 	 */ 
 	public ProblemInfo findByRepId(String RepId);
 	
