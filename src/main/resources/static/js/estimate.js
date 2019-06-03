@@ -45,7 +45,7 @@ layui.use([ 'element', 'layer' ], function() {
 	
 	//图片
 	$.ajax({  
-    	url : "/iot_process/problemreportpho/",  
+    	url : "/iot_process/estimates/problemreportpho/",  
         type : "get",
         data : {piid : "13"},
         dataType : "json",  
@@ -62,20 +62,19 @@ layui.use([ 'element', 'layer' ], function() {
 						//img_div = '';
 							
 						for (var i = 0; i < mode; i++) {
-							img_div = img_div+'<img alt="图片1" src="'+imgs[img_id].phoAddress+imgs[img_id].phoDispiayName+'">';
+							img_div = img_div+'<img alt="图片1" src="'+imgs[img_id].phoAddress+'">';
 							img_id++;
 						}
 						
 					}else{
 						
 						for (var i = 0; i < 3; i++) {
-							img_div = img_div+'<img alt="图片1" src="'+imgs[img_id].phoAddress+imgs[img_id].phoDispiayName+'">';
+							img_div = img_div+'<img alt="图片1" src="'+imgs[img_id].phoAddress+'">';
 							img_id++;
 						}
 						
 					}
 					img_div = img_div+'</div>'
-					alert(img_div);
 					$("#imag").append(img_div);
 				}
 			}
@@ -126,15 +125,26 @@ layui.use([ 'element', 'layer' ], function() {
 		
 	}
 	
-	//判断‘不安全行为’是否隐藏
-	/*if($("#prob").val() == "不安全行为/状态"){
-		$("#remark").show();
-	}else{
-		
-	}*/
+	//指定日期禁用
+	$("#sele").change(function(){
+		if ($("#sele").val()=="overhaul") {
+			$("#sdate").attr("disabled","	");
+		}else{
+			$("#sdate").val("");
+			$("#sdate").removeAttr("disabled");
+		}
+	});
 	
-	/*var a=10;
-	for (var i = 0; i < Math.ceil(a/3); i++) {
-		alert(Math.ceil(a/3));
-	}*/
+	//日期插件
+	layui.use('laydate', function(){
+		  var laydate = layui.laydate;
+		  
+		  //常规用法
+		  laydate.render({
+		    elem: '#sdate'
+		  });
+		  
+	});
+	
+	
 	 

@@ -12,6 +12,104 @@
 <body>
 
 	<div class="pro-div">
+
+		<!-- 问题处理 -->
+		<div class="layui-collapse" lay-accordion="">
+			<div class="layui-colla-item">
+				<h2 class="layui-colla-title h2c" id="pro">问题处理</h2>
+				
+				<div class="hbtn h2c">
+					<button class="layui-btn layui-btn-normal layui-btn-sm btn " onclick="alert(00)">回退</button>
+					<button class="layui-btn layui-btn-normal layui-btn-sm btn">闭环处理</button>
+					<button class="layui-btn layui-btn-normal layui-btn-sm btn">作业安排</button>
+					<button class="layui-btn layui-btn-normal layui-btn-sm btn">下一步</button>
+				</div>
+				<div class="layui-colla-content layui-show">
+
+					<div class="layui-inline">
+						<label class="layui-form-label labelr">事件/隐患标记</label>
+						<div class="layui-input-inline layui-input-top">
+							<select class="layui-input  layui-input-one" name="modules"
+								lay-verify="required" lay-search="">
+								<option value="">其他</option>
+								<option value="1">事故事件</option>
+								<option value="2">隐患事件</option>
+							</select>
+						</div>
+					</div>
+					
+					<div class="layui-form-item">
+						<div class="layui-inline">
+							<label class="layui-form-label labelr">整改日期</label>
+							<div class="layui-input-inline layui-input-top">
+								<select id="sele" class="layui-input layui-input-one" name="modules"
+								lay-verify="required" lay-search="">
+								<option value="setdate">指定日期</option>
+								<option value="overhaul">大修时整改</option>
+							</select>
+							</div>
+						</div>
+						<div class="layui-inline">
+							<label class="layui-form-label">指定日期</label>
+							<div class="layui-input-inline  layui-input-top">
+								<input type="text" class="layui-input layui-input-one" id="sdate"
+									placeholder="yyyy-MM-dd">
+							</div>
+						</div>
+					</div>
+
+					<div class="layui-form-item layui-form-text">
+						<label class="layui-form-label">处理说明</label>
+						<div class="layui-input-block right-marg">
+							<textarea name="title" id="input_localName" placeholder="请输入内容"
+								class="layui-textarea" name="desc">250-GT-115分析化验one</textarea>
+						</div>
+					</div>
+
+					<div>
+						<label class="layui-form-label">处理过程</label>
+						<div class="layui-input-block right-marg">
+							<table class="layui-table layui-input-block tdp">
+								<colgroup>
+									<col width="150">
+									<col width="150">
+									<col width="200">
+									<col  width="200">
+								</colgroup>
+								<thead>
+									<tr>
+										<th>处理人</th>
+										<th>处理节点</th>
+										<th>操作</th>
+										<th>处理说明</th>
+										<th>时间</th>
+									</tr>
+								</thead>
+								<tbody>
+									<tr>
+										<td></td>
+										<td></td>
+										<td></td>
+										<td></td>
+										<td></td>
+									</tr>
+									<tr>
+										<td></td>
+										<td></td>
+										<td></td>
+										<td></td>
+										<td></td>
+									</tr>
+								</tbody>
+							</table>
+						</div>
+					</div>
+
+				</div>
+
+			</div>
+		</div>
+
 		<!-- 问题信息 -->
 		<div class="layui-collapse" lay-filter="test">
 			<div class="layui-colla-item">
@@ -24,14 +122,14 @@
 							<div class="layui-input-inline layui-input-top">
 								<input id="parea" type="text"
 									class="layui-input layui-input-one" lay-verify="required|phone"
-									 disabled="disabled">
+									disabled="disabled">
 							</div>
 						</div>
 						<div class="layui-inline">
 							<label class="layui-form-label">所属专业</label>
 							<div class="layui-input-inline layui-input-top">
 								<input type="text" id="major"
-									class="layui-input  layui-input-one"  disabled="disabled">
+									class="layui-input  layui-input-one" disabled="disabled">
 							</div>
 						</div>
 					</div>
@@ -40,8 +138,8 @@
 						<div class="layui-inline">
 							<label class="layui-form-label">问题定位</label>
 							<div class="layui-input-inline layui-input-top">
-								<input type="text" id="rfid"
-									class="layui-input layui-input-one" disabled="disabled">
+								<input type="text" id="rfid" class="layui-input layui-input-one"
+									disabled="disabled">
 							</div>
 						</div>
 						<div class="layui-inline">
@@ -49,7 +147,7 @@
 							<div class="layui-input-inline layui-input-top">
 								<input type="text" id="prob" lay-verify="email"
 									class="layui-input  layui-input-one" disabled="disabled">
-									<!--  value="不安全行为/状态" -->
+								<!--  value="不安全行为/状态" -->
 							</div>
 						</div>
 					</div>
@@ -75,16 +173,16 @@
 						<label class="layui-form-label">问题描述</label>
 						<div class="layui-input-block right-marg">
 							<textarea name="title" id="problem_describe" placeholder="请输入内容"
-								class="layui-textarea" name="desc" disabled="disabled">250-GT-115分析化验</textarea>
+								class="layui-textarea" name="desc">250-GT-115分析化验</textarea>
 						</div>
 					</div>
 
 					<div class="layui-form-item layui-form-text bott">
 						<label class="layui-form-label">问题图片</label>
 						<div class="layui-input-block">
-						<div class="layui-carousel" id="test1" lay-filter="test1">
-							<div carousel-item="" id="imag">
-								<!-- <div>
+							<div class="layui-carousel" id="test1" lay-filter="test1">
+								<div carousel-item="" id="imag">
+									<!-- <div>
 									<img alt="图片1" src="../jsPackage/layui-v2.4.2/images/问题上报/u156.png">
 									<img alt="图片2" src="../jsPackage/layui-v2.4.2//images/问题上报/u154.png"> 
 									<img alt="图片3" src="../jsPackage/layui-v2.4.2//images/问题上报/u152.png">
@@ -112,82 +210,21 @@
 									<img alt="图片3" src="../jsPackage/layui-v2.4.2//images/问题上报/u152.png">
 								</div>
 							</div> -->
-						<!-- </div>
+									<!-- </div>
 						<img alt="图片1" src="../jsPackage/layui-v2.4.2/images/问题上报/u156.png">
 							<img alt="图片2" src="../jsPackage/layui-v2.4.2//images/问题上报/u154.png"> 
 							<img alt="图片3" src="../jsPackage/layui-v2.4.2//images/问题上报/u152.png">
 						</div> -->
-						</div>
+								</div>
 
+							</div>
 						</div>
 					</div>
 				</div>
 			</div>
 		</div>
-		<!-- 问题处理 -->
-		<div class="layui-collapse" lay-accordion="">
-			<div class="layui-colla-item">
-				<h2 class="layui-colla-title h2c">问题处理</h2>
 
-				<div class="layui-colla-content layui-show">
-					<div class="layui-form-item layui-form-text">
-						<label class="layui-form-label">处理说明</label>
-						<div class="layui-input-block right-marg">
-							<textarea name="title" id="input_localName" placeholder="请输入内容"
-								class="layui-textarea" name="desc">250-GT-115分析化验one</textarea>
-						</div>
-					</div>
-
-					<div>
-						<label class="layui-form-label">处理过程</label>
-						<div class="layui-input-block right-marg">
-							<table class="layui-table layui-input-block tdp">
-								<thead>
-									<tr>
-										<th>处理人</th>
-										<th>处理节点</th>
-										<th>操作</th>
-										<th>处理说明</th>
-										<th>时间</th>
-									</tr>
-								</thead>
-								<colgroup>
-									<col >
-									<col width="200px">
-									<col>
-								</colgroup>
-								<tbody>
-									<tr>
-										<td></td>
-										<td></td>
-										<td></td>
-										<td></td>
-										<td></td>
-									</tr>
-									<tr>
-										<td></td>
-										<td></td>
-										<td></td>
-										<td></td>
-										<td></td>
-									</tr>
-								</tbody>
-							</table>
-						</div>
-					</div>
-
-					<div class="btn-div">
-						<button class="layui-btn layui-btn-primary layui-btn-sm pbtn ">回退</button>
-						<button class="layui-btn layui-btn-primary layui-btn-sm pbtn" onclick="groupprocess()">组内处理</button>
-						<button class="layui-btn layui-btn-primary layui-btn-sm pbtn">下一步</button>
-					</div>
-
-				</div>
-
-			</div>
-		</div>
 	</div>
-	
 	<script type="text/javascript" src="../jsPackage/js/jquery-1.9.1.min.js"></script>
 	<script src="../jsPackage/layui-v2.4.2/layui.js" charset="utf-8"></script>
 	<script type="text/javascript" src="../js/estimate.js"></script>

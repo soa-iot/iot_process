@@ -8,13 +8,33 @@
 	}
 	
 	.pbtn {
-		background-color: #FF00FF;
 		width: 150px;
 		margin-left: 60px;
 		margin-right: 50px;
 	}
 	
+	.btn {
+		width: 100px;
+		margin-left: 30px;
+		margin-right: 30px;
+	}
+	
+	#pro{
+		vertical-align: middle;
+		display: inline-block;
+		width: 100px;
+	}
+	
+	.hbtn{
+		display: inline-block;
+		height: 42px;
+		line-height: 40px;
+		margin-left: -10px;
+		width: calc(100% - 145px);
+	}
+	
 	.btn-div {
+		vertical-align: middle;
 		width: 100%;
 		margin:20px;
 		/* padding: 0px,50px; */
@@ -44,4 +64,7 @@
 		background-color: #b2b2b2;
 	}
 		
+	.labelr{
+		width: 90px;
+	}
 	
