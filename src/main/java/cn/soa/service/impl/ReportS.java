@@ -1,29 +1,37 @@
 package cn.soa.service.impl;
 
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import cn.soa.dao.ReportMapper;
+import cn.soa.dao.ProblemInfoMapper;
+import cn.soa.dao.ProblemReportphoMapper;
 import cn.soa.entity.ProblemInfo;
 import cn.soa.entity.ProblemInfoVO;
 import cn.soa.service.inter.ReportSI;
+
+
 @Service
 public class ReportS implements ReportSI {
 	
 	@Autowired
-	private ReportMapper reportMapper;
+	private ProblemInfoMapper reportMapper;
+	@Autowired
+	private ProblemReportphoMapper phoMapper;
 	
 	/**   
 	 * @Title: addOne   
 	 * @Description: 添加/更新一条问题报告数据
 	 * @return: void   无返回值   
 	 */
+	@SuppressWarnings("unchecked")
 	@Transactional
 	@Override
-	public boolean addOne(ProblemInfo problemInfo) {
+	public boolean addOne(ProblemInfo problemInfo, String[] imgList) {
 		
 		String RepId = problemInfo.getTProblemRepId();
 		/*
@@ -36,6 +44,10 @@ public class ReportS implements ReportSI {
 			problemInfo.setProcesstype("7");
 			
 			try {
+				//获取最大编号，再自动+1
+				Integer maxNum = reportMapper.findMaxProblemNum();
+				maxNum = (maxNum == null ? 1 : maxNum+1);
+				problemInfo.setProblemnum(maxNum);
 				Integer rows = reportMapper.insertOne(problemInfo);
 				if(rows != 1) {
 					return false;
@@ -46,8 +58,16 @@ public class ReportS implements ReportSI {
 			}	
 		}else {
 			try {
-				Integer rows = reportMapper.updateOne(problemInfo);
-				if(rows != 1) {
+				Integer rows1 = reportMapper.updateOne(problemInfo);
+				
+				if(imgList != null && imgList.length > 0) {
+					@SuppressWarnings("rawtypes")
+					Map phoMap = new HashMap();
+					phoMap.put("tProblemRepId", RepId);
+					phoMap.put("imgList", imgList);
+					phoMapper.deleteList(phoMap);
+				}
+				if(rows1 != 1) {
 					return false;
 				}
 			}catch (Exception e) {
@@ -66,7 +86,7 @@ public class ReportS implements ReportSI {
 	 */
 	@Override
 	public ProblemInfoVO getByResavepeople(String resavepeople) {
-		
+		 
 		return reportMapper.findByResavepeople(resavepeople);
 	}
 }

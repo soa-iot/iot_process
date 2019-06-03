@@ -15,6 +15,7 @@ public class ReportWebConfig implements WebMvcConfigurer {
 	
 	/**
 	 * 配置静态图片映射路径
+	 * @author Jiang Hang
 	 */
 	 @Override
 	 public void addResourceHandlers(ResourceHandlerRegistry registry) {

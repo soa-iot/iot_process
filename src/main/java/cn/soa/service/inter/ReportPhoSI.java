@@ -1,7 +1,5 @@
 package cn.soa.service.inter;
 
-import cn.soa.entity.ProblemInfo;
-import cn.soa.entity.ProblemInfoVO;
 import cn.soa.entity.ProblemReportpho;
 
 public interface ReportPhoSI {

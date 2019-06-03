@@ -3,7 +3,7 @@ package cn.soa.service.impl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import cn.soa.dao.ReportPhoMapper;
+import cn.soa.dao.ProblemReportphoMapper;
 import cn.soa.entity.ProblemInfo;
 import cn.soa.entity.ProblemReportpho;
 import cn.soa.service.inter.ReportPhoSI;
@@ -12,7 +12,7 @@ import cn.soa.service.inter.ReportPhoSI;
 public class ReportPhoS implements ReportPhoSI {
 	
 	@Autowired
-	private ReportPhoMapper phoMapper;
+	private ProblemReportphoMapper phoMapper;
 	
 	/**   
 	 * @Title: addOne   

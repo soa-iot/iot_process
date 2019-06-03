@@ -6,7 +6,7 @@
 
 	<!-- ===========================1、查询===============================  -->
 	
-	<!--  根据流程标识字段查询问题评估信息 -->
+	<!-- 1.1 根据流程标识字段查询问题评估信息 -->
 	<!-- ProblemInfo findByPiid(String piid); -->
 	<select id="findByPiid"  resultType="cn.soa.entity.ProblemInfo">
 		select 
@@ -81,6 +81,229 @@
 		where 
 			piid = #{piid}
 	</select>
+	
+	<!-- 1.2、根据问题报告主键id查找问题报告  -->
+	<!-- public ProblemInfo findByRepId(String RepId) -->
+	
+	<resultMap type="cn.soa.entity.ProblemInfo" id="problemInfoResultMap">
+		<id property="tProblemRepId" column="T_PROBLEM_REP_ID" />
+		<result property="applypeople" column="APPLYPEOPLE" />
+		<result property="problemnum" column="PROBLEMNUM" />
+		<result property="problemtype" column="PROBLEMTYPE" />
+		<result property="welName" column="WEL_NAME" />
+		<result property="profession" column="PROFESSION" />
+		<result property="rfid" column="RFID" />
+		<result property="problemclass" column="PROBLEMCLASS" />
+		<result property="remarkfive" column="REMARKFIVE" />
+		<result property="remarksix" column="REMARKSIX" />
+		<result property="problemdescribe" column="PROBLEMDESCRIBE" />
+	</resultMap>
+	
+	<select id="findByRepId" resultMap="problemInfoResultMap">
+		SELECT
+			T_PROBLEM_REP_ID,PROBLEMNUM,APPLYPEOPLE,PROBLEMTYPE,WEL_NAME,PROFESSION,
+			RFID,PROBLEMCLASS,REMARKFIVE,REMARKSIX,PROBLEMDESCRIBE
+		FROM
+			CZ_TASK_PROBLEM_REPORT
+		WHERE
+			T_PROBLEM_REP_ID = #{RepId, jdbcType=VARCHAR} AND PIID is null			
+	</select>
+	
+	<!-- 1.3、根据当前登录人查找暂存的问题报告  -->
+	<!-- public ProblemInfo findByResavepeople(String resavepeople) -->
+	
+	<resultMap type="cn.soa.entity.ProblemInfoVO" id="problemInfoVOResultMap">
+		<id property="tProblemRepId" column="REP_ID" />
+		<result property="applypeople" column="APPLYPEOPLE" />
+		<result property="problemnum" column="proNum" />
+		<result property="problemtype" column="PROBLEMTYPE" />
+		<result property="welName" column="WEL_NAME" />
+		<result property="profession" column="PROFESSION" />
+		<result property="rfid" column="RFID" />
+		<result property="problemclass" column="PROBLEMCLASS" />
+		<result property="remarkfive" column="REMARKFIVE" />
+		<result property="remarksix" column="REMARKSIX" />
+		<result property="problemdescribe" column="PROBLEMDESCRIBE" />
+		<result property="resavepeople" column="RESAVEPEOPLE" />
+		<collection property="reportPhos" ofType="cn.soa.entity.ProblemReportpho" >
+			<id property="tProblemPhoId" column="T_PROBLEM_PHO_ID" />
+			<result property="tProblemRepId" column="REP_ID1" />
+			<result property="phoName" column="phoName" />
+			<result property="phoAddress" column="phoAddress" />
+			<result property="phoDispiayName" column="phoDisplayName" />
+			<result property="phoUploadPeople" column="phoUploadPeople" />
+		</collection>
+	</resultMap>
+	
+	<select id="findByResavepeople"  resultMap="problemInfoVOResultMap">
+		SELECT
+			pr.T_PROBLEM_REP_ID REP_ID, prp.T_PROBLEM_REP_ID REP_ID1, pr.PROBLEMNUM proNum, APPLYPEOPLE, PROBLEMTYPE,WEL_NAME,PROFESSION,
+			RFID,PROBLEMCLASS,REMARKFIVE,REMARKSIX,PROBLEMDESCRIBE,RESAVEPEOPLE,T_PROBLEM_PHO_ID, prp.PHO_NAME phoName,
+			prp.PHO_ADDRESS phoAddress, prp.PHO_DISPIAY_NAME phoDisplayName,prp.PHO_UPLOAD_PEOPLE phoUploadPeople
+		FROM
+			CZ_TASK_PROBLEM_REPORT pr LEFT JOIN CZ_TASK_PROBLEM_REPORTPHO prp
+			ON pr.T_PROBLEM_REP_ID = prp.T_PROBLEM_REP_ID
+		WHERE
+			RESAVEPEOPLE = #{resavepeople, jdbcType=VARCHAR} AND pr.PIID is null			
+	</select>
+	
+	<!-- 1.4、根据问题报告主键id查找问题报告    -->
+	<!-- public Integer findMaxProblemNum() -->
+	<select id="findMaxProblemNum" resultType="java.lang.Integer">
+		SELECT MAX(PROBLEMNUM) ma FROM CZ_TASK_PROBLEM_REPORT
+	</select>
+	
+	<!-- ===========================2、新增===============================  -->
+	<!-- 2.1、添加一条问题报告数据 	-->
+	<!-- public Integer insertOne(ProblemInfo info)	 -->
+	<insert id="insertOne" parameterType="cn.soa.entity.ProblemInfo">
+		INSERT INTO
+			CZ_TASK_PROBLEM_REPORT
+			<trim prefix="(" suffix=")" suffixOverrides=",">
+			   <if test="tProblemRepId != null and tProblemRepId != ''">
+			   		T_PROBLEM_REP_ID,
+			   </if>
+			   <if test="piid != null and piid != ''">
+			   		PIID,
+			   </if>
+			   <if test="applypeople != null and applypeople != ''">
+			   		APPLYPEOPLE,
+			   </if>
+			   <if test="problemtype != null and problemtype != ''">
+			   		PROBLEMTYPE,
+			   </if>
+			   <if test="problemnum != null">
+			   		PROBLEMNUM,
+			   </if>
+			   <if test="welName != null and welName != ''">
+			   		WEL_NAME,
+			   </if>
+			   <if test="profession != null and profession != ''">
+			   		PROFESSION,
+			   </if>
+			   <if test="processtype != null and processtype != ''">
+			   		PROCESSTYPE,
+			   </if>
+			   <if test="rfid != null and rfid != ''">
+			   		RFID,
+			   </if>
+			   <if test="problemclass != null and problemclass != ''">
+			   		PROBLEMCLASS,
+			   </if>
+			   <if test="remarkfive != null and remarkfive != ''">
+			   		REMARKFIVE,
+			   </if>
+			   <if test="remarksix != null and remarksix != ''">
+			   		REMARKSIX,
+			   </if>
+			   <if test="problemdescribe != null and problemdescribe != ''">
+			   		PROBLEMDESCRIBE,
+			   </if>
+			   <if test="applydate != null">
+			   		APPLYDATE,
+			   </if>
+			   <if test="problemstate != null and problemstate != ''">
+			   		PROBLEMSTATE,
+			   </if>
+			   <if test="resavepeople != null and resavepeople != ''">
+			   		RESAVEPEOPLE
+			   </if>
+			</trim>
+		VALUES
+			<trim prefix="(" suffix=")" suffixOverrides=",">
+			   <if test="tProblemRepId != null and tProblemRepId != ''">
+			   		#{tProblemRepId, jdbcType=VARCHAR},
+			   </if>
+			   <if test="piid != null and piid != ''">
+			   		#{piid, jdbcType=VARCHAR},
+			   </if>
+			   <if test="applypeople != null and applypeople != ''">
+			   		#{applypeople, jdbcType=VARCHAR},
+			   </if>
+			   <if test="problemtype != null and problemtype != ''">
+			   		#{problemtype, jdbcType=VARCHAR},
+			   </if>
+			   <if test="problemnum != null">
+			   		#{problemnum},
+			   </if>
+			   <if test="welName != null and welName != ''">
+			   		#{welName, jdbcType=VARCHAR},
+			   </if>
+			   <if test="profession != null and profession != ''">
+			   		#{profession, jdbcType=VARCHAR},
+			   </if>
+			   <if test="processtype != null and processtype != ''">
+			   		#{processtype, jdbcType=VARCHAR},
+			   </if>
+			   <if test="rfid != null and rfid != ''">
+			   		#{rfid, jdbcType=VARCHAR},
+			   </if>
+			   <if test="problemclass != null and problemclass != ''">
+			   		#{problemclass, jdbcType=VARCHAR},
+			   </if>
+			   <if test="remarkfive != null and remarkfive != ''">
+			   		#{remarkfive, jdbcType=VARCHAR},
+			   </if>
+			   <if test="remarksix != null and remarksix != ''">
+			   		#{remarksix, jdbcType=VARCHAR},
+			   </if>
+			   <if test="problemdescribe != null and problemdescribe != ''">
+			   		#{problemdescribe, jdbcType=VARCHAR},
+			   </if>
+			   <if test="applydate != null">
+			   		#{applydate},
+			   </if>
+			   <if test="problemstate != null and problemstate != ''">
+			   		#{problemstate, jdbcType=VARCHAR},
+			   </if>
+			   <if test="resavepeople != null and resavepeople != ''">
+			   		#{resavepeople, jdbcType=VARCHAR}
+			   </if>		   
+			</trim>	
+	</insert>
+	
+	
+	<!-- ===========================3、修改===============================  -->
+	<!-- 3.1、修改一条问题报告数据 	-->
+	<!-- public Integer updateOne(ProblemInfo info)	 -->
+	<update id="updateOne" parameterType="cn.soa.entity.ProblemInfo">
+		UPDATE CZ_TASK_PROBLEM_REPORT
+			<set>
+			   <if test="applypeople != null and applypeople != ''">
+			   		APPLYPEOPLE = #{applypeople},
+			   </if>
+			   <if test="problemtype != null and problemtype != ''">
+			   		PROBLEMTYPE = #{problemtype},
+			   </if>
+			   <if test="welName != null and welName != ''">
+			   		WEL_NAME = #{welName},
+			   </if>
+			   <if test="profession != null and profession != ''">
+			   		PROFESSION = #{profession},
+			   </if>
+			   <if test="rfid != null and rfid != ''">
+			   		RFID = #{rfid},
+			   </if>
+			   <if test="problemclass != null and problemclass != ''">
+			   		PROBLEMCLASS = #{problemclass},
+			   </if>
+			   <if test="remarkfive != null and remarkfive != ''">
+			   		REMARKFIVE = #{remarkfive},
+			   </if>
+			   <if test="remarksix != null and remarksix != ''">
+			   		REMARKSIX = #{remarksix},
+			   </if>
+			   <if test="problemdescribe != null and problemdescribe != ''">
+			   		PROBLEMDESCRIBE = #{problemdescribe},
+			   </if>
+			   <if test="applydate != null">
+			   		APPLYDATE = #{applydate},
+			   </if>
+			</set>
+			<where>
+				T_PROBLEM_REP_ID = #{tProblemRepId}
+			</where>
+	</update>
 
 	<!-- 根据流程标识字段更新问题问题描述字段 -->
 	<!-- Integer updateByPiid(String piid); -->
