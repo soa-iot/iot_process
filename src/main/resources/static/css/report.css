@@ -40,7 +40,7 @@
 #addImg, #addZmImg, #addImgdz, #addImgpz, #addImgyy {
     margin-left: 0 !important;
     font-size: 144px;
-    line-height: 104px;
+    line-height: 150px;
     color: darkgrey
 }
 
@@ -48,13 +48,14 @@
     width: 860px;
     position: relative;
     margin: 0px auto;
-    min-height: 80px;
+    min-height: 150px;
 }
 
     #imgList li, #imgZmList li, #imgListdz li #imgListpz li #imgListyy li {
-        width: 110px;
-        height: 80px;
+        width: 180px;
+        height: 150px;
         float: left;
+        margin-right:3px;
         list-style: none;
         list-style-type: none;
         display: inline-block;
