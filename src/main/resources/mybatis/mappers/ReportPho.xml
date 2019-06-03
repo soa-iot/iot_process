@@ -1,0 +1,127 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+ 
+<mapper namespace="cn.soa.dao.ReportPhoMapper">
+
+	<!-- ===========================1、查询===============================  -->
+	
+	<!-- 1.1、根据问题报告主键id查找问题报告  -->
+	
+	
+	<!-- ===========================2、新增===============================  -->
+	<!-- 2.1、添加一条问题报告数据 	-->
+	<!-- public Integer insertOne(ProblemReportpho pho) -->
+	<insert id="insertOne" parameterType="cn.soa.entity.ProblemReportpho">
+		INSERT INTO CZ_TASK_PROBLEM_REPORTPHO
+			<trim prefix="(" suffix=")" suffixOverrides=",">
+				<if test="tProblemPhoId != null and tProblemPhoId != ''">
+					T_PROBLEM_PHO_ID,
+				</if>
+				<if test="tProblemRepId != null and tProblemRepId != ''">
+					T_PROBLEM_REP_ID,
+				</if>
+				<if test="piid != null and piid != ''">
+					PIID,
+				</if>
+				<if test="problemnum != null and problemnum != ''">
+					PROBLEMNUM,
+				</if>
+				<if test="phoName != null and phoName != ''">
+					PHO_NAME,
+				</if>
+				<if test="phoAddress != null and phoAddress != ''">
+					PHO_ADDRESS,
+				</if>
+				<if test="phoDispiayName != null and phoDispiayName != ''">
+					PHO_DISPIAY_NAME,
+				</if>
+				<if test="phoUploadDate != null">
+					PHO_UPLOAD_DATE,
+				</if>
+				<if test="phoUploadPeople != null and phoUploadPeople != ''">
+					PHO_UPLOAD_PEOPLE,
+				</if>
+				<if test="remark != null and remark != ''">
+					REMARK,
+				</if>
+				<if test="remarkone != null and remarkone != ''">
+					REMARKONE,
+				</if>
+				<if test="remarktwo != null and remarktwo != ''">
+					REMARKTWO,
+				</if>
+				<if test="remarkthree != null and remarkthree != ''">
+					REMARKTHREE,
+				</if>
+			</trim>
+		VALUES
+			<trim prefix="(" suffix=")" suffixOverrides=",">
+				<if test="tProblemPhoId != null and tProblemPhoId != ''">
+					#{tProblemPhoId},
+				</if>
+				<if test="tProblemRepId != null and tProblemRepId != ''">
+					#{tProblemRepId},
+				</if>
+				<if test="piid != null and piid != ''">
+					#{piid},
+				</if>
+				<if test="problemnum != null and problemnum != ''">
+					PROBLEMNUM,
+				</if>
+				<if test="phoName != null and phoName != ''">
+					#{phoName},
+				</if>
+				<if test="phoAddress != null and phoAddress != ''">
+					#{phoAddress},
+				</if>
+				<if test="phoDispiayName != null and phoDispiayName != ''">
+					#{phoDispiayName},
+				</if>
+				<if test="phoUploadDate != null">
+					#{phoUploadDate},
+				</if>
+				<if test="phoUploadPeople != null and phoUploadPeople != ''">
+					#{phoUploadPeople},
+				</if>
+				<if test="remark != null and remark != ''">
+					#{remark},
+				</if>
+				<if test="remarkone != null and remarkone != ''">
+					#{remarkone},
+				</if>
+				<if test="remarktwo != null and remarktwo != ''">
+					#{remarktwo},
+				</if>
+				<if test="remarkthree != null and remarkthree != ''">
+					#{remarkthree},
+				</if>
+			</trim>
+	</insert>
+	
+	
+	<!-- ===========================3、修改===============================  -->
+	<!-- 3.1、修改一条问题报告数据 	-->
+	
+	
+	<!-- ===========================4、删除===============================  -->
+	<!-- 4.1、删除问题图片数据 	-->
+	<!-- public Integer deleteList(Map phos); -->
+			
+	<delete id="deleteList">
+		DELETE FROM 
+			CZ_TASK_PROBLEM_REPORTPHO
+		<where>
+			T_PROBLEM_REP_ID = #{tProblemRepId}
+			<if test="imgList != null">
+				AND T_PROBLEM_PHO_ID IN
+				<foreach collection="imgList" index="index" item="item" open="(" separator="," close=")">
+					#{item}
+				</foreach>
+			</if>
+		</where>
+	</delete>
+	
+</mapper>
+ 
+
