@@ -10,7 +10,7 @@ public interface ReportSI {
 	 * @Description: 添加一条问题报告数据
 	 * @return: void   无返回值   
 	 */
-	public boolean addOne(ProblemInfo problemInfo);
+	public boolean addOne(ProblemInfo problemInfo, String[] imgList);
 	
 	/**   
 	 * @Title: addOne   

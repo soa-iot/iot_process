@@ -7,6 +7,7 @@ import org.apache.ibatis.annotations.Mapper;
 import cn.soa.entity.UnsafeType;
 
 
+
 @Mapper
 public interface UnsafeTypeMapper {
 	
