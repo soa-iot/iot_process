@@ -6,8 +6,8 @@ import org.springframework.context.annotation.PropertySource;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
-@Configuration
-@PropertySource(value= {"classpath:/configProperties/fileDownUpload.properties"}, encoding="UTF-8")
+//@Configuration
+//@PropertySource(value= {"classpath:/configProperties/fileDownUpload.properties"}, encoding="UTF-8")
 public class ReportWebConfig implements WebMvcConfigurer {
 	
 	@Value("${problem.image.upload.path}")
