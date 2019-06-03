@@ -5,12 +5,15 @@ import java.util.Map;
 
 import org.activiti.engine.history.HistoricActivityInstance;
 import org.activiti.engine.impl.persistence.entity.ProcessDefinitionEntity;
+import org.activiti.engine.impl.persistence.entity.TaskEntity;
 import org.activiti.engine.impl.pvm.PvmTransition;
 import org.activiti.engine.impl.pvm.process.ActivityImpl;
 import org.activiti.engine.repository.Deployment;
 import org.activiti.engine.repository.ProcessDefinition;
 import org.activiti.engine.task.Task;
 import org.springframework.stereotype.Service;
+
+import cn.soa.entity.TodoTask;
 
 @Service
 public interface ActivitySI {
@@ -211,7 +214,7 @@ public interface ActivitySI {
 	 * @Description: 根据用户姓名，查询用户的所有待办任务（个人任务+组任务）  
 	 * @return: List<Task>        
 	 */  
-	List<Task> getAllTasksByUsername(String userName);
+	List<TodoTask> getAllTasksByUsername(String userName);
 
 	/**   
 	 * @Title: getProcessDefinitions   

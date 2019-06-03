@@ -38,11 +38,11 @@
 	$.ajax({
 	     type: "GET"
 	     ,url: '/iot_process/process/tasks' 
-	     ,data: {}
+	     ,data: {"userName" : ""}
 	     ,contentType: "application/x-www-form-urlencoded"
 	     ,dataType: "json"
 	     ,success: function(jsonData){
-	     	//后端返回值： ResultJson<List<Task>>
+	     	//后端返回值： ResultJson<List<TodoTask>>
 	     },
 	     ,error:function(){}		       
 	});
@@ -77,7 +77,11 @@
 	$.ajax({
 	     type: "POST"
 	     ,url: '/iot_process/process/deployment'    //dfid为流程定义id
-	     ,data: {key…… ： value……}   //问题上报表单的内容
+	     ,data: {
+			"name": "",
+	     	"xmlUrl": "",
+	     	"pngUrl": ""
+		 }   //问题上报表单的内容
 	     ,contentType: "application/x-www-form-urlencoded"
 	     ,dataType: "json"
 	     ,success: function(jsonData){
@@ -87,7 +91,24 @@
 	});
 
 
-7、
+7、部署流程(测试专用)
+	$.ajax({
+	     type: "GET"
+	     ,url: '/iot_process/process/deployment'    //dfid为流程定义id
+	     ,data: {
+	     	"name": "",
+	     	"xmlUrl": "",
+	     	"pngUrl": ""
+	     }   //问题上报表单的内容
+	     ,contentType: "application/x-www-form-urlencoded"
+	     ,dataType: "json"
+	     ,success: function(jsonData){
+	     	//后端返回值： ResultJson<List<Task>>
+	     },
+	     ,error:function(){}		       
+	});
+	
+8、
 		
 
 
@@ -148,5 +169,36 @@
 	数据库脚本(oracle)
 #####################################################################################################
 1、 activiti删除所有流程表的垃圾数据
+	delete from ACT_EVT_LOG;
+	delete from ACT_GE_BYTEARRAY;
+	
+	delete from ACT_HI_ACTINST;
+	delete from ACT_HI_ATTACHMENT;
+	delete from ACT_HI_COMMENT;
+	delete from ACT_HI_DETAIL;
+	delete from ACT_HI_IDENTITYLINK;
+	delete from ACT_HI_PROCINST;
+	delete from ACT_HI_TASKINST;
+	delete from ACT_HI_VARINST;
+	
+	delete from ACT_ID_GROUP;
+	delete from ACT_ID_INFO;
+	delete from ACT_ID_MEMBERSHIP;
+	delete from ACT_ID_USER;
+	
+	delete from ACT_PROCDEF_INFO;
+	
+	delete from ACT_RE_DEPLOYMENT;
+	delete from ACT_RE_MODEL;
+	delete from ACT_RE_PROCDEF;
+	
+	delete from ACT_RU_EVENT_SUBSCR;
+	delete from ACT_RU_EXECUTION;
+	delete from ACT_RU_IDENTITYLINK;
+	delete from ACT_RU_JOB;
+	delete from ACT_RU_TASK;
+	delete from ACT_RU_VARIABLE;
 
+	
+	
 2、

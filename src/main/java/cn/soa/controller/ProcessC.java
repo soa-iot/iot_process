@@ -7,6 +7,7 @@ import java.util.Map;
 
 import javax.validation.constraints.NotBlank;
 
+import org.activiti.engine.impl.persistence.entity.TaskEntity;
 import org.activiti.engine.repository.Deployment;
 import org.activiti.engine.repository.ProcessDefinition;
 import org.activiti.engine.task.Task;
@@ -24,8 +25,10 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.RestTemplate;
 
+import cn.soa.entity.ProblemInfo;
 import cn.soa.entity.ResultJson;
 import cn.soa.entity.ResultJsonForTable;
+import cn.soa.entity.TodoTask;
 import cn.soa.service.inter.ActivitySI;
 import cn.soa.service.inter.BussinessSI;
 import cn.soa.service.inter.ConfigSI;
@@ -69,8 +72,9 @@ public class ProcessC {
 		logger.debug( xmlUrl );
 		logger.debug( pngUrl );
 		if( name !=null ) {			
-			Deployment deployment = activityS.deployProcess( name, xmlUrl, pngUrl );
+			Deployment deployment = activityS.deployProcess( name, xmlUrl, pngUrl );			
 			if( deployment != null ) {
+				logger.debug( deployment.toString() );
 				return new ResultJson<Boolean>( 0, "部署成功", true );
 			}else {
 				return new ResultJson<Boolean>( 1, "部署失败", false );
@@ -172,15 +176,15 @@ public class ProcessC {
 	@PostMapping("/{dfid}")
 	public ResultJson<String> startProcess(
 			@PathVariable("dfid") @NotBlank String dfid,
-			@RequestParam Map<String,Object> bussinessData ){
+			ProblemInfo problemInfo ){
 		logger.debug( "--C--------启动流程（同时业务处理）  -------------" );
 		logger.debug( dfid );
-		logger.debug( bussinessData.toString() );
+		logger.debug( problemInfo.toString() );
 		
 		/*
 		 * 执行业务处理（具体业务处理需要实现以下接口）
 		 */
-		String bsid = bussinessS.dealProblemReport( bussinessData );
+		String bsid = bussinessS.dealProblemReport( problemInfo );
 		if( bsid != null ) {
 			return new ResultJson<String>( 1, "业务处理失败，流程未启动", "业务处理失败，流程未启动" );
 		}
@@ -193,7 +197,7 @@ public class ProcessC {
 		/*
 		 * 处理临时流程变量
 		 */
-		Map<String, Object> tempVars = processVariableS.addVarsStartProcess( bussinessData );
+		Map<String, Object> tempVars = processVariableS.addVarsStartProcess( problemInfo );
 				
 		/*
 		 * 流程启动
@@ -323,15 +327,15 @@ public class ProcessC {
 	 * @return: ResultJson<Task>        
 	 */ 
 	@GetMapping("/tasks")
-	public ResultJson<List<Task>> getAllTasksByUsernameC(
+	public ResultJson<List<TodoTask>> getAllTasksByUsernameC(
 			@RequestParam("userName") @NotBlank String userName ){
 		logger.debug( "--C-------- 根据用户姓名，查询用户的所有待办任务（个人任务+组任务）     -------------" );
 		logger.debug( userName );
-		List<Task> tasks = activityS.getAllTasksByUsername( userName );
+		List<TodoTask> tasks = activityS.getAllTasksByUsername( userName );
 		if( tasks != null ) {
-			return new ResultJson<List<Task>>( 0, "流程返回到上一个节点成功", tasks );
+			return new ResultJson<List<TodoTask>>( 0, "流程返回到上一个节点成功", tasks );
 		}
-		return new ResultJson<List<Task>>( 0, "流程返回到上一个节点失败", tasks );
+		return new ResultJson<List<TodoTask>>( 0, "流程返回到上一个节点失败", tasks );
 	}
 	
 	/**   
@@ -340,14 +344,14 @@ public class ProcessC {
 	 * @return: ResultJson<Task>        
 	 */ 
 	@GetMapping("/tasks/layui")
-	public ResultJsonForTable<List<Task>> getAllTasksByUsername1C(
+	public ResultJsonForTable<List<TodoTask>> getAllTasksByUsername1C(
 			@RequestParam("userName") @NotBlank String userName ){
 		logger.debug( "--C-------- 根据用户姓名，查询用户的所有待办任务（个人任务+组任务）     -------------" );
 		logger.debug( userName );
-		List<Task> tasks = activityS.getAllTasksByUsername( userName );
+		List<TodoTask> tasks = activityS.getAllTasksByUsername( userName );
 		if( tasks != null ) {
-			return new ResultJsonForTable<List<Task>>( 0, "流程返回到上一个节点成功", tasks.size(), tasks );
+			return new ResultJsonForTable<List<TodoTask>>( 0, "代办任务查询成功", tasks.size(), tasks );
 		}
-		return new ResultJsonForTable<List<Task>>( 0, "流程返回到上一个节点失败", 0, tasks );
+		return new ResultJsonForTable<List<TodoTask>>( 0, "代办任务查询失败", 0, tasks );
 	}
 }

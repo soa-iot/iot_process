@@ -4,6 +4,8 @@ import java.util.Map;
 
 import org.springframework.stereotype.Service;
 
+import cn.soa.entity.ProblemInfo;
+
 @Service
 public interface ProcessVariableSI {
 	
@@ -12,5 +14,5 @@ public interface ProcessVariableSI {
 	 * @Description: 在启动流程时，增加流程变量接口   
 	 * @return: Map<String,Object>   返回需要加入流程中的变量     
 	 */  
-	public Map<String,Object> addVarsStartProcess( Map<String,Object> bussinessData );
+	public Map<String,Object> addVarsStartProcess( ProblemInfo problemInfo );
 }

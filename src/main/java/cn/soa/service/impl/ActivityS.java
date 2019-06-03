@@ -14,6 +14,7 @@ import org.activiti.engine.RuntimeService;
 import org.activiti.engine.TaskService;
 import org.activiti.engine.history.HistoricActivityInstance;
 import org.activiti.engine.impl.persistence.entity.ProcessDefinitionEntity;
+import org.activiti.engine.impl.persistence.entity.TaskEntity;
 import org.activiti.engine.impl.pvm.PvmTransition;
 import org.activiti.engine.impl.pvm.process.ActivityImpl;
 import org.activiti.engine.impl.pvm.process.ProcessDefinitionImpl;
@@ -32,6 +33,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.ResourceUtils;
 
+import cn.soa.entity.TodoTask;
 import cn.soa.service.abs.BussinessSA;
 import cn.soa.service.inter.ActivitySI;
 import cn.soa.service.inter.BussinessSI;
@@ -80,6 +82,7 @@ public class ActivityS implements ActivitySI{
    				 .addClasspathResource( xmlUrl )
    				 .addClasspathResource( pngUrl )
    				 .deploy();
+    		logger.debug( deployment.toString() );
     		return deployment;
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -835,25 +838,49 @@ public class ActivityS implements ActivitySI{
 	 * @return: List<Task>        
 	 */  
     @Override
-	public List<Task> getAllTasksByUsername( String userName ){
+	public List<TodoTask> getAllTasksByUsername( String userName ){
 		List<Task> allTasks = new ArrayList<Task>();
+		List<TodoTask> todoTasks = new ArrayList<TodoTask>();
 		try {
 			List<Task> personalTasks = taskService.createTaskQuery()
 					.taskAssignee( userName )
 					.orderByTaskCreateTime()
 					.desc()
-					.list();
-			allTasks.addAll( personalTasks );
+					.list();			
+			if( personalTasks != null && personalTasks.size() > 0 ) {
+				logger.debug( personalTasks.toString() );
+				allTasks.addAll( personalTasks );
+			}
+			
 			List<Task> candidatetasks = taskService.createTaskQuery()
 					.taskCandidateUser( userName )
 					.orderByTaskCreateTime()
 					.desc()
 					.list();
-			allTasks.addAll( candidatetasks );				
-			return allTasks;
+			if( candidatetasks != null && candidatetasks.size() > 0 ) {
+				logger.debug( candidatetasks.toString() );
+				allTasks.addAll( candidatetasks );
+			}	
+			if( allTasks != null && allTasks.size() > 0 ) {
+				logger.debug( allTasks.toString() );
+				for( Task t : allTasks ) {
+					TodoTask todoTask = new TodoTask();
+					todoTask.setTsid( t.getId() );
+					todoTask.setDfid( t.getProcessDefinitionId() );
+					todoTask.setPiid( t.getProcessInstanceId() );
+					todoTask.setName( t.getName() );
+					todoTask.setCurrentnode( t.getName() );
+					todoTask.setDescrible( t.getDescription() );
+					todoTasks.add( todoTask );					
+				}
+				logger.debug( todoTasks.toString() );
+				return todoTasks;
+			}else {
+				return null;
+			}		
 		} catch (Exception e) {
 			e.printStackTrace();		
-			return allTasks;
+			return todoTasks;
 		}				
 	}	
 }

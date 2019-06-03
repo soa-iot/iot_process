@@ -6,6 +6,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
+import cn.soa.entity.ProblemInfo;
 import cn.soa.service.inter.BussinessSI;
 
 /**
@@ -26,15 +27,9 @@ public class BussinessS implements BussinessSI{
 	 * @see cn.soa.service.inter.BussinessSI#dealProblemReport(java.util.Map)   
 	 */ 
 	@Override
-	public String dealProblemReport(Map<String, Object> bussiness) {
-		/*
-		 * map转实体类
-		 */
+	public String dealProblemReport( ProblemInfo problemInfo) {	
+		//保存问题上报信息
 		
-		
-		/*
-		 * 
-		 */
 		return null;
 	}
 
