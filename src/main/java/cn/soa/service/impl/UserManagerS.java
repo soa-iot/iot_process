@@ -18,7 +18,7 @@ import cn.soa.entity.UserOrganization;
 import cn.soa.service.inter.UserManagerSI;
 
 @Service
-@PropertySource({"classpath:process/variables.properties"})
+//@PropertySource({"classpath:variables.properties"})
 public class UserManagerS implements UserManagerSI {
 	private static Logger logger = LoggerFactory.getLogger( UserManagerS.class );
 	

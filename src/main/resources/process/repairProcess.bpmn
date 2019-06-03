@@ -42,7 +42,7 @@
     <sequenceFlow id="flow7" sourceRef="receive" targetRef="complement"></sequenceFlow>
     <sequenceFlow id="flow8" sourceRef="complement" targetRef="check"></sequenceFlow>
     <sequenceFlow id="flow13" name="分支1流向3" sourceRef="node1" targetRef="receive">
-      <conditionExpression xsi:type="tFormalExpression"><![CDATA[ isIngroup={1}]]></conditionExpression>
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[isIngroup={1}]]></conditionExpression>
     </sequenceFlow>
   </process>
   <bpmndi:BPMNDiagram id="BPMNDiagram_processPure2">
@@ -108,7 +108,7 @@
         <omgdi:waypoint x="561.0" y="258.0"></omgdi:waypoint>
         <omgdi:waypoint x="681.0" y="257.0"></omgdi:waypoint>
         <bpmndi:BPMNLabel>
-          <omgdc:Bounds height="14.0" width="100.0" x="561.0" y="258.0"></omgdc:Bounds>
+          <omgdc:Bounds height="14.0" width="60.0" x="561.0" y="258.0"></omgdc:Bounds>
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge bpmnElement="flow11" id="BPMNEdge_flow11">
@@ -118,7 +118,7 @@
         <omgdi:waypoint x="953.0" y="144.0"></omgdi:waypoint>
         <omgdi:waypoint x="953.0" y="230.0"></omgdi:waypoint>
         <bpmndi:BPMNLabel>
-          <omgdc:Bounds height="14.0" width="100.0" x="541.0" y="238.0"></omgdc:Bounds>
+          <omgdc:Bounds height="14.0" width="60.0" x="541.0" y="238.0"></omgdc:Bounds>
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge bpmnElement="flow6" id="BPMNEdge_flow6">
@@ -140,7 +140,7 @@
         <omgdi:waypoint x="1383.0" y="350.0"></omgdi:waypoint>
         <omgdi:waypoint x="1383.0" y="286.0"></omgdi:waypoint>
         <bpmndi:BPMNLabel>
-          <omgdc:Bounds height="14.0" width="100.0" x="541.0" y="278.0"></omgdc:Bounds>
+          <omgdc:Bounds height="14.0" width="60.0" x="541.0" y="278.0"></omgdc:Bounds>
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
     </bpmndi:BPMNPlane>

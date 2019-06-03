@@ -1,5 +1,6 @@
 package cn.soa.controller;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -24,6 +25,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.RestTemplate;
 
 import cn.soa.entity.ResultJson;
+import cn.soa.entity.ResultJsonForTable;
 import cn.soa.service.inter.ActivitySI;
 import cn.soa.service.inter.BussinessSI;
 import cn.soa.service.inter.ConfigSI;
@@ -54,11 +56,42 @@ public class ProcessC {
 		
 	/**   
 	 * @Title: startProcessC   
-	 * @Description:  部署流程
+	 * @Description:  部署流程（post方式）
 	 * @return: void        
 	 */ 
 	@PostMapping("/deployment")
-	public ResultJson<Boolean> startProcessC( 
+	public ResultJson<Boolean> deployProcessC1( 
+			@RequestParam("name") String name,
+			@RequestParam("xmlUrl") @NotBlank String xmlUrl,
+			@RequestParam("pngUrl") @NotBlank String pngUrl ) {
+		logger.debug( "--C----------部署流程---------------" );
+		logger.debug( name );
+		logger.debug( xmlUrl );
+		logger.debug( pngUrl );
+		if( name !=null ) {			
+			Deployment deployment = activityS.deployProcess( name, xmlUrl, pngUrl );
+			if( deployment != null ) {
+				return new ResultJson<Boolean>( 0, "部署成功", true );
+			}else {
+				return new ResultJson<Boolean>( 1, "部署失败", false );
+			}
+		}else {
+			Deployment deployment = activityS.deployProcessNoName( xmlUrl, pngUrl );
+			if( deployment != null ) {
+				return new ResultJson<Boolean>( 0, "部署成功", true );
+			}else {
+				return new ResultJson<Boolean>( 1, "部署失败", false );
+			}
+		}				
+	}
+	
+	/**   
+	 * @Title: startProcessC   
+	 * @Description:  部署流程（get方式,测试专用）
+	 * @return: void        
+	 */ 
+	@GetMapping("/deployment")
+	public ResultJson<Boolean> deployProcessC2( 
 			@RequestParam("name") String name,
 			@RequestParam("xmlUrl") @NotBlank String xmlUrl,
 			@RequestParam("pngUrl") @NotBlank String pngUrl ) {
@@ -111,6 +144,24 @@ public class ProcessC {
 			return new ResultJson<List<ProcessDefinition>>( 0, "获取所有流程定义对象成功", processDefinitions );
 		}
 		return new ResultJson<List<ProcessDefinition>>( 1, "获取所有流程定义对象失败", processDefinitions );
+	}
+	
+	/**   
+	 * @Title: getConfigFileBPMN   
+	 * @Description:  获取流程所有流程定义对象id
+	 * @return: ResultJson<List<Map<String,Object>>>        
+	 */  
+	@GetMapping("/processdefinitions/dfids")
+	public ResultJson<List<String>> getProcessDefinitionsIdC() {
+		logger.debug( "--C----------获取流程所有流程定义对象---------------" );
+		List<ProcessDefinition> processDefinitions = activityS.getProcessDefinitions();
+		if( processDefinitions != null && processDefinitions.size() > 0 ) {
+			ArrayList<String> dfids = new ArrayList<String>();
+			processDefinitions.forEach(d -> dfids.add( d.getId() ));
+			logger.debug( dfids.toString() );		
+			return new ResultJson<List<String>>( 0, "获取所有流程定义对象成功", dfids );
+		}
+		return new ResultJson<List<String>>( 1, "获取所有流程定义对象失败", null );
 	}
 	
 	/**   
@@ -281,5 +332,22 @@ public class ProcessC {
 			return new ResultJson<List<Task>>( 0, "流程返回到上一个节点成功", tasks );
 		}
 		return new ResultJson<List<Task>>( 0, "流程返回到上一个节点失败", tasks );
+	}
+	
+	/**   
+	 * @Title: getAllTasksByUsernameC   
+	 * @Description:  根据用户姓名，查询用户的所有待办任务（个人任务+组任务） - layui指定格式   
+	 * @return: ResultJson<Task>        
+	 */ 
+	@GetMapping("/tasks/layui")
+	public ResultJsonForTable<List<Task>> getAllTasksByUsername1C(
+			@RequestParam("userName") @NotBlank String userName ){
+		logger.debug( "--C-------- 根据用户姓名，查询用户的所有待办任务（个人任务+组任务）     -------------" );
+		logger.debug( userName );
+		List<Task> tasks = activityS.getAllTasksByUsername( userName );
+		if( tasks != null ) {
+			return new ResultJsonForTable<List<Task>>( 0, "流程返回到上一个节点成功", tasks.size(), tasks );
+		}
+		return new ResultJsonForTable<List<Task>>( 0, "流程返回到上一个节点失败", 0, tasks );
 	}
 }

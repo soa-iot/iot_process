@@ -8,6 +8,12 @@ import org.springframework.stereotype.Service;
 
 import cn.soa.service.inter.BussinessSI;
 
+/**
+ * @ClassName: BussinessS
+ * @Description: 问题上报业务层 - 在此处处理问题上报的业务操作
+ * @author zhugang
+ * @date 2019年5月30日
+ */
 @Service
 public class BussinessS implements BussinessSI{
 	private static Logger logger = LoggerFactory.getLogger( BussinessS.class );
@@ -21,7 +27,14 @@ public class BussinessS implements BussinessSI{
 	 */ 
 	@Override
 	public String dealProblemReport(Map<String, Object> bussiness) {
+		/*
+		 * map转实体类
+		 */
 		
+		
+		/*
+		 * 
+		 */
 		return null;
 	}
 

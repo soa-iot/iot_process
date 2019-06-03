@@ -1,7 +1,12 @@
+#####################################################################################################
+	github
+#####################################################################################################
 公司本项目gitlab地址：https://github.com/soa-iot/iot_process.git
 
+
+
 #####################################################################################################
-http请求
+	http请求
 #####################################################################################################
 1、获取所有的流程定义对象：
 	$.ajax({
@@ -16,10 +21,23 @@ http请求
 	     ,error:function(){}		       
 	});
 	
-2、根据用户名，获取该用户的所有待办任务
+2、获取所有的流程定义对象id：
 	$.ajax({
 	     type: "GET"
-	     ,url: '/iot_process/tasks' 
+	     ,url: '/iot_process/process/processdefinitions/dfids' 
+	     ,data: {}
+	     ,contentType: "application/x-www-form-urlencoded"
+	     ,dataType: "json"
+	     ,success: function(jsonData){
+	     	//后端返回值： ResultJson<List<String>>
+	     },
+	     ,error:function(){}		       
+	});
+	
+3、根据用户名，获取该用户的所有待办任务
+	$.ajax({
+	     type: "GET"
+	     ,url: '/iot_process/process/tasks' 
 	     ,data: {}
 	     ,contentType: "application/x-www-form-urlencoded"
 	     ,dataType: "json"
@@ -29,17 +47,106 @@ http请求
 	     ,error:function(){}		       
 	});
 
-3、
+4、根据用户名，获取该用户的所有待办任务(layui表格专用)
+	$.ajax({
+	     type: "GET"
+	     ,url: '/iot_process/process/tasks/layui' 
+	     ,data: {}
+	     ,contentType: "application/x-www-form-urlencoded"
+	     ,dataType: "json"
+	     ,success: function(jsonData){
+	     	//后端返回值： ResultJson<List<Task>>
+	     },
+	     ,error:function(){}		       
+	});
+	
+5、流程上报：
+	$.ajax({
+	     type: "POST"
+	     ,url: '/iot_process/process/{dfid}'    //dfid为流程定义id
+	     ,data: {key…… ： value……}   //问题上报表单的内容
+	     ,contentType: "application/x-www-form-urlencoded"
+	     ,dataType: "json"
+	     ,success: function(jsonData){
+	     	//后端返回值： ResultJson<List<Task>>
+	     },
+	     ,error:function(){}		       
+	});
+
+6、部署流程
+	$.ajax({
+	     type: "POST"
+	     ,url: '/iot_process/process/deployment'    //dfid为流程定义id
+	     ,data: {key…… ： value……}   //问题上报表单的内容
+	     ,contentType: "application/x-www-form-urlencoded"
+	     ,dataType: "json"
+	     ,success: function(jsonData){
+	     	//后端返回值： ResultJson<List<Task>>
+	     },
+	     ,error:function(){}		       
+	});
+
+
+7、
 		
 
 
 
 #####################################################################################################
-数据库(oracle)
+	数据库(oracle)
 #####################################################################################################
 
-1、流程配置表：
+1、角色与角色对应关系表：
+	CREATE TABLE IOT_USER_ROLE_ROLE(
+		RSID CHAR(36) PRIMARK KEY,
+		ROLENAME VARCHAR2(48 CHAR) UNIQUE NOT NULL,
+		ROLENAME1 VARCHAR2(48 CHAR) DEFAULT ' ' NOT NULL ,
+		ROLENAME2 VARCHAR2(48 CHAR) DEFAULT ' ' NOT NULL',
+		ROLENAME3 VARCHAR2(48 CHAR) DEFAULT ' ' NOT NULL,
+		REMARK1 VARCHAR2(48 CHAR) DEFAULT ' ' NOT NULL,
+		REMARK2 VARCHAR2(48 CHAR) DEFAULT ' ' NOT NULL 
+	);
+	comment on table  "IOT_USER_ROLE_ROLE"                is '流程用角色与角色对应关系表';
+	comment on column "IOT_USER_ROLE_ROLE"."RSID"         is '主键';
+	comment on column "IOT_USER_ROLE_ROLE"."ROLENAME"         is '主角色';
+	comment on column "IOT_USER_ROLE_ROLE"."ROLENAME1"         is '对应角色1';
+	comment on column "IOT_USER_ROLE_ROLE"."ROLENAME2"         is '对应角色2';
+	comment on column "IOT_USER_ROLE_ROLE"."ROLENAME3"         is '对应角色3';
+	comment on column "IOT_USER_ROLE_ROLE"."REMARK1"         is '备用字段1';
+	comment on column "IOT_USER_ROLE_ROLE"."REMARK2"         is '备用字段2';
+	
+	
+2、流程变量配置表：
+	CREATE TABLE IOT_PROCESS_VARS_CONFIG(
+		VCID CHAR(36) PRIMARY KEY,
+		VARNAME VARCHAR2(48 CHAR) UNIQUE NOT NULL ,
+		VARVALUE VARCHAR2(48 CHAR) DEFAULT ' ' NOT NULL  ,
+		NAMETYPE NUMBER(3,0) DEFAULT 0 NOT NULL  ,
+		VALUETYPE NUMBER(3,0) DEFAULT 0 NOT NULL  ,
+		NOTE VARCHAR2(48 CHAR) DEFAULT ' ' NOT NULL  ,
+		REMARK1 VARCHAR2(48 CHAR) DEFAULT ' ' NOT NULL ,
+		REMARK2 VARCHAR2(48 CHAR) DEFAULT ' ' NOT NULL 
+	);
+	comment on table  "IOT_PROCESS_VARS_CONFIG"                is '流程变量初始化表';
+	comment on column "IOT_PROCESS_VARS_CONFIG"."VCID"         is '主键';
+	comment on column "IOT_PROCESS_VARS_CONFIG"."VARNAME"         is '变量名称';
+	comment on column "IOT_PROCESS_VARS_CONFIG"."VARVALUE"         is '初始化变量值';
+	comment on column "IOT_PROCESS_VARS_CONFIG"."NAMETYPE"         is '名称类型';
+	comment on column "IOT_PROCESS_VARS_CONFIG"."VALUETYPE"        is '值类型';
+	comment on column "IOT_PROCESS_VARS_CONFIG"."NOTE"         		is '描述';
+	comment on column "IOT_PROCESS_VARS_CONFIG"."REMARK1"         is '备用字段1';
+	comment on column "IOT_PROCESS_VARS_CONFIG"."REMARK2"         is '备用字段2';
+
+3、
 
 
 
 
+
+
+#####################################################################################################
+	数据库脚本(oracle)
+#####################################################################################################
+1、 activiti删除所有流程表的垃圾数据
+
+2、
