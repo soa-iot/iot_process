@@ -18,4 +18,12 @@ public interface ProblemInfoSI {
 	 * @return 问题评估信息实体
 	 */
 	ProblemInfo getByPiid(String piid);
+	
+	/**
+	 * 根据流程标识字段更新问题问题描述字段
+	 * @param piid 流程标识字段
+	 * @return 数据库更新数量
+	 */
+	Integer changeProblemDescribeByPiid(String piid,String problemdescribe);
+	
 }

@@ -1,3 +1,14 @@
+//日期插件
+	layui.use('laydate', function(){
+		  var laydate = layui.laydate;
+		  
+		  //常规用法
+		  laydate.render({
+		    elem: '#sdate'
+		  });
+		  
+	});
+	
 //轮播图
 layui.use(['carousel', 'form'], function(){
 	var carousel = layui.carousel
@@ -18,6 +29,7 @@ layui.use([ 'element', 'layer' ], function() {
 });
 
 //信息问题请求
+	var pd="";
 	$.ajax({  
     	url : "/iot_process/estimates/estim",  
         type : "get",
@@ -38,6 +50,7 @@ layui.use([ 'element', 'layer' ], function() {
 					$("#remark").hide();
 				}
         		$("#problem_describe").val(problem.problemdescribe);
+        		pd=problem.problemdescribe;
 			}
         	 
         }  
@@ -82,8 +95,6 @@ layui.use([ 'element', 'layer' ], function() {
         }  
    });
 	
-	
-
 	//组内处理
 	function groupprocess() {
 		
@@ -135,15 +146,24 @@ layui.use([ 'element', 'layer' ], function() {
 		}
 	});
 	
-	//日期插件
-	layui.use('laydate', function(){
-		  var laydate = layui.laydate;
-		  
-		  //常规用法
-		  laydate.render({
-		    elem: '#sdate'
-		  });
-		  
+	//更新问题描述
+	$(".problem_describe").click(function(){
+		alert(pd==$("#problem_describe").val());
+		if (pd!=$("#problem_describe").val()) {
+			$.ajax({  
+		    	url : "/iot_process/estimates/problemdescribe",  
+		        type : "post",
+		        data : {piid : "ADAA80DB601C4470BE8BB224705F5F9C",problemdescribe:$("#problem_describe").val()},
+		        dataType : "json",  
+		        success: function( json) {
+		        	
+		        	if (json.state==1) {
+		        		alert(json.message);
+						
+					}
+		        }  
+		   });
+		}
 	});
 	
 	

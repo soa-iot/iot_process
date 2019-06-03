@@ -26,4 +26,10 @@ public class ProblemInfoMapperTest {
 		ProblemInfo estimate = problemInfoMapper.findByPiid("ADAA80DB601C4470BE8BB224705F5F9C");
 		System.err.println(estimate);
 	}
+	
+	@Test
+	public void updateProblemDescribeByPiidTest() {
+		Integer row = problemInfoMapper.updateProblemDescribeByPiid("ADAA80DB601C4470BE8BB224705F5F9C", "test1");
+		System.err.println(row);
+	}
 }

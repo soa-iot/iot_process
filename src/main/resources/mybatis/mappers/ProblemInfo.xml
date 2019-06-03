@@ -6,6 +6,8 @@
 
 	<!-- ===========================1、查询===============================  -->
 	
+	<!--  根据流程标识字段查询问题评估信息 -->
+	<!-- ProblemInfo findByPiid(String piid); -->
 	<select id="findByPiid"  resultType="cn.soa.entity.ProblemInfo">
 		select 
 			t_problem_rep_id tProblemRepId,
@@ -80,6 +82,18 @@
 			piid = #{piid}
 	</select>
 
+	<!-- 根据流程标识字段更新问题问题描述字段 -->
+	<!-- Integer updateByPiid(String piid); -->
+	<update id="updateProblemDescribeByPiid">
+		UPDATE 
+			cz_task_problem_report 
+		SET 
+			problemdescribe=#{problemdescribe} 
+		WHERE 
+			piid=#{piid}
+	
+	</update>
+	
 </mapper>
  
 

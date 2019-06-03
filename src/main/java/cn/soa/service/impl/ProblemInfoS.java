@@ -32,6 +32,18 @@ public class ProblemInfoS implements ProblemInfoSI {
 	}
 
 	/**
+	 * 根据流程标识字段更新问题问题描述字段
+	 * @param piid 流程标识字段
+	 * @return 数据库更新数量
+	 */
+	@Override
+	public Integer changeProblemDescribeByPiid(String piid, String problemdescribe) {
+		
+		return updateProblemDescribeByPiid(piid, problemdescribe);
+	}
+
+	
+	/**
 	 * 持久层方法实现发
 	 * 
 	 * @param piid 流程标识字段
@@ -47,4 +59,20 @@ public class ProblemInfoS implements ProblemInfoSI {
 		}
 	}
 
+	/**
+	 * 持久层方法实现
+	 * 
+	 * 根据流程标识字段更新问题问题描述字段
+	 * @param piid 流程标识字段
+	 * @return 数据库更新数量
+	 */
+	public Integer updateProblemDescribeByPiid(String piid,String problemdescribe) {
+		try {
+			Integer rows = problemInfoMapper.updateProblemDescribeByPiid(piid, problemdescribe);
+			return rows;
+		} catch (Exception e) {
+			e.printStackTrace();
+			return -1;
+		}
+	}
 }
