@@ -149,6 +149,107 @@ public class ActivityS implements ActivitySI{
     }
     
     /**   
+     * @Title: getTsidByPiid   
+     * @Description:  根据piid查询当前任务节点的tsid 
+     * @return: String        
+     */ 
+    @Override
+    public String getTsidByPiid( String piid ) {
+    	if( StringUtils.isNotBlank( piid )) {
+    		logger.debug( "------piid为null--------" );
+    		return null;
+    	}
+    	try {
+    		List<Task> tasks = taskService.createTaskQuery().processInstanceId(piid).list();
+    		if( tasks.size() > 0 ) {
+    			logger.debug( tasks.toString() );
+    			return tasks.get(0).getId();
+    		}
+    		logger.debug( "------未正确找到task对象-------" );
+    		return null;    		
+		} catch (Exception e) {
+			e.printStackTrace();
+			return null;
+		}
+    }
+    
+    /**   
+     * @Title: getPiidByTsid   
+     * @Description:  根据tsid查询当前任务节点的  piid
+     * @return: String        
+     */
+    @Override
+    public String getPiidByTsid( String tsid ) {
+    	if( StringUtils.isNotBlank( tsid )) {
+    		logger.debug( "------tsid为null--------" );
+    		return null;
+    	}
+    	try {
+    		Task task = taskService.createTaskQuery().taskId(tsid).singleResult();
+    		if( task != null ) {
+    			logger.debug( task.toString() );
+    			return task.getProcessInstanceId();
+    		}
+    		logger.debug( "------未正确找到task对象-------" );
+    		return null;    		
+		} catch (Exception e) {
+			e.printStackTrace();
+			return null;
+		}
+    }
+    
+    
+    /**   
+     * @Title: saveCommentByTsid   
+     * @Description:  根据任务tsid，增加任务节点的备注信息 
+     * @return: boolean        
+     */ 
+    @Override
+    public boolean saveCommentByTsid( String tsid, String comment ) {
+    	if( StringUtils.isNotBlank( tsid )) {
+    		logger.debug( "------tsid为null--------" );
+    		return false;
+    	}
+    	String piid = getPiidByTsid( tsid );
+    	if( StringUtils.isNotBlank( piid )) {
+    		logger.debug( "------piid为null--------" );
+    		return false;
+    	}
+    	try {   		
+    		taskService.addComment( tsid, piid, comment );
+		} catch (Exception e) {
+			e.printStackTrace();
+			return false;
+		}
+    	return false;
+    }
+    
+    /**   
+     * @Title: saveCommentByTsid   
+     * @Description:  根据任务piid，增加任务节点的备注信息 
+     * @return: boolean        
+     */  
+    @Override
+    public boolean saveCommentByPiid( String piid, String comment ) {
+    	if( StringUtils.isNotBlank( piid )) {
+    		logger.debug( "------piid为null--------" );
+    		return false;
+    	}
+    	String tsid = getTsidByPiid( piid );
+    	if( StringUtils.isNotBlank( tsid )) {
+    		logger.debug( "------tsid为null--------" );
+    		return false;
+    	}
+    	try {   		
+    		taskService.addComment( tsid, piid, comment );
+		} catch (Exception e) {
+			e.printStackTrace();
+			return false;
+		}
+    	return false;
+    }
+    
+    /**   
      * @Title: getProcessFile   
      * @Description: 获取activity流程配置文件格式为bpmn的全部文件（已指定目录/process）
      * @return: List<Map<String,Object>>        
@@ -213,13 +314,8 @@ public class ActivityS implements ActivitySI{
      */  
     @Override
     @Transactional
-    public boolean nextNodeByTSID( String tsid, String var, String varValue, String comments,
-    		String nodeid, Map<String,Object> map ) {
+    public boolean nextNodeByTSID( String tsid, String var, String varValue, String comments) {
     	try {
-    		/*
-        	 * 业务处理
-        	 */
-        	String s = bussinessSI.nextNode(nodeid, map);
         	
         	/*
         	 * 加入节点流程变量,流程流转下一个节点
@@ -246,23 +342,31 @@ public class ActivityS implements ActivitySI{
      */  
     @Override
     @Transactional
-    public boolean nextNodeByPIID( String tsid, String var, String varValue, String comments,
-    		String nodeid, Map<String,Object> map ) {
-    	try {
+    public boolean nextNodeByPIID( String piid, String var, String varValue, String comments ) {
+    	try {     
     		/*
-        	 * 业务处理
-        	 */
-        	String s = bussinessSI.nextNode(nodeid, map);
-        	
+    		 * 增加备注信息
+    		 */
+    		boolean b = saveCommentByPiid( piid, comments );
+    		if( b ) {
+    			logger.debug( "---执行流转下一个节点，保存备注信息---------" + b );
+    		}
+    		
         	/*
         	 * 加入节点流程变量,流程流转下一个节点
         	 */
+    		String tsid = getTsidByPiid( piid );
+    		if( StringUtils.isBlank( tsid ) ) {
+    			logger.debug( "---执行流转下一个节点为null---------" );
+    			return false;
+    		}
         	if( StringUtils.isNotBlank( var ) ) {
         		HashMap<String, Object> vars = new HashMap<String,Object>();
         		vars.put(var, varValue);
-        		taskService.complete( tsid, vars );
+        		taskService.addComment( tsid, piid, comments );
+        		taskService.complete( piid, vars );
         	}else {
-        		taskService.complete( tsid );
+        		taskService.complete( piid );
         	}
         	return true;
 		} catch (Exception e) {
@@ -542,7 +646,7 @@ public class ActivityS implements ActivitySI{
      * @return: void        
      */  
     @Override
-    public String endProcess( String tsid ) {
+    public String endProcessByTsid( String tsid ) {
     	if( StringUtils.isBlank( tsid ) ) {
 			logger.debug( "---S--------任务tsid为null-------------" );
 			return null;
@@ -579,7 +683,7 @@ public class ActivityS implements ActivitySI{
      * @return: String        
      */  
     @Override
-    public String endProcessInComment( String tsid, String comment ) {
+    public String endProcessByTsidInComment( String tsid, String comment ) {
     	if( StringUtils.isBlank( tsid ) ) {
 			logger.debug( "---S--------任务tsid为null-------------" );
 			return null;

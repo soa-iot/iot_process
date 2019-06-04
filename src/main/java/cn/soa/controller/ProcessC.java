@@ -147,7 +147,7 @@ public class ProcessC {
 		 * 执行业务处理（具体业务处理需要实现以下接口）
 		 */
 		String bsid = bussinessS.dealProblemReport( problemInfo );
-		if( bsid != null ) {
+		if( bsid == null ) {
 			return new ResultJson<String>( 1, "业务处理失败，流程未启动", "业务处理失败，流程未启动" );
 		}
 		logger.debug( "--C--------bsid  -------------" + bsid);
@@ -156,6 +156,7 @@ public class ProcessC {
 		 * 处理数据库配置流程变量
 		 */
 		Map<String, Object> basicVars = configS.setVarsAtStart();
+		logger.debug( "--C--------basicVars  -------------" + basicVars);
 		
 		/*
 		 * 处理临时流程变量
@@ -181,18 +182,15 @@ public class ProcessC {
 	@PutMapping("/nodes/next/{piid}")
 	public ResultJson<Boolean> nextNodeByPIID( 
 			@PathVariable("piid") String piid,
-			@RequestParam("var") String var,
-			@RequestParam("varValue") String varValue,
-			@RequestParam("comment") String comment,
-			@RequestParam("nodeid") String nodeid,
-			Map<String,Object> map ){
+			@RequestParam(value="var",required=false) String var,
+			@RequestParam(value="varValue",required=false) String varValue,
+			@RequestParam(value="comment",required=false) String comment){
 		logger.debug( "--C-------- 执行流程的下一步     -------------" );
 		logger.debug( piid );
 		logger.debug( var );
 		logger.debug( comment );
 		logger.debug( varValue );
-		logger.debug( map.toString() );
-		boolean b = activityS.nextNodeByPIID(piid, var, varValue, comment, nodeid, map);
+		boolean b = activityS.nextNodeByPIID(piid, var, varValue, comment);
 		if( b ) {
 			return new ResultJson<Boolean>( 0, "流程流转下一个节点任务成功", true );
 		}
@@ -207,18 +205,16 @@ public class ProcessC {
 	@PutMapping("/nodes/next/{tsid}")
 	public ResultJson<Boolean> nextNodeByTSID( 
 			@PathVariable("tsid") String tsid,
-			@RequestParam("var") String var,
-			@RequestParam("varValue") String varValue,
+			@RequestParam(value="var",required=false) String var,
+			@RequestParam(value="varValue",required=false) String varValue,
 			@RequestParam("comment") String comment,
-			@RequestParam("nodeid") String nodeid,
-			Map<String,Object> map ){
+			@RequestParam("nodeid") String nodeid){
 		logger.debug( "--C-------- 执行流程的下一步     -------------" );
 		logger.debug( tsid );
 		logger.debug( var );
 		logger.debug( comment );
 		logger.debug( varValue );
-		logger.debug( map.toString() );
-		Boolean b = activityS.nextNodeByTSID(tsid, var, varValue, comment, nodeid, map);
+		Boolean b = activityS.nextNodeByTSID(tsid, var, varValue, comment);
 		if( b ) {
 			return new ResultJson<Boolean>( 0, "流程流转下一个节点任务成功", true );
 		}
@@ -239,9 +235,9 @@ public class ProcessC {
 		logger.debug( comment );
 		String s = null;
 		if( StringUtils.isBlank(comment) ) {
-			s = activityS.endProcess(tsid);
+			s = activityS.endProcessByTsid(tsid);
 		}else {
-			s = activityS.endProcess(tsid);
+			s = activityS.endProcessByTsidInComment(tsid, comment);
 		}
 		if( StringUtils.isBlank( s ) ) {
 			return new ResultJson<String>( 1, "闭环流程失败", "闭环流程失败" );
