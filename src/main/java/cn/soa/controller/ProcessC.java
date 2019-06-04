@@ -188,6 +188,7 @@ public class ProcessC {
 		if( bsid != null ) {
 			return new ResultJson<String>( 1, "业务处理失败，流程未启动", "业务处理失败，流程未启动" );
 		}
+		logger.debug( "--C--------bsid  -------------" + bsid);
 		
 		/*
 		 * 处理数据库配置流程变量
