@@ -54,6 +54,7 @@
     #imgList li, #imgZmList li, #imgListdz li #imgListpz li #imgListyy li {
         width: 180px;
         height: 150px;
+        margin-right:3px;
         float: left;
         margin-right:3px;
         list-style: none;

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<definitions xmlns="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:activiti="http://activiti.org/bpmn" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:omgdc="http://www.omg.org/spec/DD/20100524/DC" xmlns:omgdi="http://www.omg.org/spec/DD/20100524/DI" typeLanguage="http://www.w3.org/2001/XMLSchema" expressionLanguage="http://www.w3.org/1999/XPath" targetNamespace="all">
-  <process id="processPure2" name="净化二厂闭环流程" isExecutable="true">
-    <startEvent id="startprocess" name="启动流程">
+<definitions xmlns="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:activiti="http://activiti.org/bpmn" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:omgdc="http://www.omg.org/spec/DD/20100524/DC" xmlns:omgdi="http://www.omg.org/spec/DD/20100524/DI" typeLanguage="http://www.w3.org/2001/XMLSchema" expressionLanguage="http://www.w3.org/1999/XPath" targetNamespace="http://www.activiti.org/test">
+  <process id="mechatronicsProcess" name="mechatronicsProcess" isExecutable="true">
+    <startEvent id="problemReport" name="问题上报">
       <extensionElements>
         <activiti:executionListener event="end" class="cn.soa.service.impl.activity.Test1">
           <activiti:field name="type">
@@ -34,113 +34,137 @@
     <sequenceFlow id="flow12" name="分支1流向2" sourceRef="node1" targetRef="pure">
       <conditionExpression xsi:type="tFormalExpression"><![CDATA[area == {'净化工段'} and isIngroup={2}]]></conditionExpression>
     </sequenceFlow>
+
     <sequenceFlow id="flow11" name="分支1流向1" sourceRef="node1" targetRef="repair">
       <conditionExpression xsi:type="tFormalExpression"><![CDATA[area == {'维修工段'}  and  isIngroup={2}]]></conditionExpression>
     </sequenceFlow>
-    <sequenceFlow id="flow6" sourceRef="repair" targetRef="arrange"></sequenceFlow>
-    <userTask id="complement" name="作业完成" activiti:candidateUsers="complementor"></userTask>
-    <sequenceFlow id="flow7" sourceRef="receive" targetRef="complement"></sequenceFlow>
-    <sequenceFlow id="flow8" sourceRef="complement" targetRef="check"></sequenceFlow>
-    <sequenceFlow id="flow13" name="分支1流向3" sourceRef="node1" targetRef="receive">
-      <conditionExpression xsi:type="tFormalExpression"><![CDATA[isIngroup={1}]]></conditionExpression>
+    <sequenceFlow id="mechatronicsFlow10" sourceRef="priblemReview" targetRef="endevent"></sequenceFlow>
+    <exclusiveGateway id="branchNode1" name="分支节点1">
+      <extensionElements>
+        <activiti:executionListener event="start" class="cn.soa.service.impl.activity.ExecFindUsersByRoleId">
+          <activiti:field name="impVar">
+            <activiti:string><![CDATA[reporter]]></activiti:string>
+          </activiti:field>
+          <activiti:field name="expVar">
+            <activiti:string><![CDATA[firstnode]]></activiti:string>
+          </activiti:field>
+        </activiti:executionListener>
+      </extensionElements>
+    </exclusiveGateway>
+    <sequenceFlow id="problemReportflow" name="问题上报流向" sourceRef="problemReport" targetRef="branchNode1"></sequenceFlow>
+    <sequenceFlow id="mechatronicsFlow11" name="非机电仪专业非技干" sourceRef="branchNode1" targetRef="problemEstimate">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${firstnode=='净化操作工'}]]></conditionExpression>
+    </sequenceFlow>
+    <sequenceFlow id="mechatronicsFlow12" name="非机电仪技干" sourceRef="branchNode1" targetRef="pureAssign">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${firstnode==‘净化技干’}]]></conditionExpression>
+    </sequenceFlow>
+    <sequenceFlow id="mechatronicsFlow13" name="维修专业人员" sourceRef="branchNode1" targetRef="repairAssign">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${firstnode=='净化操作工2'}]]></conditionExpression>
     </sequenceFlow>
   </process>
-  <bpmndi:BPMNDiagram id="BPMNDiagram_processPure2">
-    <bpmndi:BPMNPlane bpmnElement="processPure2" id="BPMNPlane_processPure2">
-      <bpmndi:BPMNShape bpmnElement="startprocess" id="BPMNShape_startprocess">
-        <omgdc:Bounds height="35.0" width="35.0" x="1.0" y="240.0"></omgdc:Bounds>
+  <bpmndi:BPMNDiagram id="BPMNDiagram_mechatronicsProcess">
+    <bpmndi:BPMNPlane bpmnElement="mechatronicsProcess" id="BPMNPlane_mechatronicsProcess">
+      <bpmndi:BPMNShape bpmnElement="problemReport" id="BPMNShape_problemReport">
+        <omgdc:Bounds height="35.0" width="35.0" x="0.0" y="240.0"></omgdc:Bounds>
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape bpmnElement="estimate" id="BPMNShape_estimate">
-        <omgdc:Bounds height="55.0" width="105.0" x="321.0" y="230.0"></omgdc:Bounds>
+      <bpmndi:BPMNShape bpmnElement="problemEstimate" id="BPMNShape_problemEstimate">
+        <omgdc:Bounds height="55.0" width="105.0" x="350.0" y="230.0"></omgdc:Bounds>
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape bpmnElement="pure" id="BPMNShape_pure">
-        <omgdc:Bounds height="55.0" width="105.0" x="681.0" y="230.0"></omgdc:Bounds>
+      <bpmndi:BPMNShape bpmnElement="pureAssign" id="BPMNShape_pureAssign">
+        <omgdc:Bounds height="55.0" width="105.0" x="580.0" y="230.0"></omgdc:Bounds>
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape bpmnElement="repair" id="BPMNShape_repair">
-        <omgdc:Bounds height="55.0" width="105.0" x="901.0" y="230.0"></omgdc:Bounds>
+      <bpmndi:BPMNShape bpmnElement="repairAssign" id="BPMNShape_repairAssign">
+        <omgdc:Bounds height="55.0" width="105.0" x="781.0" y="230.0"></omgdc:Bounds>
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape bpmnElement="arrange" id="BPMNShape_arrange">
-        <omgdc:Bounds height="55.0" width="105.0" x="1121.0" y="230.0"></omgdc:Bounds>
+      <bpmndi:BPMNShape bpmnElement="jobArrange" id="BPMNShape_jobArrange">
+        <omgdc:Bounds height="55.0" width="105.0" x="1140.0" y="230.0"></omgdc:Bounds>
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape bpmnElement="receive" id="BPMNShape_receive">
-        <omgdc:Bounds height="55.0" width="105.0" x="1331.0" y="231.0"></omgdc:Bounds>
+      <bpmndi:BPMNShape bpmnElement="jobDeal" id="BPMNShape_jobDeal">
+        <omgdc:Bounds height="55.0" width="105.0" x="1400.0" y="230.0"></omgdc:Bounds>
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape bpmnElement="check" id="BPMNShape_check">
-        <omgdc:Bounds height="55.0" width="105.0" x="1696.0" y="231.0"></omgdc:Bounds>
+      <bpmndi:BPMNShape bpmnElement="priblemReview" id="BPMNShape_priblemReview">
+        <omgdc:Bounds height="55.0" width="105.0" x="1400.0" y="100.0"></omgdc:Bounds>
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape bpmnElement="endprocess" id="BPMNShape_endprocess">
-        <omgdc:Bounds height="35.0" width="35.0" x="1891.0" y="241.0"></omgdc:Bounds>
+      <bpmndi:BPMNShape bpmnElement="jobCheck" id="BPMNShape_jobCheck">
+        <omgdc:Bounds height="55.0" width="105.0" x="1630.0" y="230.0"></omgdc:Bounds>
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape bpmnElement="report" id="BPMNShape_report">
-        <omgdc:Bounds height="55.0" width="105.0" x="121.0" y="230.0"></omgdc:Bounds>
+      <bpmndi:BPMNShape bpmnElement="endevent" id="BPMNShape_endevent">
+        <omgdc:Bounds height="35.0" width="35.0" x="1870.0" y="240.0"></omgdc:Bounds>
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape bpmnElement="node1" id="BPMNShape_node1">
-        <omgdc:Bounds height="40.0" width="40.0" x="521.0" y="238.0"></omgdc:Bounds>
+      <bpmndi:BPMNShape bpmnElement="branchNode2" id="BPMNShape_branchNode2">
+        <omgdc:Bounds height="40.0" width="40.0" x="990.0" y="237.0"></omgdc:Bounds>
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape bpmnElement="complement" id="BPMNShape_complement">
-        <omgdc:Bounds height="55.0" width="105.0" x="1511.0" y="231.0"></omgdc:Bounds>
+      <bpmndi:BPMNShape bpmnElement="branchNode1" id="BPMNShape_branchNode1">
+        <omgdc:Bounds height="40.0" width="40.0" x="160.0" y="237.0"></omgdc:Bounds>
       </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge bpmnElement="mechatronicsFlow21" id="BPMNEdge_mechatronicsFlow21">
+        <omgdi:waypoint x="455.0" y="257.0"></omgdi:waypoint>
+        <omgdi:waypoint x="580.0" y="257.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge bpmnElement="mechatronicsFlow31" id="BPMNEdge_mechatronicsFlow31">
-        <omgdi:waypoint x="786.0" y="257.0"></omgdi:waypoint>
-        <omgdi:waypoint x="901.0" y="257.0"></omgdi:waypoint>
+        <omgdi:waypoint x="685.0" y="257.0"></omgdi:waypoint>
+        <omgdi:waypoint x="781.0" y="257.0"></omgdi:waypoint>
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge bpmnElement="mechatronicsFlow6" id="BPMNEdge_mechatronicsFlow6">
-        <omgdi:waypoint x="1226.0" y="257.0"></omgdi:waypoint>
-        <omgdi:waypoint x="1331.0" y="258.0"></omgdi:waypoint>
+        <omgdi:waypoint x="1245.0" y="257.0"></omgdi:waypoint>
+        <omgdi:waypoint x="1400.0" y="257.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="mechatronicsFlow7" id="BPMNEdge_mechatronicsFlow7">
+        <omgdi:waypoint x="1505.0" y="257.0"></omgdi:waypoint>
+        <omgdi:waypoint x="1630.0" y="257.0"></omgdi:waypoint>
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge bpmnElement="mechatronicsFlow8" id="BPMNEdge_mechatronicsFlow8">
-        <omgdi:waypoint x="1801.0" y="258.0"></omgdi:waypoint>
-        <omgdi:waypoint x="1891.0" y="258.0"></omgdi:waypoint>
+        <omgdi:waypoint x="1735.0" y="257.0"></omgdi:waypoint>
+        <omgdi:waypoint x="1870.0" y="257.0"></omgdi:waypoint>
       </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge bpmnElement="flow1" id="BPMNEdge_flow1">
-        <omgdi:waypoint x="36.0" y="257.0"></omgdi:waypoint>
-        <omgdi:waypoint x="121.0" y="257.0"></omgdi:waypoint>
+      <bpmndi:BPMNEdge bpmnElement="mechatronicsFlow4" id="BPMNEdge_mechatronicsFlow4">
+        <omgdi:waypoint x="886.0" y="257.0"></omgdi:waypoint>
+        <omgdi:waypoint x="990.0" y="257.0"></omgdi:waypoint>
       </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge bpmnElement="flow2" id="BPMNEdge_flow2">
-        <omgdi:waypoint x="226.0" y="257.0"></omgdi:waypoint>
-        <omgdi:waypoint x="321.0" y="257.0"></omgdi:waypoint>
+      <bpmndi:BPMNEdge bpmnElement="mechatronicsFlow51" id="BPMNEdge_mechatronicsFlow51">
+        <omgdi:waypoint x="1030.0" y="257.0"></omgdi:waypoint>
+        <omgdi:waypoint x="1140.0" y="257.0"></omgdi:waypoint>
       </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge bpmnElement="flow3" id="BPMNEdge_flow3">
-        <omgdi:waypoint x="426.0" y="257.0"></omgdi:waypoint>
-        <omgdi:waypoint x="521.0" y="258.0"></omgdi:waypoint>
+      <bpmndi:BPMNEdge bpmnElement="mechatronicsFlow92" id="BPMNEdge_mechatronicsFlow92">
+        <omgdi:waypoint x="1010.0" y="237.0"></omgdi:waypoint>
+        <omgdi:waypoint x="1010.0" y="127.0"></omgdi:waypoint>
+        <omgdi:waypoint x="1400.0" y="127.0"></omgdi:waypoint>
       </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge bpmnElement="flow12" id="BPMNEdge_flow12">
-        <omgdi:waypoint x="561.0" y="258.0"></omgdi:waypoint>
-        <omgdi:waypoint x="681.0" y="257.0"></omgdi:waypoint>
+      <bpmndi:BPMNEdge bpmnElement="mechatronicsFlow10" id="BPMNEdge_mechatronicsFlow10">
+        <omgdi:waypoint x="1505.0" y="127.0"></omgdi:waypoint>
+        <omgdi:waypoint x="1887.0" y="127.0"></omgdi:waypoint>
+        <omgdi:waypoint x="1887.0" y="240.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="problemReportflow" id="BPMNEdge_problemReportflow">
+        <omgdi:waypoint x="35.0" y="257.0"></omgdi:waypoint>
+        <omgdi:waypoint x="160.0" y="257.0"></omgdi:waypoint>
         <bpmndi:BPMNLabel>
           <omgdc:Bounds height="14.0" width="100.0" x="561.0" y="258.0"></omgdc:Bounds>
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge bpmnElement="flow11" id="BPMNEdge_flow11">
-        <omgdi:waypoint x="541.0" y="238.0"></omgdi:waypoint>
-        <omgdi:waypoint x="541.0" y="144.0"></omgdi:waypoint>
-        <omgdi:waypoint x="700.0" y="144.0"></omgdi:waypoint>
-        <omgdi:waypoint x="953.0" y="144.0"></omgdi:waypoint>
-        <omgdi:waypoint x="953.0" y="230.0"></omgdi:waypoint>
+      <bpmndi:BPMNEdge bpmnElement="mechatronicsFlow11" id="BPMNEdge_mechatronicsFlow11">
+        <omgdi:waypoint x="200.0" y="257.0"></omgdi:waypoint>
+        <omgdi:waypoint x="350.0" y="257.0"></omgdi:waypoint>
         <bpmndi:BPMNLabel>
-          <omgdc:Bounds height="14.0" width="60.0" x="541.0" y="238.0"></omgdc:Bounds>
+          <omgdc:Bounds height="42.0" width="100.0" x="189.0" y="257.0"></omgdc:Bounds>
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge bpmnElement="flow6" id="BPMNEdge_flow6">
-        <omgdi:waypoint x="1006.0" y="257.0"></omgdi:waypoint>
-        <omgdi:waypoint x="1121.0" y="257.0"></omgdi:waypoint>
-      </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge bpmnElement="flow7" id="BPMNEdge_flow7">
-        <omgdi:waypoint x="1436.0" y="258.0"></omgdi:waypoint>
-        <omgdi:waypoint x="1511.0" y="258.0"></omgdi:waypoint>
-      </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge bpmnElement="flow8" id="BPMNEdge_flow8">
-        <omgdi:waypoint x="1616.0" y="258.0"></omgdi:waypoint>
-        <omgdi:waypoint x="1696.0" y="258.0"></omgdi:waypoint>
-      </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge bpmnElement="flow13" id="BPMNEdge_flow13">
-        <omgdi:waypoint x="541.0" y="278.0"></omgdi:waypoint>
-        <omgdi:waypoint x="541.0" y="350.0"></omgdi:waypoint>
-        <omgdi:waypoint x="942.0" y="350.0"></omgdi:waypoint>
-        <omgdi:waypoint x="1383.0" y="350.0"></omgdi:waypoint>
-        <omgdi:waypoint x="1383.0" y="286.0"></omgdi:waypoint>
+      <bpmndi:BPMNEdge bpmnElement="mechatronicsFlow12" id="BPMNEdge_mechatronicsFlow12">
+        <omgdi:waypoint x="180.0" y="237.0"></omgdi:waypoint>
+        <omgdi:waypoint x="180.0" y="132.0"></omgdi:waypoint>
+        <omgdi:waypoint x="632.0" y="132.0"></omgdi:waypoint>
+        <omgdi:waypoint x="632.0" y="230.0"></omgdi:waypoint>
         <bpmndi:BPMNLabel>
-          <omgdc:Bounds height="14.0" width="60.0" x="541.0" y="278.0"></omgdc:Bounds>
+          <omgdc:Bounds height="14.0" width="100.0" x="180.0" y="237.0"></omgdc:Bounds>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="mechatronicsFlow13" id="BPMNEdge_mechatronicsFlow13">
+        <omgdi:waypoint x="180.0" y="277.0"></omgdi:waypoint>
+        <omgdi:waypoint x="180.0" y="358.0"></omgdi:waypoint>
+        <omgdi:waypoint x="833.0" y="358.0"></omgdi:waypoint>
+        <omgdi:waypoint x="833.0" y="285.0"></omgdi:waypoint>
+        <bpmndi:BPMNLabel>
+          <omgdc:Bounds height="14.0" width="100.0" x="180.0" y="277.0"></omgdc:Bounds>
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
     </bpmndi:BPMNPlane>

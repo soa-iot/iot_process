@@ -147,6 +147,9 @@
 	<!-- 2.1、添加一条问题报告数据 	-->
 	<!-- public Integer insertOne(ProblemInfo info)	 -->
 	<insert id="insertOne" parameterType="cn.soa.entity.ProblemInfo">
+		<selectKey keyProperty="tProblemRepId" order="BEFORE" resultType="java.lang.String">
+			select sys_guid() from dual
+		</selectKey>
 		INSERT INTO
 			CZ_TASK_PROBLEM_REPORT
 			<trim prefix="(" suffix=")" suffixOverrides=",">

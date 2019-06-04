@@ -20,6 +20,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import cn.soa.entity.ProblemInfo;
+
 import cn.soa.entity.ResultJson;
 import cn.soa.entity.ResultJsonForTable;
 import cn.soa.entity.TodoTask;
@@ -146,7 +147,7 @@ public class ProcessC {
 		 * 执行业务处理（具体业务处理需要实现以下接口）
 		 */
 		String bsid = bussinessS.dealProblemReport( problemInfo );
-		if( bsid != null ) {
+		if( bsid == null ) {
 			return new ResultJson<String>( 1, "业务处理失败，流程未启动", "业务处理失败，流程未启动" );
 		}
 		logger.debug( "--C--------bsid  -------------" + bsid);
@@ -277,8 +278,10 @@ public class ProcessC {
 			return new ResultJson<Boolean>( 0, "流程返回到上一个节点成功", true );
 		}
 		return new ResultJson<Boolean>( 0, "流程返回到上一个节点失败", null );
+
 	}
-	
+
+
 	/**   
 	 * @Title: getAllTasksByUsernameC   
 	 * @Description:  根据用户姓名，查询用户的所有待办任务（个人任务+组任务）   
@@ -311,5 +314,7 @@ public class ProcessC {
 			return new ResultJsonForTable<List<TodoTask>>( 0, "代办任务查询成功", tasks.size(), tasks );
 		}
 		return new ResultJsonForTable<List<TodoTask>>( 0, "代办任务查询失败", 0, tasks );
+
 	}
+
 }
