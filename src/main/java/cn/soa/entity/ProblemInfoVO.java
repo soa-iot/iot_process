@@ -27,6 +27,7 @@ public class ProblemInfoVO implements Serializable {
 	
 	private String tProblemRepId;
 	private String problemtype;
+	private String problemnum;
 	private String welName;
 	private String problemdescribe;
 	private String resavepeople;
@@ -51,6 +52,7 @@ public class ProblemInfoVO implements Serializable {
 		this.problemclass = problemclass;
 		this.applypeople = applypeople;
 		this.problemtype = problemtype;
+		this.problemnum = problemnum;
 	}
 	
 }

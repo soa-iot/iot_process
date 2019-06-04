@@ -8,6 +8,7 @@ import cn.soa.entity.ProblemInfo;
 import cn.soa.entity.ProblemReportpho;
 import cn.soa.service.inter.ReportPhoSI;
 
+
 @Service
 public class ReportPhoS implements ReportPhoSI {
 	

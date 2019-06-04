@@ -11,7 +11,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -19,9 +18,11 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.client.RestTemplate;
 
+import cn.soa.entity.ProblemInfo;
 import cn.soa.entity.ResultJson;
+import cn.soa.entity.ResultJsonForTable;
+import cn.soa.entity.TodoTask;
 import cn.soa.service.inter.ActivitySI;
 import cn.soa.service.inter.BussinessSI;
 import cn.soa.service.inter.ConfigSI;
@@ -56,7 +57,39 @@ public class ProcessC {
 	 * @return: void        
 	 */ 
 	@PostMapping("/deployment")
-	public ResultJson<Boolean> startProcessC( 
+	public ResultJson<Boolean> deployProcessC1( 
+			@RequestParam("name") String name,
+			@RequestParam("xmlUrl") @NotBlank String xmlUrl,
+			@RequestParam("pngUrl") @NotBlank String pngUrl ) {
+		logger.debug( "--C----------部署流程---------------" );
+		logger.debug( name );
+		logger.debug( xmlUrl );
+		logger.debug( pngUrl );
+		if( name !=null ) {			
+			Deployment deployment = activityS.deployProcess( name, xmlUrl, pngUrl );			
+			if( deployment != null ) {
+				logger.debug( deployment.toString() );
+				return new ResultJson<Boolean>( 0, "部署成功", true );
+			}else {
+				return new ResultJson<Boolean>( 1, "部署失败", false );
+			}
+		}else {
+			Deployment deployment = activityS.deployProcessNoName( xmlUrl, pngUrl );
+			if( deployment != null ) {
+				return new ResultJson<Boolean>( 0, "部署成功", true );
+			}else {
+				return new ResultJson<Boolean>( 1, "部署失败", false );
+			}
+		}				
+	}
+	
+	/**   
+	 * @Title: startProcessC   
+	 * @Description:  部署流程（get方式,测试专用）
+	 * @return: void        
+	 */ 
+	@GetMapping("/deployment")
+	public ResultJson<Boolean> deployProcessC2( 
 			@RequestParam("name") String name,
 			@RequestParam("xmlUrl") @NotBlank String xmlUrl,
 			@RequestParam("pngUrl") @NotBlank String pngUrl ) {
@@ -104,18 +137,19 @@ public class ProcessC {
 	@PostMapping("/{dfid}")
 	public ResultJson<String> startProcess(
 			@PathVariable("dfid") @NotBlank String dfid,
-			@RequestParam Map<String,Object> bussinessData ){
+			ProblemInfo problemInfo ){
 		logger.debug( "--C--------启动流程（同时业务处理）  -------------" );
 		logger.debug( dfid );
-		logger.debug( bussinessData.toString() );
+		logger.debug( problemInfo.toString() );
 		
 		/*
 		 * 执行业务处理（具体业务处理需要实现以下接口）
 		 */
-		String bsid = bussinessS.dealProblemReport( bussinessData );
+		String bsid = bussinessS.dealProblemReport( problemInfo );
 		if( bsid != null ) {
 			return new ResultJson<String>( 1, "业务处理失败，流程未启动", "业务处理失败，流程未启动" );
 		}
+		logger.debug( "--C--------bsid  -------------" + bsid);
 		
 		/*
 		 * 处理数据库配置流程变量
@@ -125,7 +159,7 @@ public class ProcessC {
 		/*
 		 * 处理临时流程变量
 		 */
-		Map<String, Object> tempVars = processVariableS.addVarsStartProcess( bussinessData );
+		Map<String, Object> tempVars = processVariableS.addVarsStartProcess( problemInfo );
 				
 		/*
 		 * 流程启动
@@ -247,5 +281,39 @@ public class ProcessC {
 			return new ResultJson<Boolean>( 0, "流程返回到上一个节点成功", true );
 		}
 		return new ResultJson<Boolean>( 0, "流程返回到上一个节点失败", null );
+	}
+
+	/**   
+	 * @Title: getAllTasksByUsernameC   
+	 * @Description:  根据用户姓名，查询用户的所有待办任务（个人任务+组任务）   
+	 * @return: ResultJson<Task>        
+	 */ 
+	@GetMapping("/tasks")
+	public ResultJson<List<TodoTask>> getAllTasksByUsernameC(
+			@RequestParam("userName") @NotBlank String userName ){
+		logger.debug( "--C-------- 根据用户姓名，查询用户的所有待办任务（个人任务+组任务）     -------------" );
+		logger.debug( userName );
+		List<TodoTask> tasks = activityS.getAllTasksByUsername( userName );
+		if( tasks != null ) {
+			return new ResultJson<List<TodoTask>>( 0, "流程返回到上一个节点成功", tasks );
+		}
+		return new ResultJson<List<TodoTask>>( 0, "流程返回到上一个节点失败", tasks );
+	}
+	
+	/**   
+	 * @Title: getAllTasksByUsernameC   
+	 * @Description:  根据用户姓名，查询用户的所有待办任务（个人任务+组任务） - layui指定格式   
+	 * @return: ResultJson<Task>        
+	 */ 
+	@GetMapping("/tasks/layui")
+	public ResultJsonForTable<List<TodoTask>> getAllTasksByUsername1C(
+			@RequestParam("userName") @NotBlank String userName ){
+		logger.debug( "--C-------- 根据用户姓名，查询用户的所有待办任务（个人任务+组任务）     -------------" );
+		logger.debug( userName );
+		List<TodoTask> tasks = activityS.getAllTasksByUsername( userName );
+		if( tasks != null ) {
+			return new ResultJsonForTable<List<TodoTask>>( 0, "代办任务查询成功", tasks.size(), tasks );
+		}
+		return new ResultJsonForTable<List<TodoTask>>( 0, "代办任务查询失败", 0, tasks );
 	}
 }

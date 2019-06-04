@@ -10,13 +10,6 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 
 //spring注解扫描
 @SpringBootApplication(scanBasePackages = "cn.soa",exclude = SecurityAutoConfiguration.class)
-//@SpringBootApplication
-
-//开启spring-data-JPA
-@EnableJpaRepositories( "cn.soa.dao" )
-
-//JPA实体类扫描
-@EntityScan("cn.soa.entity")
 public class IotprocessApplication extends SpringBootServletInitializer{
 	public static void main(String[] args) {
 		SpringApplication.run(IotprocessApplication.class, args);

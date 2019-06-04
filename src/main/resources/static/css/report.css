@@ -48,12 +48,13 @@
     width: 860px;
     position: relative;
     margin: 0px auto;
-    min-height: 80px;
+    min-height: 150px;
 }
 
     #imgList li, #imgZmList li, #imgListdz li #imgListpz li #imgListyy li {
-        width: 110px;
-        height: 80px;
+        width: 180px;
+        height: 150px;
+        margin-right:3px;
         float: left;
         list-style: none;
         list-style-type: none;
