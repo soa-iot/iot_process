@@ -169,8 +169,8 @@
 						<div class="layui-inline">
 							<label class="layui-form-label">设备定位</label>
 							<div class="layui-input-inline layui-input-top layui-row">
-								<input type="text" id="rfid" class="layui-input layui-input-one layui-col-md8" style="width:100px;" disabled="disabled">
-								<button class="layui-btn layui-btn-xs layui-col-md4 layui-col-md-offset1" style="height: 25px;">定位设备</button>
+								<input type="text" id="rfid" class="layui-input layui-input-one" disabled="disabled">
+								<!-- <button class="layui-btn layui-btn-xs layui-col-md4 layui-col-md-offset1" style="height: 25px;">定位设备</button> -->
 							</div>
 				
 						</div>
@@ -186,8 +186,7 @@
 					<div class="layui-form-item layui-form-text">
 						<label class="layui-form-label">问题描述</label>
 						<div class="layui-input-block right-marg">
-							<textarea name="title" id="problem_describe" placeholder="请输入内容"
-								class="layui-textarea" name="desc"></textarea>
+							<textarea name="title" id="problem_describe" disabled class="layui-textarea" name="desc"></textarea>
 						</div>
 					</div>
 
@@ -280,10 +279,7 @@
 		        	  
 		        	//将每次选择的文件追加到文件队列
 		          	var files = this.files = obj.pushFile();
-		        	
-		          	if(JSON.stringify(files).length > 2){
-	              		 $("#finish-phos").css({"display":"block"});
-	              	 }
+		          	$("#finish-phos").css({"display":"block"});
 		          	
 		           //预读本地文件，如果是多文件，则会遍历。(不支持ie8/9)
 		           obj.preview(function (index, file, result) {
@@ -293,8 +289,8 @@
 		               //删除列表中对应的文件
 		               $(".img_close").click(function(){
 		              	 delete files[index]; //删除对应的文件
-		              	 var len = JSON.stringify(files).length;
-		              	 if(len <= 2){
+		              	 var len = $('#imgZmList').children().length;
+		              	 if(len <= 0){
 		              		 $("#finish-phos").css("display", "none");
 		              	 }
 		              	 console.log(index);
