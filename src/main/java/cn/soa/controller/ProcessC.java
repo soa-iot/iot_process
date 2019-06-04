@@ -20,6 +20,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import cn.soa.entity.ProblemInfo;
+
 import cn.soa.entity.ResultJson;
 import cn.soa.entity.ResultJsonForTable;
 import cn.soa.entity.TodoTask;
@@ -281,7 +282,9 @@ public class ProcessC {
 			return new ResultJson<Boolean>( 0, "流程返回到上一个节点成功", true );
 		}
 		return new ResultJson<Boolean>( 0, "流程返回到上一个节点失败", null );
+
 	}
+
 
 	/**   
 	 * @Title: getAllTasksByUsernameC   
@@ -315,5 +318,7 @@ public class ProcessC {
 			return new ResultJsonForTable<List<TodoTask>>( 0, "代办任务查询成功", tasks.size(), tasks );
 		}
 		return new ResultJsonForTable<List<TodoTask>>( 0, "代办任务查询失败", 0, tasks );
+
 	}
+
 }

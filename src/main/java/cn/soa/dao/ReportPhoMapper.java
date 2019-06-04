@@ -1,10 +1,12 @@
 package cn.soa.dao;
 
-import org.apache.ibatis.annotations.Mapper;
+import java.util.Map;
 
-import cn.soa.entity.ProblemInfo;
-import cn.soa.entity.ProblemInfoVO;
+import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
+
 import cn.soa.entity.ProblemReportpho;
+
 
 @Mapper
 public interface ReportPhoMapper {
@@ -22,5 +24,12 @@ public interface ReportPhoMapper {
 	 * @return: Integer        
 	 */ 
 	public Integer insertOne(ProblemReportpho pho);
+	
+	/**   
+	 * @Title: deleteList   
+	 * @Description: 删除问题图片数据 
+	 * @return: Integer        
+	 */ 
+	public Integer deleteList(Map phos);
 	
 }

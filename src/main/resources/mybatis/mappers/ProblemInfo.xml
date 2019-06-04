@@ -105,6 +105,7 @@
 	<resultMap type="cn.soa.entity.ProblemInfoVO" id="problemInfoVOResultMap">
 		<id property="tProblemRepId" column="REP_ID" />
 		<result property="applypeople" column="APPLYPEOPLE" />
+		<result property="problemnum" column="proNum" />
 		<result property="problemtype" column="PROBLEMTYPE" />
 		<result property="welName" column="WEL_NAME" />
 		<result property="profession" column="PROFESSION" />

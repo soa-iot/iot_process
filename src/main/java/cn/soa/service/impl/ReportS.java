@@ -1,5 +1,7 @@
 package cn.soa.service.impl;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -12,6 +14,7 @@ import cn.soa.dao.ProblemInfoMapper;
 import cn.soa.dao.ProblemReportphoMapper;
 import cn.soa.entity.ProblemInfo;
 import cn.soa.entity.ProblemInfoVO;
+import cn.soa.entity.ProblemReportpho;
 import cn.soa.service.inter.ReportSI;
 
 
