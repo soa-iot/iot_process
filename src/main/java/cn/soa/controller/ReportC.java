@@ -99,7 +99,7 @@ public class ReportC {
 	 * @Description: 保存问题图片
 	 * @return: ResultJson<List<UnsafeType>> 返回成功响应数据 
 	 */
-	@Value("${problem.image.upload.path}")
+//	@Value("${problem.image.upload.path}")
 	private String rootPath;   //获取图片存放根目录
 	
 	@PostMapping("/upload")
