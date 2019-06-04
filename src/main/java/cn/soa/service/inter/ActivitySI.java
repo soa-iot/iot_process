@@ -65,16 +65,14 @@ public interface ActivitySI {
 	 * @Description: 执行流转下一个节点  (根据任务tsid)  
 	 * @return: void        
 	 */  
-	boolean nextNodeByTSID(String tsid, String var, String varValue, String comments, String nodeid,
-			Map<String, Object> map);
+	boolean nextNodeByTSID(String tsid, String var, String varValue, String comments);
 
 	/**   
 	 * @Title: nextNodeByPIID   
 	 * @Description:  执行流转下一个节点 (根据任务piid) 
 	 * @return: void        
 	 */  
-	boolean nextNodeByPIID(String tsid, String var, String varValue, String comments, String nodeid,
-			Map<String, Object> map);
+	boolean nextNodeByPIID(String tsid, String var, String varValue, String comments);
 
 	/**   
 	 * @Title: getEndNode   
@@ -144,14 +142,14 @@ public interface ActivitySI {
 	 * @Description:终止流程   
 	 * @return: void        
 	 */  
-	String endProcess(String tsid);
+	String endProcessByTsid(String tsid);
 
 	/**   
 	 * @Title: endProcessInComment   
 	 * @Description: 终止流程（批准信息）   
 	 * @return: String        
 	 */  
-	String endProcessInComment(String tsid, String comment);
+	String endProcessByTsidInComment(String tsid, String comment);
 
 	/**   
 	 * @Title: getHistoryNodesByPiid   
@@ -222,6 +220,34 @@ public interface ActivitySI {
 	 * @return: List<ProcessDefinition>        
 	 */  
 	List<ProcessDefinition> getProcessDefinitions();
+
+	/**   
+	 * @Title: getTsidByPiid   
+	 * @Description: 根据piid查询当前任务节点的tsid   
+	 * @return: String        
+	 */  
+	String getTsidByPiid(String piid);
+
+	/**   
+	 * @Title: getPiidByTsid   
+	 * @Description:  根据tsid查询当前任务节点的  piid 
+	 * @return: String        
+	 */  
+	String getPiidByTsid(String tsid);
+
+	/**   
+	 * @Title: saveCommentByTsid   
+	 * @Description: 根据任务tsid，增加任务节点的备注信息   
+	 * @return: boolean        
+	 */  
+	boolean saveCommentByTsid(String tsid, String comment);
+
+	/**   
+	 * @Title: saveCommentByPiid   
+	 * @Description: 根据任务piid，增加任务节点的备注信息   
+	 * @return: boolean        
+	 */  
+	boolean saveCommentByPiid(String piid, String comment);
 
 	
 	
