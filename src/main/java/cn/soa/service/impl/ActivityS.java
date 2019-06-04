@@ -123,23 +123,6 @@ public class ActivityS implements ActivitySI{
 	}
     
     /**   
-     * @Title: getProcessDefinitions   
-     * @Description: 获取流程所有流程定义对象  
-     * @return: List<ProcessDefinition>        
-     */ 
-    @Override
-    public List<ProcessDefinition> getProcessDefinitions(){
-    	try {
-    		List<ProcessDefinition> processDefinitions = 
-    				repositoryService.createProcessDefinitionQuery().list();
-    		return processDefinitions;
-		} catch (Exception e) {
-			e.printStackTrace();
-			return null;
-		}
-    }
-    
-    /**   
      * @Title: startProcess   
      * @Description: 启动流程  
      * @return: void        
@@ -205,6 +188,23 @@ public class ActivityS implements ActivitySI{
 			return null;
 		}   	
     } 
+    
+    /**   
+     * @Title: getProcessDefinitions   
+     * @Description: 获取流程所有流程定义对象  
+     * @return: List<ProcessDefinition>        
+     */ 
+    @Override
+    public List<ProcessDefinition> getProcessDefinitions(){
+    	try {
+    		List<ProcessDefinition> processDefinitions = 
+    				repositoryService.createProcessDefinitionQuery().list();
+    		return processDefinitions;
+		} catch (Exception e) {
+			e.printStackTrace();
+			return null;
+		}
+    }
     
     /**   
      * @Title: nextNode   
@@ -808,7 +808,7 @@ public class ActivityS implements ActivitySI{
 		}
 		
 	}
-	
+    
 	
 	/**   
 	 * @Title: getCandidateTasksByUsername   
@@ -882,5 +882,6 @@ public class ActivityS implements ActivitySI{
 			e.printStackTrace();		
 			return todoTasks;
 		}				
-	}	
+	}
+
 }

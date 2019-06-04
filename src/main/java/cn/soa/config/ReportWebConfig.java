@@ -10,9 +10,9 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 //@PropertySource(value= {"classpath:/configProperties/fileDownUpload.properties"}, encoding="UTF-8")
 public class ReportWebConfig implements WebMvcConfigurer {
 	
-	@Value("${problem.image.upload.path}")
+//	@Value("${problem.image.upload.path}")
 	private String imagePath;  //从配置文件中读取图片存放位置
-	
+
 	/**
 	 * 配置静态图片映射路径
 	 */

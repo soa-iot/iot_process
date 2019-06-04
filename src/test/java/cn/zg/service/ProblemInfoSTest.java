@@ -1,6 +1,5 @@
 package cn.zg.service;
 
-import org.activiti.engine.repository.Deployment;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -9,21 +8,20 @@ import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
 
 import cn.soa.IotprocessApplication;
-import cn.soa.service.inter.ActivitySI;
+import cn.soa.entity.ProblemInfo;
+import cn.soa.service.inter.ProblemInfoSI;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(classes = { IotprocessApplication.class })
 @WebAppConfiguration
-public class ActivitySTest {
+public class ProblemInfoSTest {
+
 	@Autowired
-	private ActivitySI asi;
+	private ProblemInfoSI problemInfoSI;
 	
 	@Test
-	public void deployProcess() {
-		String name = "净化厂机电仪检维修流程";
-		String xmlUrl = "process/repairProcess.bpmn";
-		String pngUrl = "process/repairProcess.png";
-		Deployment deployObj = asi.deployProcess( name, xmlUrl, pngUrl );
-		System.out.println(deployObj);
+	public void getByPiidTest() {
+		ProblemInfo estimate = problemInfoSI.getByPiid("ADAA80DB601C4470BE8BB224705F5F9C");
+		System.err.println(estimate);
 	}
 }

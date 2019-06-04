@@ -11,8 +11,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import cn.soa.dao.ReportMapper;
-import cn.soa.dao.ReportPhoMapper;
+import cn.soa.dao.ProblemInfoMapper;
+import cn.soa.dao.ProblemReportphoMapper;
 import cn.soa.entity.ProblemInfo;
 import cn.soa.entity.ProblemInfoVO;
 import cn.soa.entity.ProblemReportpho;
@@ -23,9 +23,9 @@ import cn.soa.service.inter.ReportSI;
 public class ReportS implements ReportSI {
 	
 	@Autowired
-	private ReportMapper reportMapper;
+	private ProblemInfoMapper reportMapper;
 	@Autowired
-	private ReportPhoMapper phoMapper;
+	private ProblemReportphoMapper phoMapper;
 	
 	/**   
 	 * @Title: addOne   

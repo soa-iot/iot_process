@@ -1,6 +1,7 @@
-package cn.zg.service;
+package cn.zg.mapper;
 
-import org.activiti.engine.repository.Deployment;
+import java.util.List;
+
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -9,21 +10,20 @@ import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
 
 import cn.soa.IotprocessApplication;
-import cn.soa.service.inter.ActivitySI;
+import cn.soa.dao.ProblemReportphoMapper;
+import cn.soa.entity.ProblemReportpho;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(classes = { IotprocessApplication.class })
 @WebAppConfiguration
-public class ActivitySTest {
-	@Autowired
-	private ActivitySI asi;
+public class ProblemReportphoMapperTest {
 	
+	@Autowired
+	private ProblemReportphoMapper problemReportphoMapper;
+
 	@Test
-	public void deployProcess() {
-		String name = "净化厂机电仪检维修流程";
-		String xmlUrl = "process/repairProcess.bpmn";
-		String pngUrl = "process/repairProcess.png";
-		Deployment deployObj = asi.deployProcess( name, xmlUrl, pngUrl );
-		System.out.println(deployObj);
+	public void findByPiidTest() {
+		  List<ProblemReportpho> problemReportphos = problemReportphoMapper.findByPiid("13");
+		System.err.println(problemReportphos);
 	}
 }

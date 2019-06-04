@@ -1,21 +1,16 @@
 package cn.soa.controller;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import javax.validation.constraints.NotBlank;
 
-import org.activiti.engine.impl.persistence.entity.TaskEntity;
 import org.activiti.engine.repository.Deployment;
-import org.activiti.engine.repository.ProcessDefinition;
-import org.activiti.engine.task.Task;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -23,7 +18,6 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.client.RestTemplate;
 
 import cn.soa.entity.ProblemInfo;
 import cn.soa.entity.ResultJson;
@@ -59,7 +53,7 @@ public class ProcessC {
 		
 	/**   
 	 * @Title: startProcessC   
-	 * @Description:  部署流程（post方式）
+	 * @Description:  部署流程
 	 * @return: void        
 	 */ 
 	@PostMapping("/deployment")
@@ -133,39 +127,6 @@ public class ProcessC {
 			return new ResultJson<List<Map<String,Object>>>( 0, "获取文件成功", files );
 		}
 		return new ResultJson<List<Map<String,Object>>>( 1, "获取文件失败", files );
-	}
-	
-	/**   
-	 * @Title: getConfigFileBPMN   
-	 * @Description:  获取流程所有流程定义对象 
-	 * @return: ResultJson<List<Map<String,Object>>>        
-	 */  
-	@GetMapping("/processdefinitions")
-	public ResultJson<List<ProcessDefinition>> getProcessDefinitionsC() {
-		logger.debug( "--C----------获取流程所有流程定义对象---------------" );
-		List<ProcessDefinition> processDefinitions = activityS.getProcessDefinitions();
-		if( processDefinitions != null ) {
-			return new ResultJson<List<ProcessDefinition>>( 0, "获取所有流程定义对象成功", processDefinitions );
-		}
-		return new ResultJson<List<ProcessDefinition>>( 1, "获取所有流程定义对象失败", processDefinitions );
-	}
-	
-	/**   
-	 * @Title: getConfigFileBPMN   
-	 * @Description:  获取流程所有流程定义对象id
-	 * @return: ResultJson<List<Map<String,Object>>>        
-	 */  
-	@GetMapping("/processdefinitions/dfids")
-	public ResultJson<List<String>> getProcessDefinitionsIdC() {
-		logger.debug( "--C----------获取流程所有流程定义对象---------------" );
-		List<ProcessDefinition> processDefinitions = activityS.getProcessDefinitions();
-		if( processDefinitions != null && processDefinitions.size() > 0 ) {
-			ArrayList<String> dfids = new ArrayList<String>();
-			processDefinitions.forEach(d -> dfids.add( d.getId() ));
-			logger.debug( dfids.toString() );		
-			return new ResultJson<List<String>>( 0, "获取所有流程定义对象成功", dfids );
-		}
-		return new ResultJson<List<String>>( 1, "获取所有流程定义对象失败", null );
 	}
 	
 	/**   
