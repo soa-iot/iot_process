@@ -123,7 +123,14 @@ layui.use(['jquery','form','upload','layedit', 'laydate'], function(){
       				var phoAddress = data.data.reportPhos[i].phoAddress;
       				imgList.push(tProblemPhoId);
       				$('#imgZmList').append('<li style="position:relative"><img class="imgList" id="'+tProblemPhoId+'" src="' + phoAddress + '" width="180" height="150"><div class="img_close" onclick="deleteElement(this)">X</div></li>');
+      				$(".img_close").click(function(){
+      	              	 var len = $('#imgZmList').children().length;
+      	             	 if(len <= 0){
+      	             		 $("#problem-img").css("display", "none");
+      	             	 }
+      				})
       			}
+      			$("#problem-img").css({"display":"block"});
       		  }
       		console.log(imgList);
           }
@@ -202,7 +209,8 @@ layui.use(['jquery','form','upload','layedit', 'laydate'], function(){
         	  
         	//将每次选择的文件追加到文件队列
           	var files = this.files = obj.pushFile();
-        	  
+          	$("#problem-img").css({"display":"block"});
+          	
           //预读本地文件，如果是多文件，则会遍历。(不支持ie8/9)
            obj.preview(function (index, file, result) {
                console.log(index);
@@ -211,6 +219,10 @@ layui.use(['jquery','form','upload','layedit', 'laydate'], function(){
                //删除列表中对应的文件
                $(".img_close").click(function(){
               	 delete files[index]; //删除对应的文件
+              	 var len = $('#imgZmList').children().length;
+             	 if(len <= 0){
+             		 $("#problem-img").css("display", "none");
+             	 }
               	 console.log(index);
               	 uploadList.config.elem.next()[0].value = ''; //清空 input file值，以免删除后出现同名文件不可选
                })
