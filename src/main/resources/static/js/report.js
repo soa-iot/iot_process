@@ -9,7 +9,7 @@ layui.use(['jquery','form','upload','layedit', 'laydate'], function(){
 	
 	//从cookie中获取当前登录用户
 	//var resavepeople = getCookie1("currentName");
-	var resavepeople = "test2";
+	var resavepeople = "test3";
 	console.log("currentLoginUser:"+resavepeople);
 	//从url中获取PIID
 	var piid = getUrlParamValueByName("piid");
@@ -204,7 +204,7 @@ layui.use(['jquery','form','upload','layedit', 'laydate'], function(){
           , number: 3
           , multiple: true
           , auto:false
-          , bindAction: '#saveBtn'
+          , bindAction: '#'
           , choose: function (obj) {
         	  
         	//将每次选择的文件追加到文件队列
@@ -251,5 +251,16 @@ layui.use(['jquery','form','upload','layedit', 'laydate'], function(){
         	  console.log("error");
           }
       });
+     
+ 	//监听提交事件
+	  form.on('submit(problem_report)', function(data){
+		 alert("问题上报");
+		 
+		 uploadList.upload();
+		 
+	    return false;
+	  });
+	  
+     
 })  
 	

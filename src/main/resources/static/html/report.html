@@ -22,8 +22,7 @@
     	.text-font-warm{
     		color: red;
     		/* display: inline-block; */
-    		/* position: relative; */
-    		
+    		/* position: relative; */	
     	}
     
     </style>
@@ -195,7 +194,7 @@
 			  <div class="layui-form-item">
 			  	<div class="layui-col-md-offset5">
 				    <button class="layui-btn saveBtn" lay-submit lay-filter="saveBtn" id="saveBtn">暂存</button> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-				    <button class="layui-btn" type="button">问题上报</button>
+				    <button class="layui-btn" type="button" lay-submit lay-filter="problem_report">问题上报</button>
 			    </div>
 			 </div>
 		   </form>
@@ -227,6 +226,8 @@
 		      }
 		    }
 		  });
+		   
+		   
 })	    
 </script>
   </body>
