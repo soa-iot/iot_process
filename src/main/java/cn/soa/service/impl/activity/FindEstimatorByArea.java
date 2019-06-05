@@ -39,7 +39,7 @@ public class FindEstimatorByArea implements ExecutionListener{
 		}
 		userStr = userStr.substring( 0, userStr.length() - 1 );
 		logger.debug( "------问题评估变量执行人------" + userStr);
-		execution.setVariable( area, userStr );
+		execution.setVariable( "estimators", userStr );
 	}
 
 }

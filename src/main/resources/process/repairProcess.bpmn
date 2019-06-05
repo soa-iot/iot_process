@@ -22,10 +22,10 @@
     <exclusiveGateway id="node1" name="分支节点1"></exclusiveGateway>
     <sequenceFlow id="flow3" sourceRef="estimate" targetRef="node1"></sequenceFlow>
     <sequenceFlow id="flow12" name="分支1流向2" sourceRef="node1" targetRef="pure">
-      <conditionExpression xsi:type="tFormalExpression"><![CDATA[area == {'净化工段'} and isIngroup={2}]]></conditionExpression>
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[area == {'净化工段'} and isIngroup={3}]]></conditionExpression>
     </sequenceFlow>
     <sequenceFlow id="flow11" name="分支1流向1" sourceRef="node1" targetRef="repair">
-      <conditionExpression xsi:type="tFormalExpression"><![CDATA[area == {'维修工段'}  and  isIngroup={2}]]></conditionExpression>
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[area == {'维修工段'}  and  isIngroup={3}]]></conditionExpression>
     </sequenceFlow>
     <sequenceFlow id="flow6" sourceRef="repair" targetRef="arrange"></sequenceFlow>
     <userTask id="complement" name="作业完成" activiti:candidateUsers="complementor"></userTask>
@@ -98,7 +98,7 @@
         <omgdi:waypoint x="561.0" y="258.0"></omgdi:waypoint>
         <omgdi:waypoint x="681.0" y="257.0"></omgdi:waypoint>
         <bpmndi:BPMNLabel>
-          <omgdc:Bounds height="14.0" width="60.0" x="561.0" y="258.0"></omgdc:Bounds>
+          <omgdc:Bounds height="14.0" width="100.0" x="561.0" y="258.0"></omgdc:Bounds>
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge bpmnElement="flow11" id="BPMNEdge_flow11">
@@ -108,7 +108,7 @@
         <omgdi:waypoint x="953.0" y="144.0"></omgdi:waypoint>
         <omgdi:waypoint x="953.0" y="230.0"></omgdi:waypoint>
         <bpmndi:BPMNLabel>
-          <omgdc:Bounds height="14.0" width="60.0" x="541.0" y="238.0"></omgdc:Bounds>
+          <omgdc:Bounds height="14.0" width="100.0" x="541.0" y="238.0"></omgdc:Bounds>
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge bpmnElement="flow6" id="BPMNEdge_flow6">

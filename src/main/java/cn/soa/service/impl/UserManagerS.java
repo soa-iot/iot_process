@@ -146,7 +146,7 @@ public class UserManagerS implements UserManagerSI {
 	public List<UserOrganization> findUserByArea( String area ){
 		HashMap<String, String> map = new HashMap<>();
 		map.put( "roleName", area );
-		String url = "http://" + ip + ":" + port + "/iot_usermanager/role/name/users";
+		String url = "http://" + ip + ":" + port + "/iot_usermanager/user/roleName";
 		ResponseEntity<ResultJson> organ = restTemplate.getForEntity( url, ResultJson.class, map);
 		ResultJson r = organ.getBody();
 		if( r.getState() == 1 || r.getData() != null ) {

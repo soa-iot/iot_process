@@ -104,7 +104,28 @@
 	     ,error:function(){}		       
 	});
 	
+	
 8、流程写下一步接口：
+	$.ajax({
+	     type: "PUT"
+	     ,url: '/iot_process/process//nodes/next/{piid}'    //piid为流程实例id
+	     ,data: {
+	     	"isIngroup": "",    //流程变量名称,流程变量值(属地单位为非维修非净化+前端选择"作业安排"时，值为1；
+			     								   属地单位为非维修非净化+前端选择"外部协调"时，值为2；
+			     								   属地单位为维修或净化+前端选择"作业安排"时，值为1；
+			     								    属地单位为维修或净化+前端选择"下一步"时，值为3 )
+	     	"comment": ""     //节点的处理信息
+	     }   //问题上报表单的内容
+	     ,contentType: "application/x-www-form-urlencoded"
+	     ,dataType: "json"
+	     ,success: function(jsonData){
+	     	//后端返回值： ResultJson<Boolean>
+	     },
+	     ,error:function(){}		       
+	});
+
+
+9、
 
 		
 
@@ -125,7 +146,6 @@
 			NOTE VARCHAR2(48 CHAR) DEFAULT '' NOT NULL ,
 			REMARK1 VARCHAR2(18 CHAR) DEFAULT '' NOT NULL ,
 			REMARK2 VARCHAR2(38 CHAR) DEFAULT '' NOT NULL 
-
 		)
 	
 2、流程变量配置表：

@@ -22,6 +22,7 @@ public class TodoTask implements Serializable {
 	private String name ;
 	private String tip ;
 	private String describle ;
+	private String area;
 	private String currentnode ;
 	private String reporttime ;
 	private String reportperson ;

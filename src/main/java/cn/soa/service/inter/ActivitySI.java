@@ -72,7 +72,7 @@ public interface ActivitySI {
 	 * @Description:  执行流转下一个节点 (根据任务piid) 
 	 * @return: void        
 	 */  
-	boolean nextNodeByPIID(String tsid, String var, String varValue, String comments);
+	boolean nextNodeByPIID(  String piid, Map<String,Object> map  );
 
 	/**   
 	 * @Title: getEndNode   
@@ -191,7 +191,7 @@ public interface ActivitySI {
 	 * @Description: 根据流程任务id，获取当前流程的历史节点 信息  
 	 * @return: List<Map<String,Object>>        
 	 */  
-	List<Map<String, Object>> getAllHistoryInfos(String tsid);
+	List<Map<String, Object>> getHisInfosByTsid(String tsid);
 
 	/**   
 	 * @Title: getPersonalTasksByUsername   
@@ -248,6 +248,13 @@ public interface ActivitySI {
 	 * @return: boolean        
 	 */  
 	boolean saveCommentByPiid(String piid, String comment);
+
+	/**   
+	 * @Title: getHisInfosByPiid   
+	 * @Description: 根据流程piid，获取当前流程的历史节点信息  
+	 * @return: List<Map<String,Object>>        
+	 */  
+	List<Map<String, Object>> getHisInfosByPiid(String piid);
 
 	
 }

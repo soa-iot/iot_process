@@ -166,6 +166,7 @@ public class ProcessC {
 		 * 处理临时流程变量
 		 */
 		Map<String, Object> tempVars = processVariableS.addVarsStartProcess( problemInfo );
+		logger.debug( "--C--------tempVars  -------------" + tempVars);
 				
 		/*
 		 * 流程启动
@@ -173,6 +174,7 @@ public class ProcessC {
 		Map<String, Object> vars = new HashMap<String, Object>();
 		vars.putAll(basicVars);
 		vars.putAll(tempVars);
+		logger.debug( "--C--------vars  -------------" + vars);
 		
 		/*
 		 * 流程启动前的流程其他业务处理
@@ -200,15 +202,12 @@ public class ProcessC {
 	@PutMapping("/nodes/next/{piid}")
 	public ResultJson<Boolean> nextNodeByPIID( 
 			@PathVariable("piid") String piid,
-			@RequestParam(value="var",required=false) String var,
-			@RequestParam(value="varValue",required=false) String varValue,
-			@RequestParam(value="comment",required=false) String comment){
+			Map<String,Object> map){
 		logger.debug( "--C-------- 执行流程的下一步     -------------" );
 		logger.debug( piid );
-		logger.debug( var );
-		logger.debug( comment );
-		logger.debug( varValue );
-		boolean b = activityS.nextNodeByPIID(piid, var, varValue, comment);
+		logger.debug( map.toString() );
+				
+		boolean b = activityS.nextNodeByPIID( piid, map );
 		if( b ) {
 			return new ResultJson<Boolean>( 0, "流程流转下一个节点任务成功", true );
 		}
@@ -268,12 +267,30 @@ public class ProcessC {
 	 * @Description:  根据任务tsid，获取流程所有的历史节点 
 	 * @return: ResultJson<List<Map<String,Object>>>        
 	 */  
-	@GetMapping("/nodes/history/{tsid}")
-	public ResultJson<List<Map<String,Object>>> getHitoryNodeInfos(
+	@GetMapping("/nodes/history/tsid/{tsid}")
+	public ResultJson<List<Map<String,Object>>> getHisInfosByTsid(
 			@PathVariable("tsid") @NotBlank String tsid ){
 		logger.debug( "--C-------- 根据任务tsid，获取流程所有的历史节点      -------------" );
 		logger.debug( tsid );
-		List<Map<String, Object>> historyNodesInfo = activityS.getAllHistoryInfos( tsid );
+		List<Map<String, Object>> historyNodesInfo = activityS.getHisInfosByTsid( tsid );
+		if( historyNodesInfo != null && historyNodesInfo.size() > 0  ) {
+			return new ResultJson<List<Map<String,Object>>>( 0, "获取流程所有的历史节点成功", historyNodesInfo );
+		}
+		return new ResultJson<List<Map<String,Object>>>( 0, "获取流程所有的历史节点失败", null );
+
+	}
+	
+	/**   
+	 * @Title: getHitoryNodeInfos   
+	 * @Description:  根据任务tsid，获取流程所有的历史节点 
+	 * @return: ResultJson<List<Map<String,Object>>>        
+	 */  
+	@GetMapping("/nodes/history/piid/{piid}")
+	public ResultJson<List<Map<String,Object>>> getHisInfosByPiid(
+			@PathVariable("piid") @NotBlank String piid ){
+		logger.debug( "--C-------- 根据任务piid，获取流程所有的历史节点      -------------" );
+		logger.debug( piid );
+		List<Map<String, Object>> historyNodesInfo = activityS.getHisInfosByPiid( piid );
 		if( historyNodesInfo != null && historyNodesInfo.size() > 0  ) {
 			return new ResultJson<List<Map<String,Object>>>( 0, "获取流程所有的历史节点成功", historyNodesInfo );
 		}
