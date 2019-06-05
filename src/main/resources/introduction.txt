@@ -47,7 +47,7 @@
 	$.ajax({
 	     type: "GET"
 	     ,url: '/iot_process/process/tasks/layui' 
-	     ,data: {}
+	     ,data: {"userName":""}
 	     ,contentType: "application/x-www-form-urlencoded"
 	     ,dataType: "json"
 	     ,success: function(jsonData){
@@ -59,12 +59,12 @@
 5、流程上报：
 	$.ajax({
 	     type: "POST"
-	     ,url: '/iot_process/process/{dfid}'    //dfid为流程定义id
-	     ,data: {key…… ： value……}   //问题上报表单的内容
+	     ,url: '/iot_process/process/{dfid}'    //dfid为流程定义id（暂时就是dfid="processPure2:1:37516"）
+	     ,data: {"……": "……"}   //问题上报表单的内容
 	     ,contentType: "application/x-www-form-urlencoded"
 	     ,dataType: "json"
 	     ,success: function(jsonData){
-	     	//后端返回值： ResultJson<List<Task>>
+	     	//后端返回值： data="piid,bsid"(流程实例piid,业务数据bsid)
 	     },
 	     ,error:function(){}		       
 	});
@@ -104,7 +104,7 @@
 	     ,error:function(){}		       
 	});
 	
-8、
+8、流程写下一步接口：
 
 		
 
