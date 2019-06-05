@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
 
 import cn.soa.entity.ProblemReportpho;
 
@@ -41,5 +42,15 @@ public interface ProblemReportphoMapper {
 	 * @Description: 删除问题图片数据 
 	 * @return: Integer        
 	 */ 
-	public Integer deleteList(Map phos);
+	public Integer deleteList(String[] imgList);
+	
+	/**   
+	 * @Title: updateTempPho   
+	 * @Description: 更新暂存图片的流程实例PIID和问题上报流程任务表主键T_PROBLEM_REP_ID
+	 * @return: Integer        
+	 */ 
+	public Integer updateTempPho(
+			@Param("tProblemRepId") String tProblemRepId,
+			@Param("tempRepId") String tempRepId, 
+			@Param("piid") String piid);
 }

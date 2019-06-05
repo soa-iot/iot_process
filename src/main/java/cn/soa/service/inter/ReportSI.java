@@ -8,14 +8,14 @@ public interface ReportSI {
 	/**   
 	 * @Title: addOne   
 	 * @Description: 添加一条问题报告数据
-	 * @return: void   无返回值   
+	 * @return: String   生成的主键id   
 	 */
-	public boolean addOne(ProblemInfo problemInfo, String[] imgList);
+	public String addOne(ProblemInfo problemInfo, String[] imgList);
 	
 	/**   
 	 * @Title: addOne   
 	 * @Description: 添加一条问题报告数据
-	 * @return: void   无返回值   
+	 * @return: ProblemInfoVO   问题报告数据  
 	 */
 	public ProblemInfoVO getByResavepeople(String resavepeople);
 }

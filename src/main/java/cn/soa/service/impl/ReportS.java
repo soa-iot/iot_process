@@ -29,12 +29,12 @@ public class ReportS implements ReportSI {
 	/**   
 	 * @Title: addOne   
 	 * @Description: 添加/更新一条问题报告数据
-	 * @return: void   无返回值   
+	 * @return: String   生成的问题报告主键id   
 	 */
 	@SuppressWarnings("unchecked")
 	@Transactional
 	@Override
-	public boolean addOne(ProblemInfo problemInfo, String[] imgList) {
+	public String addOne(ProblemInfo problemInfo, String[] imgList) {
 		
 		String RepId = problemInfo.getTProblemRepId();
 		/*
@@ -42,6 +42,7 @@ public class ReportS implements ReportSI {
 		 * 存在就update，不存在则insert
 		 */
 		ProblemInfo result = reportMapper.findByRepId(RepId);
+		
 		problemInfo.setApplydate(new Date());
 		if(result == null) {
 			problemInfo.setProcesstype("7");
@@ -52,34 +53,31 @@ public class ReportS implements ReportSI {
 				maxNum = (maxNum == null ? 1 : maxNum+1);
 				problemInfo.setProblemnum(maxNum);
 				Integer rows = reportMapper.insertOne(problemInfo);
+				RepId = problemInfo.getTProblemRepId();
 				if(rows != 1) {
-					return false;
+					return null;
 				}
 			}catch (Exception e) {
 				e.printStackTrace();
-				return false;
+				return null;
 			}	
 		}else {
 			try {
-				Integer rows1 = reportMapper.updateOne(problemInfo);
+				Integer rows = reportMapper.updateOne(problemInfo);
 				
 				if(imgList != null && imgList.length > 0) {
-					@SuppressWarnings("rawtypes")
-					Map phoMap = new HashMap();
-					phoMap.put("tProblemRepId", RepId);
-					phoMap.put("imgList", imgList);
-					phoMapper.deleteList(phoMap);
+					phoMapper.deleteList(imgList);
 				}
-				if(rows1 != 1) {
-					return false;
+				if(rows != 1) {
+					return null;
 				}
 			}catch (Exception e) {
 				e.printStackTrace();
-				return false;
+				return null;
 			}
 		}
 		
-		return true;
+		return RepId;
 	}
 	
 	/**   

@@ -1,5 +1,8 @@
 package cn.soa.service.impl;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -33,6 +36,32 @@ public class ReportPhoS implements ReportPhoSI {
 			e.printStackTrace();
 			return false;
 		}
+		
+		return true;
+	}
+	
+	/**   
+	 * @Title: updateTempPho   
+	 * @Description: 更新暂存图片的流程实例PIID和问题上报流程任务表主键T_PROBLEM_REP_ID
+	 * @return: boolean   true-表示添加成功，false-表示添加失败   
+	 */
+	@Override
+	public boolean updateTempPho(String tProblemRepId, String tempRepId, String piid, String[] imgList) {
+		try {
+			
+			if(imgList != null && imgList.length > 0) {
+				phoMapper.deleteList(imgList);
+			}
+			
+			Integer rows = phoMapper.updateTempPho(tProblemRepId, tempRepId, piid);
+			if(rows == 0) {
+				return false;
+			}
+		}catch (Exception e) {
+			e.printStackTrace();
+			return false;
+		}
+		
 		
 		return true;
 	}

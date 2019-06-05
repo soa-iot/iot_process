@@ -1,22 +1,19 @@
 //加载layui内置模块
-layui.use(['jquery','form','upload','layedit', 'laydate'], function(){
+layui.use(['jquery','form','upload','layedit'], function(){
 	var form = layui.form
 	,layer = layui.layer
 	,layedit = layui.layedit
-	,laydate = layui.laydate
 	,$ = layui.$ //重点处,使用jQuery
 	,upload = layui.upload;
 	
 	//从cookie中获取当前登录用户
 	//var resavepeople = getCookie1("currentName");
-	var resavepeople = "test3";
+	var resavepeople = "test4";
 	console.log("currentLoginUser:"+resavepeople);
-	//从url中获取PIID
-	var piid = getUrlParamValueByName("piid");
-	console.log("piid:"+piid);
-	//UUID生成,并去掉符号'-'
-	var uuid = Math.uuid().replace(/-/g,"");
-	console.log("uuid:"+uuid);
+	//上报问题报告id和piid
+	var tProblemRepId = null, piid = null;
+	//暂存的问题报告id
+	var tempRepId = null;
 	
 	//不安全行为下拉框事件监听
 	$(".notsafe-select").click(function(){
@@ -76,8 +73,8 @@ layui.use(['jquery','form','upload','layedit', 'laydate'], function(){
         data: {resavepeople:resavepeople}, 
         success: function(data){ 
           if(data.state == 0 && data.data != null && data.data != undefined){
-        	  uuid = data.data.tproblemRepId;
-        	  console.log("uuid="+uuid);
+        	  tempRepId = data.data.tproblemRepId;
+        	  console.log("tempRepId="+tempRepId);
         	  
               //表单初始赋值
       		  form.val('report-form', {
@@ -132,7 +129,7 @@ layui.use(['jquery','form','upload','layedit', 'laydate'], function(){
       			}
       			$("#problem-img").css({"display":"block"});
       		  }
-      		console.log(imgList);
+      		console.log("加载的图片列表："+imgList);
           }
         }
     }); 
@@ -156,15 +153,15 @@ layui.use(['jquery','form','upload','layedit', 'laydate'], function(){
 		 form.render('select','notsafe-select');
 	});
 	
-	 //监听提交事件
+	  //监听暂存提交事件
 	  form.on('submit(saveBtn)', function(data){
 		  //var jsonData = JSON.stringify(data.field);
 		  //保存主键
-		  data.field.tProblemRepId = uuid;
+		  if(tempRepId != undefined || tempRepId != null){
+			  data.field.tProblemRepId = tempRepId;
+		  }
 		  //保存当前登录人
 		  data.field.resavepeople = resavepeople;
-		  //保存piid
-		  data.field.piid = piid;
 		  console.log(data.field);
 		  
 		  $(".imgList").each(function(index){
@@ -187,9 +184,14 @@ layui.use(['jquery','form','upload','layedit', 'laydate'], function(){
 		   		data: data.field,
 		   		dataType: "json",
 		   		success: function(data){
-		   			console.log(data.message);
+		   			if(data.data != null){
+		   				tempRepId = tProblemRepId = data.data;
+			   			//上传问题图片
+				   		uploadList.upload();
+		   			}
+		   			
 		   		}
-		   	})
+		  })
 	    return false;
 	  });
 	  
@@ -198,7 +200,8 @@ layui.use(['jquery','form','upload','layedit', 'laydate'], function(){
           elem: '#addProblemImg'
           , url: '/iot_process/report/upload'
           , data: {		resavepeople: function(){ return resavepeople;}, 
-        	  	   		tProblemRepId: function(){ return uuid;}
+        	  			piid: function(){console.log("piid: "+piid); return piid;},
+        	  	   		tProblemRepId: function(){ console.log("tProblemRepId=="+tProblemRepId); return tProblemRepId;}
           			}
           , accept: 'images'
           , number: 3
@@ -252,12 +255,50 @@ layui.use(['jquery','form','upload','layedit', 'laydate'], function(){
           }
       });
      
- 	//监听提交事件
+ 	//监听流程上报提交事件
 	  form.on('submit(problem_report)', function(data){
-		 alert("问题上报");
-		 
-		 uploadList.upload();
-		 
+		 console.log("问题上报开始...");
+		 console.log(data.field);
+		 //流程上报：
+		 //dfid为流程定义id（暂时就是dfid="processPure2:1:37516"）
+		 $.ajax({
+		     type: "POST"
+		     ,url: '/iot_process/process/processPure2:1:37516'    //dfid为流程定义id（暂时就是dfid="processPure2:1:37516"）
+		     ,data: data.field  //问题上报表单的内容
+		     ,contentType: "application/x-www-form-urlencoded"
+		     ,dataType: "json"
+		     ,success: function(jsonData){
+		     	//后端返回值： data="piid,bsid"(流程实例piid,业务数据bsid)
+		    	 var data = jsonData.data;
+		    	if(data != undefined || data != null){
+		    		var arr = data.split(",");
+		    		console.log("arr = " + arr);
+		    		piid = arr[0];
+		    		tProblemRepId = arr[1];
+		    		
+		    		//获取暂存图片列表
+			    	  $(".imgList").each(function(index){
+			  			  imgList.splice(index,1,"");
+			  		  })	  
+		    		
+		    		//更新暂存的图片piid和问题上报主键id
+		    		$.ajax({
+		    			type: "POST",
+		    			url: "/iot_process/report/updatepho",
+		    			data: {"imgList":imgList, "tProblemRepId":tProblemRepId, "tempRepId":tempRepId, "piid":piid},
+		    			dataType: "json",
+		    			success: function(json){
+		    				console.log("暂存图片流程实例piid,业务数据bsid更新完毕");
+		    			}
+		    		});
+		    		
+		    		//上传问题图片
+			    	uploadList.upload();
+		    	}
+		     }
+		     ,error:function(){}		       
+		});
+		 	 
 	    return false;
 	  });
 	  
