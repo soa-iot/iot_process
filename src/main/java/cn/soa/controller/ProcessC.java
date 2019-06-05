@@ -28,6 +28,7 @@ import cn.soa.service.inter.ActivitySI;
 import cn.soa.service.inter.BussinessSI;
 import cn.soa.service.inter.ConfigSI;
 import cn.soa.service.inter.ProcessVariableSI;
+import cn.soa.service.inter.activiti.ProcessStartHandler;
 
 /**
  * @ClassName: ProcessC
@@ -51,6 +52,9 @@ public class ProcessC {
 	
 	@Autowired
 	private ProcessVariableSI processVariableS;
+	
+	@Autowired
+	private ProcessStartHandler processStartHandler;
 		
 	/**   
 	 * @Title: startProcessC   
@@ -169,9 +173,23 @@ public class ProcessC {
 		Map<String, Object> vars = new HashMap<String, Object>();
 		vars.putAll(basicVars);
 		vars.putAll(tempVars);
-		String piid = activityS.startProcess( dfid, bsid, vars );
 		
-		return new ResultJson<String>( 0, "流程启动成功", piid );
+		/*
+		 * 流程启动前的流程其他业务处理
+		 */
+		boolean beforeHandler = processStartHandler.before();
+		if( beforeHandler ) logger.debug( "--C--------流程启动前的流程其他业务处理  -------------" + beforeHandler);
+		
+		String piid = activityS.startProcess( dfid, bsid, vars );
+		logger.debug( "--C--------piid  -------------" + piid);
+		
+		/*
+		 * 流程启动后的流程其他业务处理 - 修改为观察者模式
+		 */
+		boolean afterHandler =processStartHandler.after( piid );
+		if( beforeHandler ) logger.debug( "--C--------流程启动后的流程其他业务处理  -------------" + beforeHandler);
+		
+		return new ResultJson<String>( 0, "流程启动成功", piid + "," + bsid);
 	}
 	
 	/**   

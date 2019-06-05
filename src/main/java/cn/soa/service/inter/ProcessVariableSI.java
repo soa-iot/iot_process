@@ -2,12 +2,15 @@ package cn.soa.service.inter;
 
 import java.util.Map;
 
+import org.activiti.engine.TaskService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import cn.soa.entity.ProblemInfo;
 
 @Service
 public interface ProcessVariableSI {
+
 	
 	/**   
 	 * @Title: addVarsAtFirstNode   
