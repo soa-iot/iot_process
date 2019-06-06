@@ -42,6 +42,15 @@ public class ProblemInfoS implements ProblemInfoSI {
 		return updateProblemDescribeByPiid(piid, problemdescribe);
 	}
 
+	/**   
+	 * @Title: ModifyEstiByPiid   
+	 * @Description: 更新一条问题评估
+	 * @return: Integer  受影响行数      
+	 */ 
+	public Integer ModifyEstiByPiid(ProblemInfo info) {
+		return updateEstiByPiid(info);
+	}
+	
 	
 	/**
 	 * 持久层方法实现发
@@ -70,6 +79,22 @@ public class ProblemInfoS implements ProblemInfoSI {
 		try {
 			Integer rows = problemInfoMapper.updateProblemDescribeByPiid(piid, problemdescribe);
 			return rows;
+		} catch (Exception e) {
+			e.printStackTrace();
+			return -1;
+		}
+	}
+	
+	/**   
+	 * @Title: updateEstiByPiid   
+	 * @Description: 更新一条问题评估实现方法
+	 * @return: Integer  受影响行数      
+	 */ 
+	private Integer updateEstiByPiid(ProblemInfo info) {
+		
+		try {
+			Integer row = problemInfoMapper.updateEstiByPiid(info);
+			return row;
 		} catch (Exception e) {
 			e.printStackTrace();
 			return -1;

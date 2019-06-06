@@ -1,5 +1,6 @@
 package cn.soa.controller;
 
+import java.util.Date;
 import java.util.List;
 
 import org.apache.ibatis.annotations.Param;
@@ -36,7 +37,7 @@ public class EstimateC {
 	 * @param piid
 	 * @return
 	 */
-	@GetMapping("/problemreportpho/")
+	@GetMapping("/problemreportpho")
 	public ResultJson<List<ProblemReportpho>> getEstimatePho(String piid) {
 
 		 List<ProblemReportpho> problemReportphos = problemReportphoSI.getByPiid(piid);
@@ -83,5 +84,12 @@ public class EstimateC {
 		}
 	}
 	
+	@PostMapping("/modifyestimated")
+	public ResultJson<Integer> ModifyEstiByPiid(ProblemInfo problemInfo){
+		
+		Integer row = problemInfoSI.ModifyEstiByPiid(problemInfo);
+		return row > 0 ? new ResultJson<Integer>(0, "数据更新成功"): new ResultJson<Integer>(1, "问题描述更新失败");
+		
+	}
 	
 }

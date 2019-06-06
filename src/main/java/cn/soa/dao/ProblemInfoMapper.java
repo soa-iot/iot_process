@@ -63,4 +63,11 @@ public interface ProblemInfoMapper {
 	 * @return: Integer  受影响行数      
 	 */ 
 	public Integer updateOne(ProblemInfo info);
+	
+	/**   
+	 * @Title: updateEstiByPiid   
+	 * @Description: 更新一条问题评估
+	 * @return: Integer  受影响行数      
+	 */ 
+	public Integer updateEstiByPiid(ProblemInfo info);
 }

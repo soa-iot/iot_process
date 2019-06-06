@@ -1,5 +1,6 @@
 package cn.zg.mapper;
 
+import java.util.Date;
 import java.util.List;
 
 import org.junit.Test;
@@ -30,6 +31,19 @@ public class ProblemInfoMapperTest {
 	@Test
 	public void updateProblemDescribeByPiidTest() {
 		Integer row = problemInfoMapper.updateProblemDescribeByPiid("ADAA80DB601C4470BE8BB224705F5F9C", "test1");
+		System.err.println(row);
+	}
+	
+	@Test
+	public void updateEstiByPiidTest() {
+		
+		ProblemInfo info = new ProblemInfo();
+		info.setRemark("123456");
+		info.setTicketNo("ticketNo");
+		info.setPiid("ADAA80DB601C4470BE8BB224705F5F9C");
+		
+		info.setRectificationperiod(null);
+		Integer row = problemInfoMapper.updateEstiByPiid(info);
 		System.err.println(row);
 	}
 }

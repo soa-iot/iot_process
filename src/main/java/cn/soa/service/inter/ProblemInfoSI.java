@@ -26,4 +26,11 @@ public interface ProblemInfoSI {
 	 */
 	Integer changeProblemDescribeByPiid(String piid,String problemdescribe);
 	
+	/**   
+	 * @Title: ModifyEstiByPiid   
+	 * @Description: 更新一条问题评估
+	 * @return: Integer  受影响行数      
+	 */ 
+	Integer ModifyEstiByPiid(ProblemInfo info);
+	
 }

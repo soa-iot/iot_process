@@ -2,7 +2,7 @@
 <html>
 <head>
 <meta charset="UTF-8">
-<title>问题评估（净化工段）</title>
+<title>问题评估（非净化工段）</title>
 <link rel="stylesheet" href="../jsPackage/layui-v2.4.2/css/layui.css" media="all">
 <link rel="stylesheet" href="../css/estimate.css" media="all">
 <style type="text/css">
@@ -20,20 +20,20 @@
 				<h2 class="layui-colla-title h2c" id="pro">问题处理</h2>
 				<div class="hbtn h2c site-demo-button">
 					<button class="layui-btn layui-btn-normal layui-btn-sm btn problem_describe">回退</button>
-					<button class="layui-btn layui-btn-normal layui-btn-sm btn problem_describe">闭环处理</button>
+					<button class="layui-btn layui-btn-normal layui-btn-sm btn problem_describe" id="complete">闭环处理</button>
 					<button class="layui-btn layui-btn-normal layui-btn-sm btn problem_describe" id="work_plan"  data-method="offset" data-type="t" >作业安排</button>
 					<button class="layui-btn layui-btn-normal layui-btn-sm btn problem_describe">外部协调</button>
 				</div>
 				<div id="test1"></div>
 				
-				<div class="layui-colla-content layui-show">
-
+				<div class="layui-colla-content layui-show" >
+					<form id="estimate">
 					<div class="layui-inline">
 						<label class="layui-form-label labelr">事件/隐患标记</label>
 						<div class="layui-input-inline layui-input-top">
-							<select class="layui-input  layui-input-one" name="ticket_no"
+							<select class="layui-input  layui-input-one" name="ticketNo" id="ticketNo"
 								lay-verify="required" lay-search="">
-								<option value="">其他</option>
+								<option value="其他事件">其他事件</option>
 								<option value="事故事件">事故事件</option>
 								<option value="隐患事件">隐患事件</option>
 							</select>
@@ -56,14 +56,14 @@
 							<div class="layui-input-inline  layui-input-top">
 								<input type="text" class="layui-input layui-input-one" id="sdate"
 									name="rectificationperiod" placeholder="yyyy-MM-dd">
-							</div>
+							</div>		  
 						</div>
 					</div>
 
 					<div class="layui-form-item layui-form-text">
 						<label class="layui-form-label">处理说明</label>
 						<div class="layui-input-block right-marg">
-							<textarea name="title" id="input_localName" placeholder="请输入内容"
+							<textarea name="tite" id="comment" placeholder="请输入内容"
 								class="layui-textarea" name="desc">250-GT-115分析化验one</textarea>
 						</div>
 					</div>
@@ -107,8 +107,8 @@
 						</div>
 					</div>
 
+</form>
 				</div>
-
 			</div>
 		</div>
 
@@ -118,6 +118,24 @@
 				<h2 class="layui-colla-title h2c">问题信息</h2>
 				<div class="layui-colla-content">
 
+					<div class="layui-form-item">
+						<div class="layui-inline">
+							<label class="layui-form-label">上报人</label>
+							<div class="layui-input-inline layui-input-top">
+								<input id="applypeople" type="text"
+									class="layui-input layui-input-one" lay-verify="required|phone"
+									disabled="disabled">
+							</div>
+						</div>
+						<div class="layui-inline">
+							<label class="layui-form-label">属地单位</label>
+							<div class="layui-input-inline layui-input-top">
+								<input type="text" id="problemtype"
+									class="layui-input  layui-input-one" disabled="disabled">
+							</div>
+						</div>
+					</div>
+					
 					<div class="layui-form-item">
 						<div class="layui-inline">
 							<label class="layui-form-label">问题区域</label>
