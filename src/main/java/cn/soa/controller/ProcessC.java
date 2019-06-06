@@ -11,7 +11,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -19,13 +18,17 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.client.RestTemplate;
+
+import cn.soa.entity.ProblemInfo;
 
 import cn.soa.entity.ResultJson;
+import cn.soa.entity.ResultJsonForTable;
+import cn.soa.entity.TodoTask;
 import cn.soa.service.inter.ActivitySI;
 import cn.soa.service.inter.BussinessSI;
 import cn.soa.service.inter.ConfigSI;
 import cn.soa.service.inter.ProcessVariableSI;
+import cn.soa.service.inter.activiti.ProcessStartHandler;
 
 /**
  * @ClassName: ProcessC
@@ -49,6 +52,9 @@ public class ProcessC {
 	
 	@Autowired
 	private ProcessVariableSI processVariableS;
+	
+	@Autowired
+	private ProcessStartHandler processStartHandler;
 		
 	/**   
 	 * @Title: startProcessC   
@@ -56,7 +62,39 @@ public class ProcessC {
 	 * @return: void        
 	 */ 
 	@PostMapping("/deployment")
-	public ResultJson<Boolean> startProcessC( 
+	public ResultJson<Boolean> deployProcessC1( 
+			@RequestParam("name") String name,
+			@RequestParam("xmlUrl") @NotBlank String xmlUrl,
+			@RequestParam("pngUrl") @NotBlank String pngUrl ) {
+		logger.debug( "--C----------部署流程---------------" );
+		logger.debug( name );
+		logger.debug( xmlUrl );
+		logger.debug( pngUrl );
+		if( name !=null ) {			
+			Deployment deployment = activityS.deployProcess( name, xmlUrl, pngUrl );			
+			if( deployment != null ) {
+				logger.debug( deployment.toString() );
+				return new ResultJson<Boolean>( 0, "部署成功", true );
+			}else {
+				return new ResultJson<Boolean>( 1, "部署失败", false );
+			}
+		}else {
+			Deployment deployment = activityS.deployProcessNoName( xmlUrl, pngUrl );
+			if( deployment != null ) {
+				return new ResultJson<Boolean>( 0, "部署成功", true );
+			}else {
+				return new ResultJson<Boolean>( 1, "部署失败", false );
+			}
+		}				
+	}
+	
+	/**   
+	 * @Title: startProcessC   
+	 * @Description:  部署流程（get方式,测试专用）
+	 * @return: void        
+	 */ 
+	@GetMapping("/deployment")
+	public ResultJson<Boolean> deployProcessC2( 
 			@RequestParam("name") String name,
 			@RequestParam("xmlUrl") @NotBlank String xmlUrl,
 			@RequestParam("pngUrl") @NotBlank String pngUrl ) {
@@ -104,28 +142,31 @@ public class ProcessC {
 	@PostMapping("/{dfid}")
 	public ResultJson<String> startProcess(
 			@PathVariable("dfid") @NotBlank String dfid,
-			@RequestParam Map<String,Object> bussinessData ){
+			ProblemInfo problemInfo ){
 		logger.debug( "--C--------启动流程（同时业务处理）  -------------" );
 		logger.debug( dfid );
-		logger.debug( bussinessData.toString() );
+		logger.debug( problemInfo.toString() );
 		
 		/*
 		 * 执行业务处理（具体业务处理需要实现以下接口）
 		 */
-		String bsid = bussinessS.dealProblemReport( bussinessData );
-		if( bsid != null ) {
+		String bsid = bussinessS.dealProblemReport( problemInfo );
+		if( bsid == null ) {
 			return new ResultJson<String>( 1, "业务处理失败，流程未启动", "业务处理失败，流程未启动" );
 		}
+		logger.debug( "--C--------bsid  -------------" + bsid);
 		
 		/*
 		 * 处理数据库配置流程变量
 		 */
 		Map<String, Object> basicVars = configS.setVarsAtStart();
+		logger.debug( "--C--------basicVars  -------------" + basicVars);
 		
 		/*
 		 * 处理临时流程变量
 		 */
-		Map<String, Object> tempVars = processVariableS.addVarsStartProcess( bussinessData );
+		Map<String, Object> tempVars = processVariableS.addVarsStartProcess( problemInfo );
+		logger.debug( "--C--------tempVars  -------------" + tempVars);
 				
 		/*
 		 * 流程启动
@@ -133,9 +174,24 @@ public class ProcessC {
 		Map<String, Object> vars = new HashMap<String, Object>();
 		vars.putAll(basicVars);
 		vars.putAll(tempVars);
-		String piid = activityS.startProcess( dfid, bsid, vars );
+		logger.debug( "--C--------vars  -------------" + vars);
 		
-		return new ResultJson<String>( 0, "流程启动成功", piid );
+		/*
+		 * 流程启动前的流程其他业务处理
+		 */
+		boolean beforeHandler = processStartHandler.before();
+		if( beforeHandler ) logger.debug( "--C--------流程启动前的流程其他业务处理  -------------" + beforeHandler);
+		
+		String piid = activityS.startProcess( dfid, bsid, vars );
+		logger.debug( "--C--------piid  -------------" + piid);
+		
+		/*
+		 * 流程启动后的流程其他业务处理 - 修改为观察者模式
+		 */
+		boolean afterHandler =processStartHandler.after( piid );
+		if( beforeHandler ) logger.debug( "--C--------流程启动后的流程其他业务处理  -------------" + beforeHandler);
+		
+		return new ResultJson<String>( 0, "流程启动成功", piid + "," + bsid);
 	}
 	
 	/**   
@@ -146,18 +202,12 @@ public class ProcessC {
 	@PutMapping("/nodes/next/{piid}")
 	public ResultJson<Boolean> nextNodeByPIID( 
 			@PathVariable("piid") String piid,
-			@RequestParam("var") String var,
-			@RequestParam("varValue") String varValue,
-			@RequestParam("comment") String comment,
-			@RequestParam("nodeid") String nodeid,
-			Map<String,Object> map ){
+			Map<String,Object> map){
 		logger.debug( "--C-------- 执行流程的下一步     -------------" );
 		logger.debug( piid );
-		logger.debug( var );
-		logger.debug( comment );
-		logger.debug( varValue );
 		logger.debug( map.toString() );
-		boolean b = activityS.nextNodeByPIID(piid, var, varValue, comment, nodeid, map);
+				
+		boolean b = activityS.nextNodeByPIID( piid, map );
 		if( b ) {
 			return new ResultJson<Boolean>( 0, "流程流转下一个节点任务成功", true );
 		}
@@ -172,18 +222,16 @@ public class ProcessC {
 	@PutMapping("/nodes/next/{tsid}")
 	public ResultJson<Boolean> nextNodeByTSID( 
 			@PathVariable("tsid") String tsid,
-			@RequestParam("var") String var,
-			@RequestParam("varValue") String varValue,
+			@RequestParam(value="var",required=false) String var,
+			@RequestParam(value="varValue",required=false) String varValue,
 			@RequestParam("comment") String comment,
-			@RequestParam("nodeid") String nodeid,
-			Map<String,Object> map ){
+			@RequestParam("nodeid") String nodeid){
 		logger.debug( "--C-------- 执行流程的下一步     -------------" );
 		logger.debug( tsid );
 		logger.debug( var );
 		logger.debug( comment );
 		logger.debug( varValue );
-		logger.debug( map.toString() );
-		Boolean b = activityS.nextNodeByTSID(tsid, var, varValue, comment, nodeid, map);
+		Boolean b = activityS.nextNodeByTSID(tsid, var, varValue, comment);
 		if( b ) {
 			return new ResultJson<Boolean>( 0, "流程流转下一个节点任务成功", true );
 		}
@@ -204,9 +252,9 @@ public class ProcessC {
 		logger.debug( comment );
 		String s = null;
 		if( StringUtils.isBlank(comment) ) {
-			s = activityS.endProcess(tsid);
+			s = activityS.endProcessByTsid(tsid);
 		}else {
-			s = activityS.endProcess(tsid);
+			s = activityS.endProcessByTsidInComment(tsid, comment);
 		}
 		if( StringUtils.isBlank( s ) ) {
 			return new ResultJson<String>( 1, "闭环流程失败", "闭环流程失败" );
@@ -219,12 +267,30 @@ public class ProcessC {
 	 * @Description:  根据任务tsid，获取流程所有的历史节点 
 	 * @return: ResultJson<List<Map<String,Object>>>        
 	 */  
-	@GetMapping("/nodes/history/{tsid}")
-	public ResultJson<List<Map<String,Object>>> getHitoryNodeInfos(
+	@GetMapping("/nodes/history/tsid/{tsid}")
+	public ResultJson<List<Map<String,Object>>> getHisInfosByTsid(
 			@PathVariable("tsid") @NotBlank String tsid ){
 		logger.debug( "--C-------- 根据任务tsid，获取流程所有的历史节点      -------------" );
 		logger.debug( tsid );
-		List<Map<String, Object>> historyNodesInfo = activityS.getAllHistoryInfos( tsid );
+		List<Map<String, Object>> historyNodesInfo = activityS.getHisInfosByTsid( tsid );
+		if( historyNodesInfo != null && historyNodesInfo.size() > 0  ) {
+			return new ResultJson<List<Map<String,Object>>>( 0, "获取流程所有的历史节点成功", historyNodesInfo );
+		}
+		return new ResultJson<List<Map<String,Object>>>( 0, "获取流程所有的历史节点失败", null );
+
+	}
+	
+	/**   
+	 * @Title: getHitoryNodeInfos   
+	 * @Description:  根据任务tsid，获取流程所有的历史节点 
+	 * @return: ResultJson<List<Map<String,Object>>>        
+	 */  
+	@GetMapping("/nodes/history/piid/{piid}")
+	public ResultJson<List<Map<String,Object>>> getHisInfosByPiid(
+			@PathVariable("piid") @NotBlank String piid ){
+		logger.debug( "--C-------- 根据任务piid，获取流程所有的历史节点      -------------" );
+		logger.debug( piid );
+		List<Map<String, Object>> historyNodesInfo = activityS.getHisInfosByPiid( piid );
 		if( historyNodesInfo != null && historyNodesInfo.size() > 0  ) {
 			return new ResultJson<List<Map<String,Object>>>( 0, "获取流程所有的历史节点成功", historyNodesInfo );
 		}
@@ -247,5 +313,43 @@ public class ProcessC {
 			return new ResultJson<Boolean>( 0, "流程返回到上一个节点成功", true );
 		}
 		return new ResultJson<Boolean>( 0, "流程返回到上一个节点失败", null );
+
 	}
+
+
+	/**   
+	 * @Title: getAllTasksByUsernameC   
+	 * @Description:  根据用户姓名，查询用户的所有待办任务（个人任务+组任务）   
+	 * @return: ResultJson<Task>        
+	 */ 
+	@GetMapping("/tasks")
+	public ResultJson<List<TodoTask>> getAllTasksByUsernameC(
+			@RequestParam("userName") @NotBlank String userName ){
+		logger.debug( "--C-------- 根据用户姓名，查询用户的所有待办任务（个人任务+组任务）     -------------" );
+		logger.debug( userName );
+		List<TodoTask> tasks = activityS.getAllTasksByUsername( userName );
+		if( tasks != null ) {
+			return new ResultJson<List<TodoTask>>( 0, "流程返回到上一个节点成功", tasks );
+		}
+		return new ResultJson<List<TodoTask>>( 0, "流程返回到上一个节点失败", tasks );
+	}
+	
+	/**   
+	 * @Title: getAllTasksByUsernameC   
+	 * @Description:  根据用户姓名，查询用户的所有待办任务（个人任务+组任务） - layui指定格式   
+	 * @return: ResultJson<Task>        
+	 */ 
+	@GetMapping("/tasks/layui")
+	public ResultJsonForTable<List<TodoTask>> getAllTasksByUsername1C(
+			@RequestParam("userName") @NotBlank String userName ){
+		logger.debug( "--C-------- 根据用户姓名，查询用户的所有待办任务（个人任务+组任务）     -------------" );
+		logger.debug( userName );
+		List<TodoTask> tasks = activityS.getAllTasksByUsername( userName );
+		if( tasks != null ) {
+			return new ResultJsonForTable<List<TodoTask>>( 0, "代办任务查询成功", tasks.size(), tasks );
+		}
+		return new ResultJsonForTable<List<TodoTask>>( 0, "代办任务查询失败", 0, tasks );
+
+	}
+
 }

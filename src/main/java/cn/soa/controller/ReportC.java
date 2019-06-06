@@ -81,16 +81,16 @@ public class ReportC {
 	 * @return: ResultJson<List<UnsafeType>> 返回成功响应数据 
 	 */
 	@PostMapping("/")
-	public ResultJson<Void> saveReport(ProblemInfo problemInfo, @RequestParam(value="imgList[]", required=false) String[] imgList){
+	public ResultJson<String> saveReport(ProblemInfo problemInfo, @RequestParam(value="imgList[]", required=false) String[] imgList){
 		System.out.println("进入ReportC...saveReport...");
 		
 		//调用service层执行查询操作
-		boolean result = reportS.addOne(problemInfo, imgList);
+		String repId = reportS.addOne(problemInfo, imgList);
 		//boolean result=true;
-		if(result) {
-			return new ResultJson<>(ResultJson.SUCCESS, "保存问题报告成功");
+		if(repId != null) {
+			return new ResultJson<String>(ResultJson.SUCCESS, "保存问题报告成功", repId);
 		}else {
-			return new ResultJson<>(ResultJson.ERROR, "保存问题报告失败");
+			return new ResultJson<String>(ResultJson.ERROR, "保存问题报告失败");
 		}		
 	}
 	
@@ -99,21 +99,23 @@ public class ReportC {
 	 * @Description: 保存问题图片
 	 * @return: ResultJson<List<UnsafeType>> 返回成功响应数据 
 	 */
-	@Value("${problem.image.upload.path}")
+
+   	@Value("${problem.image.upload.path}")
 	private String rootPath;   //获取图片存放根目录
 	
 	@PostMapping("/upload")
 	public ResultJson<Void> saveUpload(
 			@RequestParam("file") MultipartFile file, 
 			@RequestParam("resavepeople") String resavepeople, 
+			@RequestParam("piid") String piid,
 			@RequestParam("tProblemRepId") String tProblemRepId, HttpServletRequest request){
 		
 		System.out.println("进入ReportC...saveUpload...");
 		
 		log.info("上传图片名为：{}", file.getOriginalFilename());
 		log.info("当前系统登录人为：{}", resavepeople);
-		log.info("问题报告id：{}", tProblemRepId);
-
+		log.info("问题报告piid：{}", piid);
+		log.info("上报问题报告id：{}", tProblemRepId);
 		
 		if("".equals(resavepeople) || "".equals(tProblemRepId)) {
 			return new ResultJson<>(ResultJson.ERROR, "图片上传失败");
@@ -147,6 +149,7 @@ public class ReportC {
 		ProblemReportpho reportPho = new ProblemReportpho();
 		reportPho.setPhoUploadPeople(resavepeople);
 		reportPho.setTProblemRepId(tProblemRepId);
+		reportPho.setPiid(piid);
 		reportPho.setPhoUploadDate(date);
 		reportPho.setRemark("1");
 		reportPho.setRemarkone("0");
@@ -162,6 +165,21 @@ public class ReportC {
 			return new ResultJson<>(ResultJson.SUCCESS, "图片上传成功");
 		}else {
 			return new ResultJson<>(ResultJson.ERROR, "图片上传失败");
+		}
+	}
+	
+	@PostMapping("/updatepho")
+	public ResultJson<Void> updatePho(String tProblemRepId, String tempRepId, String piid,
+			@RequestParam(value="imgList[]", required=false) String[] imgList){
+		System.out.println("进入ReportC...updatePho...");
+		
+		//调用service层进行插入操作
+		boolean result = reportPhoS.updateTempPho(tProblemRepId, tempRepId, piid, imgList);
+	
+		if(result) {
+			return new ResultJson<>(ResultJson.SUCCESS, "暂存图片更新成功");
+		}else {
+			return new ResultJson<>(ResultJson.ERROR, "暂存图片更新失败");
 		}
 	}
 	
