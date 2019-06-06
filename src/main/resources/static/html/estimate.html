@@ -22,9 +22,10 @@
 					<button class="layui-btn layui-btn-normal layui-btn-sm btn problem_describe">回退</button>
 					<button class="layui-btn layui-btn-normal layui-btn-sm btn problem_describe" id="complete">闭环处理</button>
 					<button class="layui-btn layui-btn-normal layui-btn-sm btn problem_describe" id="work_plan"  data-method="offset" data-type="t" >作业安排</button>
-					<button class="layui-btn layui-btn-normal layui-btn-sm btn problem_describe">外部协调</button>
+					<button class="layui-btn layui-btn-normal layui-btn-sm btn problem_describe" id="coordinate"   data-method="offset" data-type="t" >外部协调</button>
 				</div>
-				<div id="test1"></div>
+				<div id="work_plan_tree"></div>
+				<div id="organization_tree" class=""></div>
 				
 				<div class="layui-colla-content layui-show" >
 					<form id="estimate">
@@ -229,5 +230,7 @@
 	<script type="text/javascript" src="../js/tree_util.js"></script>
 	<script src="../jsPackage/layui-v2.4.2/layui.js" charset="utf-8"></script>
 	<script type="text/javascript" src="../js/estimate.js"></script>
+	<script type="text/javascript" src="../js/jquery-3.4.1.min.js"></script>
+	<script type="text/javascript" src="../js/organization_tree.js"></script>
 </body>
 </html>
