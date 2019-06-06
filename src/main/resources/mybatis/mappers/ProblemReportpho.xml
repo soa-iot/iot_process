@@ -119,24 +119,37 @@
 	
 	
 	<!-- ===========================3、修改===============================  -->
-	<!-- 3.1、修改一条问题报告数据 	-->
-	
+	<!-- 3.1、修改暂存问题图片数据 	-->
+	<!-- public Integer updateTempPho(String tProblemRepId, String tempRepId, String piid) -->
+	<update id="updateTempPho">
+		UPDATE
+			CZ_TASK_PROBLEM_REPORTPHO
+		<set>
+			<if test="piid != null and piid != ''">
+				PIID = #{piid},
+			</if>
+			<if test="tProblemRepId != null and tProblemRepId != ''">
+				T_PROBLEM_REP_ID = #{tProblemRepId}
+			</if>
+		</set>
+		<where>
+			T_PROBLEM_REP_ID = #{tempRepId}
+		</where>
+		
+	</update>
 	
 	<!-- ===========================4、删除===============================  -->
 	<!-- 4.1、删除问题图片数据 	-->
-	<!-- public Integer deleteList(Map phos); -->
+	<!-- public Integer deleteList(String[] imgList); -->
 			
 	<delete id="deleteList">
 		DELETE FROM 
 			CZ_TASK_PROBLEM_REPORTPHO
 		<where>
-			T_PROBLEM_REP_ID = #{tProblemRepId}
-			<if test="imgList != null">
-				AND T_PROBLEM_PHO_ID IN
-				<foreach collection="imgList" index="index" item="item" open="(" separator="," close=")">
-					#{item}
-				</foreach>
-			</if>
+			T_PROBLEM_PHO_ID IN
+			<foreach collection="array" index="index" item="item" open="(" separator="," close=")">
+				#{item}
+			</foreach>
 		</where>
 	</delete>
 	

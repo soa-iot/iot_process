@@ -4,14 +4,22 @@ import java.util.Map;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import cn.soa.dao.ProblemInfoMapper;
+import cn.soa.dao.ReportMapper;
+import cn.soa.entity.ProblemInfo;
+import cn.soa.service.inter.ActivitySI;
 import cn.soa.service.inter.BussinessSI;
 
 @Service
 public class BussinessS implements BussinessSI{
 	private static Logger logger = LoggerFactory.getLogger( BussinessS.class );
 
+	@Autowired
+	private ProblemInfoMapper problemInfoMapper;
+	
 	/**   
 	 * <p>Title: dealProblemReport</p>   
 	 * <p>Description: </p>   流程启动节点（问题上报）业务处理逻辑方法
@@ -19,9 +27,15 @@ public class BussinessS implements BussinessSI{
 	 * @return   
 	 * @see cn.soa.service.inter.BussinessSI#dealProblemReport(java.util.Map)   
 	 */ 
+
 	@Override
-	public String dealProblemReport(Map<String, Object> bussiness) {
-		
+	public String dealProblemReport( ProblemInfo problemInfo ) {	
+		//保存问题上报信息
+		Integer i = problemInfoMapper.insertOne( problemInfo );		
+		if( i > 0 ) {
+			logger.debug( "------流程启动节点（问题上报）业务处理逻辑方法-----主键---" +problemInfo.getTProblemRepId() );
+			return problemInfo.getTProblemRepId();
+		}
 		return null;
 	}
 

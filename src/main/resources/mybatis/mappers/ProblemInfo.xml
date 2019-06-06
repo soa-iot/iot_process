@@ -147,6 +147,9 @@
 	<!-- 2.1、添加一条问题报告数据 	-->
 	<!-- public Integer insertOne(ProblemInfo info)	 -->
 	<insert id="insertOne" parameterType="cn.soa.entity.ProblemInfo">
+		<selectKey keyProperty="tProblemRepId" order="BEFORE" resultType="java.lang.String">
+			select sys_guid() from dual
+		</selectKey>
 		INSERT INTO
 			CZ_TASK_PROBLEM_REPORT
 			<trim prefix="(" suffix=")" suffixOverrides=",">
@@ -770,6 +773,29 @@
 			cz_task_problem_report 
 		SET 
 			problemdescribe=#{problemdescribe} 
+		WHERE 
+			piid=#{piid}
+	
+	</update>
+	
+	
+	<!-- 更新一条问题报告数据  -->
+	<!-- public Integer updateEstiByPiid(ProblemInfo info); -->
+	<update id="updateEstiByPiid">
+		UPDATE 
+			cz_task_problem_report 
+		SET 
+			remark=#{remark},
+			problemdescribe=#{problemdescribe},
+			<choose>
+				<when test="rectificationperiod != null">
+					rectificationperiod=#{rectificationperiod},
+				</when>
+				<otherwise>
+					rectificationperiod=null,
+				</otherwise>
+			</choose>
+			ticket_no=#{ticketNo}
 		WHERE 
 			piid=#{piid}
 	

@@ -5,12 +5,15 @@ import java.util.Map;
 
 import org.activiti.engine.history.HistoricActivityInstance;
 import org.activiti.engine.impl.persistence.entity.ProcessDefinitionEntity;
+import org.activiti.engine.impl.persistence.entity.TaskEntity;
 import org.activiti.engine.impl.pvm.PvmTransition;
 import org.activiti.engine.impl.pvm.process.ActivityImpl;
 import org.activiti.engine.repository.Deployment;
 import org.activiti.engine.repository.ProcessDefinition;
 import org.activiti.engine.task.Task;
 import org.springframework.stereotype.Service;
+
+import cn.soa.entity.TodoTask;
 
 @Service
 public interface ActivitySI {
@@ -62,16 +65,14 @@ public interface ActivitySI {
 	 * @Description: 执行流转下一个节点  (根据任务tsid)  
 	 * @return: void        
 	 */  
-	boolean nextNodeByTSID(String tsid, String var, String varValue, String comments, String nodeid,
-			Map<String, Object> map);
+	boolean nextNodeByTSID(String tsid, String var, String varValue, String comments);
 
 	/**   
 	 * @Title: nextNodeByPIID   
 	 * @Description:  执行流转下一个节点 (根据任务piid) 
 	 * @return: void        
 	 */  
-	boolean nextNodeByPIID(String tsid, String var, String varValue, String comments, String nodeid,
-			Map<String, Object> map);
+	boolean nextNodeByPIID(  String piid, Map<String,Object> map  );
 
 	/**   
 	 * @Title: getEndNode   
@@ -141,14 +142,14 @@ public interface ActivitySI {
 	 * @Description:终止流程   
 	 * @return: void        
 	 */  
-	String endProcess(String tsid);
+	String endProcessByTsid(String tsid);
 
 	/**   
 	 * @Title: endProcessInComment   
 	 * @Description: 终止流程（批准信息）   
 	 * @return: String        
 	 */  
-	String endProcessInComment(String tsid, String comment);
+	String endProcessByTsidInComment(String tsid, String comment);
 
 	/**   
 	 * @Title: getHistoryNodesByPiid   
@@ -190,8 +191,70 @@ public interface ActivitySI {
 	 * @Description: 根据流程任务id，获取当前流程的历史节点 信息  
 	 * @return: List<Map<String,Object>>        
 	 */  
-	List<Map<String, Object>> getAllHistoryInfos(String tsid);
+	List<Map<String, Object>> getHisInfosByTsid(String tsid);
 
-	
+	/**   
+	 * @Title: getPersonalTasksByUsername   
+	 * @Description: 根据用户姓名，查询该用户个人待办任务   
+	 * @return: List<Task>        
+	 */  
+	List<Task> getPersonalTasksByUsername(String userName);
+
+	/**   
+	 * @Title: getCandidateTasksByUsername   
+	 * @Description:  根据用户姓名，查询该用户组待办任务 
+	 * @return: List<Task>        
+	 */  
+	List<Task> getCandidateTasksByUsername(String userName);
+
+	/**   
+	 * @Title: getAllTasksByUsername   
+	 * @Description: 根据用户姓名，查询用户的所有待办任务（个人任务+组任务）  
+	 * @return: List<Task>        
+	 */  
+	List<TodoTask> getAllTasksByUsername(String userName);
+
+	/**   
+	 * @Title: getProcessDefinitions   
+	 * @Description:  获取流程所有流程定义   
+	 * @return: List<ProcessDefinition>        
+	 */  
+	List<ProcessDefinition> getProcessDefinitions();
+
+	/**   
+	 * @Title: getTsidByPiid   
+	 * @Description: 根据piid查询当前任务节点的tsid   
+	 * @return: String        
+	 */  
+	String getTsidByPiid(String piid);
+
+	/**   
+	 * @Title: getPiidByTsid   
+	 * @Description:  根据tsid查询当前任务节点的  piid 
+	 * @return: String        
+	 */  
+	String getPiidByTsid(String tsid);
+
+	/**   
+	 * @Title: saveCommentByTsid   
+	 * @Description: 根据任务tsid，增加任务节点的备注信息   
+	 * @return: boolean        
+	 */  
+	boolean saveCommentByTsid(String tsid, String comment);
+
+	/**   
+	 * @Title: saveCommentByPiid   
+	 * @Description: 根据任务piid，增加任务节点的备注信息   
+	 * @return: boolean        
+	 */  
+	boolean saveCommentByPiid(String piid, String comment);
+
+	/**   
+	 * @Title: getHisInfosByPiid   
+	 * @Description: 根据流程piid，获取当前流程的历史节点信息  
+	 * @return: List<Map<String,Object>>        
+	 */  
+	List<Map<String, Object>> getHisInfosByPiid(String piid);
+
 	
 }

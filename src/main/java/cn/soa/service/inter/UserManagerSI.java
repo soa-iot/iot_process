@@ -4,6 +4,8 @@ import java.util.List;
 
 import org.springframework.stereotype.Service;
 
+import cn.soa.entity.UserOrganization;
+
 @Service
 public interface UserManagerSI {
 
@@ -34,5 +36,12 @@ public interface UserManagerSI {
 	 * @return: String        
 	 */  
 	String findUserPostByName(String username);
+
+	/**   
+	 * @Title: findUserByArea   
+	 * @Description: 根据一个名称（String，一个配置表中的名称） ，获取对应的角色下所有用户  
+	 * @return: List<UserOrganization>        
+	 */  
+	List<UserOrganization> findUserByArea(String username);
 	
 }

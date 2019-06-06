@@ -136,4 +136,25 @@ public class UserManagerS implements UserManagerSI {
 		return user.getRemark2();
 	}
 	
+	
+	/**   
+	 * @Title: findUserByArea   
+	 * @Description:  根据一个名称（String，一个配置表中的名称） ，获取对应的角色下所有用户
+	 * @return: List<UserOrganization>        
+	 */  
+	@Override
+	public List<UserOrganization> findUserByArea( String area ){
+		HashMap<String, String> map = new HashMap<>();
+		map.put( "roleName", area );
+		String url = "http://" + ip + ":" + port + "/iot_usermanager/user/roleName";
+		ResponseEntity<ResultJson> organ = restTemplate.getForEntity( url, ResultJson.class, map);
+		ResultJson r = organ.getBody();
+		if( r.getState() == 1 || r.getData() != null ) {
+			logger.debug( "-------获取人员数据失败--------" );
+			return null;
+		}		
+		List<UserOrganization> users = (List<UserOrganization>) r.getData(); 
+		logger.debug( users.toString() );		
+		return users;
+	}
 }

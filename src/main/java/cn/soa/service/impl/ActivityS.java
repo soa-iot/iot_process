@@ -3,10 +3,17 @@ package cn.soa.service.impl;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.time.Instant;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.Period;
+import java.time.ZoneId;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import org.activiti.engine.HistoryService;
 import org.activiti.engine.RepositoryService;
@@ -14,6 +21,7 @@ import org.activiti.engine.RuntimeService;
 import org.activiti.engine.TaskService;
 import org.activiti.engine.history.HistoricActivityInstance;
 import org.activiti.engine.impl.persistence.entity.ProcessDefinitionEntity;
+import org.activiti.engine.impl.persistence.entity.TaskEntity;
 import org.activiti.engine.impl.pvm.PvmTransition;
 import org.activiti.engine.impl.pvm.process.ActivityImpl;
 import org.activiti.engine.impl.pvm.process.ProcessDefinitionImpl;
@@ -32,6 +40,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.ResourceUtils;
 
+import cn.soa.entity.TodoTask;
 import cn.soa.service.abs.BussinessSA;
 import cn.soa.service.inter.ActivitySI;
 import cn.soa.service.inter.BussinessSI;
@@ -80,6 +89,7 @@ public class ActivityS implements ActivitySI{
    				 .addClasspathResource( xmlUrl )
    				 .addClasspathResource( pngUrl )
    				 .deploy();
+    		logger.debug( deployment.toString() );
     		return deployment;
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -146,6 +156,107 @@ public class ActivityS implements ActivitySI{
     }
     
     /**   
+     * @Title: getTsidByPiid   
+     * @Description:  根据piid查询当前任务节点的tsid 
+     * @return: String        
+     */ 
+    @Override
+    public String getTsidByPiid( String piid ) {
+    	if( StringUtils.isBlank( piid )) {
+    		logger.debug( "------piid为null--------" );
+    		return null;
+    	}
+    	try {
+    		List<Task> tasks = taskService.createTaskQuery().processInstanceId(piid).list();
+    		if( tasks.size() > 0 ) {
+    			logger.debug( tasks.toString() );
+    			return tasks.get(0).getId();
+    		}
+    		logger.debug( "------未正确找到task对象-------" );
+    		return null;    		
+		} catch (Exception e) {
+			e.printStackTrace();
+			return null;
+		}
+    }
+    
+    /**   
+     * @Title: getPiidByTsid   
+     * @Description:  根据tsid查询当前任务节点的  piid
+     * @return: String        
+     */
+    @Override
+    public String getPiidByTsid( String tsid ) {
+    	if( StringUtils.isNotBlank( tsid )) {
+    		logger.debug( "------tsid为null--------" );
+    		return null;
+    	}
+    	try {
+    		Task task = taskService.createTaskQuery().taskId(tsid).singleResult();
+    		if( task != null ) {
+    			logger.debug( task.toString() );
+    			return task.getProcessInstanceId();
+    		}
+    		logger.debug( "------未正确找到task对象-------" );
+    		return null;    		
+		} catch (Exception e) {
+			e.printStackTrace();
+			return null;
+		}
+    }
+    
+    
+    /**   
+     * @Title: saveCommentByTsid   
+     * @Description:  根据任务tsid，增加任务节点的备注信息 
+     * @return: boolean        
+     */ 
+    @Override
+    public boolean saveCommentByTsid( String tsid, String comment ) {
+    	if( StringUtils.isNotBlank( tsid )) {
+    		logger.debug( "------tsid为null--------" );
+    		return false;
+    	}
+    	String piid = getPiidByTsid( tsid );
+    	if( StringUtils.isNotBlank( piid )) {
+    		logger.debug( "------piid为null--------" );
+    		return false;
+    	}
+    	try {   		
+    		taskService.addComment( tsid, piid, comment );
+		} catch (Exception e) {
+			e.printStackTrace();
+			return false;
+		}
+    	return false;
+    }
+    
+    /**   
+     * @Title: saveCommentByTsid   
+     * @Description:  根据任务piid，增加任务节点的备注信息 
+     * @return: boolean        
+     */  
+    @Override
+    public boolean saveCommentByPiid( String piid, String comment ) {
+    	if( StringUtils.isNotBlank( piid )) {
+    		logger.debug( "------piid为null--------" );
+    		return false;
+    	}
+    	String tsid = getTsidByPiid( piid );
+    	if( StringUtils.isNotBlank( tsid )) {
+    		logger.debug( "------tsid为null--------" );
+    		return false;
+    	}
+    	try {   		
+    		taskService.addComment( tsid, piid, comment );
+		} catch (Exception e) {
+			e.printStackTrace();
+			return false;
+		}
+    	return false;
+    }
+    
+    /**   
      * @Title: getProcessFile   
      * @Description: 获取activity流程配置文件格式为bpmn的全部文件（已指定目录/process）
      * @return: List<Map<String,Object>>        
@@ -187,19 +298,31 @@ public class ActivityS implements ActivitySI{
     } 
     
     /**   
+     * @Title: getProcessDefinitions   
+     * @Description: 获取流程所有流程定义对象  
+     * @return: List<ProcessDefinition>        
+     */ 
+    @Override
+    public List<ProcessDefinition> getProcessDefinitions(){
+    	try {
+    		List<ProcessDefinition> processDefinitions = 
+    				repositoryService.createProcessDefinitionQuery().list();
+    		return processDefinitions;
+		} catch (Exception e) {
+			e.printStackTrace();
+			return null;
+		}
+    }
+    
+    /**   
      * @Title: nextNode   
      * @Description: 执行流转下一个节点  (根据任务tsid)
      * @return: void        
      */  
     @Override
     @Transactional
-    public boolean nextNodeByTSID( String tsid, String var, String varValue, String comments,
-    		String nodeid, Map<String,Object> map ) {
+    public boolean nextNodeByTSID( String tsid, String var, String varValue, String comments) {
     	try {
-    		/*
-        	 * 业务处理
-        	 */
-        	String s = bussinessSI.nextNode(nodeid, map);
         	
         	/*
         	 * 加入节点流程变量,流程流转下一个节点
@@ -226,24 +349,45 @@ public class ActivityS implements ActivitySI{
      */  
     @Override
     @Transactional
-    public boolean nextNodeByPIID( String tsid, String var, String varValue, String comments,
-    		String nodeid, Map<String,Object> map ) {
-    	try {
+    public boolean nextNodeByPIID( String piid, Map<String,Object> map ) { 
+    	/*
+    	 * 根据piid获取tsid
+    	 */
+    	String tsid = getTsidByPiid( piid );
+    	
+    	Object commentObj = map.get( "comment" );
+    	if( commentObj == null ) {
+    		logger.debug( "-------执行流转下一个节点 (根据任务piid)--------" );
+    		logger.debug( "-------comment参数不存在--------" );
+    	}
+    	String comment = map.get( "comment" ).toString();
+    	map.remove( "comment" );
+    	logger.debug( map.toString() );
+    	
+    	try {     
     		/*
-        	 * 业务处理
-        	 */
-        	String s = bussinessSI.nextNode(nodeid, map);
-        	
+    		 * 增加备注信息
+    		 */
+    		boolean b = saveCommentByPiid( piid, comment );
+    		if( b ) {
+    			logger.debug( "---执行流转下一个节点，保存备注信息---------" + b );
+    		}
+    		
         	/*
-        	 * 加入节点流程变量,流程流转下一个节点
+        	 *设置流程变量
         	 */
-        	if( StringUtils.isNotBlank( var ) ) {
-        		HashMap<String, Object> vars = new HashMap<String,Object>();
-        		vars.put(var, varValue);
-        		taskService.complete( tsid, vars );
-        	}else {
-        		taskService.complete( tsid );
-        	}
+    		HashMap<String, Object> vars = new HashMap<String,Object>();
+    		for( Entry<String, Object> e : map.entrySet() ) {
+    			if(StringUtils.isBlank( e.getKey() ) ) {
+    				logger.debug( "---key---------" + e.getKey() );
+    			}
+    			taskService.setVariable(tsid, e.getKey(), e.getValue());
+    		}
+    		
+    		/*
+    		 * 流程流转下一个节点
+    		 */
+    		taskService.complete( tsid );
         	return true;
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -522,7 +666,7 @@ public class ActivityS implements ActivitySI{
      * @return: void        
      */  
     @Override
-    public String endProcess( String tsid ) {
+    public String endProcessByTsid( String tsid ) {
     	if( StringUtils.isBlank( tsid ) ) {
 			logger.debug( "---S--------任务tsid为null-------------" );
 			return null;
@@ -559,7 +703,7 @@ public class ActivityS implements ActivitySI{
      * @return: String        
      */  
     @Override
-    public String endProcessInComment( String tsid, String comment ) {
+    public String endProcessByTsidInComment( String tsid, String comment ) {
     	if( StringUtils.isBlank( tsid ) ) {
 			logger.debug( "---S--------任务tsid为null-------------" );
 			return null;
@@ -605,8 +749,9 @@ public class ActivityS implements ActivitySI{
     		List<HistoricActivityInstance> lists = historyService
     				.createHistoricActivityInstanceQuery()
     				.processInstanceId( piid )
-    				.orderByHistoricActivityInstanceStartTime()
+    				.finished()
     				.list();
+    		logger.debug( lists.toString() );
     		return lists;
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -730,7 +875,7 @@ public class ActivityS implements ActivitySI{
 	 * @return: List<Map<String,Object>>        
 	 */ 
     @Override
-	public List<Map<String,Object>> getAllHistoryInfos( String tsid ){
+	public List<Map<String,Object>> getHisInfosByTsid( String tsid ){
 		ArrayList<Map<String, Object>> allHistoryInfos = new ArrayList<Map<String,Object>>();
 		if( StringUtils.isBlank( tsid ) ) {
 			logger.debug( "---S--------任务tsid为null-------------" );
@@ -767,6 +912,171 @@ public class ActivityS implements ActivitySI{
 			return null;
 		}
 	}
+    
+    /**   
+	 * @Title: getAllHistoryInfo   
+	 * @Description:  根据流程piid，获取当前流程的历史节点信息
+	 * @return: List<Map<String,Object>>        
+	 */ 
+    @Override
+	public List<Map<String,Object>> getHisInfosByPiid( String piid ){
+    	logger.debug( "---S--------根据流程piid，获取当前流程的历史节点信息-------------" );
+		ArrayList<Map<String, Object>> allHistoryInfos = new ArrayList<Map<String,Object>>();
+		if( StringUtils.isBlank( piid ) ) {
+			logger.debug( "---S--------piid为null-------------" );
+			return null;
+		}
+		
+		String tsid = getTsidByPiid( piid ); 
+		if( StringUtils.isBlank( tsid ) ) {
+			logger.debug( "---S--------tsid为null-------------" );
+			return null;
+		}
+		/*
+		 * 获取历史节点
+		 */
+		try {
+			List<HistoricActivityInstance> historyNodes = getHistoryNodesByPiid( piid );
+			logger.debug(historyNodes.toString());
+			for( HistoricActivityInstance h : historyNodes ) {
+				logger.debug("1");
+				HashMap<String, Object> tempMap = new HashMap<String, Object>();
+				String historyActid = h.getTaskId();
+				List<Comment> comments = taskService.getTaskComments( historyActid );
+				if( comments.size() > 0 ) {
+					for( Comment c : comments ) {
+						Object o = tempMap.get( "nodeComment");
+						if( o != null ) {
+							tempMap.put( "nodeComment", o + c.getFullMessage() );
+						}else {
+							tempMap.put( "nodeComment",  c.getFullMessage() );
+						}					
+					}				
+				}else {
+					tempMap.put( "nodeComment", "" );
+				}
+				tempMap.put( "nodeId", h.getActivityId() );
+				tempMap.put( "nodeName", h.getActivityName() );
+				allHistoryInfos.add( tempMap );
+			}
+			return allHistoryInfos;
+		} catch (Exception e) {
+			e.printStackTrace();
+			return null;
+		}
+	}
 	
+    /**   
+     * @Title: getPersonalTasksByUsername   
+     * @Description:  根据用户姓名，查询该用户个人待办任务 
+     * @return: List<Task>        
+     */  
+    @Override
+    public List<Task> getPersonalTasksByUsername( String userName ){
+    	try {
+    		List<Task> tasks = taskService.createTaskQuery()
+    				.taskAssignee( userName )
+    				.orderByTaskCreateTime()
+    				.desc()
+    				.list();
+    		return tasks;
+		} catch (Exception e) {
+			e.printStackTrace();
+			return null;
+		}
+		
+	}
+    
 	
+	/**   
+	 * @Title: getCandidateTasksByUsername   
+	 * @Description: 根据用户姓名，查询该用户组待办任务   
+	 * @return: List<Task>        
+	 */  
+    @Override
+	public List<Task> getCandidateTasksByUsername( String userName ){
+		try {
+			List<Task> tasks = taskService.createTaskQuery()
+					.taskCandidateUser( userName )
+					.orderByTaskCreateTime()
+					.desc()
+					.list();
+			return tasks;
+		} catch (Exception e) {
+			e.printStackTrace();
+			return null;
+		}		
+	}
+	
+	/**   
+	 * @Title: getCanPerTasksByAssignee   
+	 * @Description:  根据用户姓名，查询用户的所有待办任务（个人任务+组任务）
+	 * @param: @param userId
+	 * @param: @return      
+	 * @return: List<Task>        
+	 */  
+    @Override
+	public List<TodoTask> getAllTasksByUsername( String userName ){
+		List<Task> allTasks = new ArrayList<Task>();
+		List<TodoTask> todoTasks = new ArrayList<TodoTask>();
+		try {
+			List<Task> personalTasks = taskService.createTaskQuery()
+					.taskAssignee( userName )
+					.orderByTaskCreateTime()
+					.desc()
+					.list();			
+			if( personalTasks != null && personalTasks.size() > 0 ) {
+				logger.debug( personalTasks.toString() );
+				allTasks.addAll( personalTasks );
+			}
+			
+			List<Task> candidatetasks = taskService.createTaskQuery()
+					.taskCandidateUser( userName )
+					.orderByTaskCreateTime()
+					.desc()
+					.list();
+			if( candidatetasks != null && candidatetasks.size() > 0 ) {
+				logger.debug( candidatetasks.toString() );
+				allTasks.addAll( candidatetasks );
+			}	
+			if( allTasks != null && allTasks.size() > 0 ) {
+				logger.debug( allTasks.toString() );
+				for( Task t : allTasks ) {
+					TodoTask todoTask = new TodoTask();					
+					todoTask.setTsid( t.getId() );
+					todoTask.setDfid( t.getProcessDefinitionId() );
+					todoTask.setPiid( t.getProcessInstanceId() );
+					todoTask.setName( t.getName() );
+					todoTask.setCurrentnode( t.getName() );
+					todoTask.setDescrible( t.getDescription() );
+					Map<String, Object> vars = t.getProcessVariables();
+					//添加属地变量
+					Object area = vars.get("area");
+					if( area != null  ) {
+						todoTask.setArea( area.toString() );
+					}
+					//添加超期记录
+					LocalDate today = LocalDate.now();
+					java.util.Date date = t.getCreateTime();
+				    Instant instant = date.toInstant();
+				    ZoneId zone = ZoneId.systemDefault();
+				    LocalDateTime localDateTime = LocalDateTime.ofInstant(instant, zone);
+				    LocalDate createDay = localDateTime.toLocalDate();
+					long p2 = ChronoUnit.DAYS.between(createDay, today);
+					logger.debug( "---------待办任务的时间间隔，检验超期------------" + p2 );
+					todoTask.setTip( p2 > 2 ? "超期" : "未超期" );
+					
+					todoTasks.add( todoTask );					
+				}
+				logger.debug( todoTasks.toString() );
+				return todoTasks;
+			}else {
+				return null;
+			}		
+		} catch (Exception e) {
+			e.printStackTrace();		
+			return todoTasks;
+		}				
+	}
+
 }

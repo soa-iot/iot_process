@@ -22,8 +22,7 @@
     	.text-font-warm{
     		color: red;
     		/* display: inline-block; */
-    		/* position: relative; */
-    		
+    		/* position: relative; */	
     	}
     
     </style>
@@ -60,6 +59,9 @@
 			          <option value="生产办">生产办</option>
 			          <option value="财务经营办">财务经营办</option>
 			          <option value="综合办">综合办</option>
+			          <option value="化验">化验</option>
+         			  <option value="电站">电站</option>
+         			  <option value="电机">电机</option>
 			        </select>
 			      </div>
 			    </div>
@@ -170,8 +172,8 @@
 			  </div>
 			  
 			   <div class="layui-form-item" style="margin-bottom: 0px ">
-			   	<div class="layui-inline">
-			      	<div class="layui-form-item" style="margin-bottom: 5px ">
+			   	<div class="layui-inline" style="margin-bottom: 30px ">
+			      	<div class="layui-form-item" style="margin-bottom: 10px ">
 	                    <label class="text-font layui-form-label">问题图片</label>
 	                    <!-- 多图片上传 -->
 	                    <div class="layui-input-inline" id="addProblemImg">
@@ -180,9 +182,11 @@
 	                    <img class="img" src="../images/report/u166.png"/>
 	                    <span class="text-font-warm">最多允许上传三张图片</span>
 	                </div>
-					<div class="">
+					<div id="problem-img" style="display: none;">
 					  <label class="layui-form-label">&nbsp;</label>
-					  <ul id="imgZmList"></ul>
+					  <div class="layui-input-inline">
+						  <ul id="imgZmList"></ul>
+					  </div>
 					</div>
 	  		  </div>
 			 </div>
@@ -190,7 +194,7 @@
 			  <div class="layui-form-item">
 			  	<div class="layui-col-md-offset5">
 				    <button class="layui-btn saveBtn" lay-submit lay-filter="saveBtn" id="saveBtn">暂存</button> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-				    <button class="layui-btn" type="button">问题上报</button>
+				    <button class="layui-btn" type="button" lay-submit lay-filter="problem_report">问题上报</button>
 			    </div>
 			 </div>
 		   </form>
@@ -222,6 +226,8 @@
 		      }
 		    }
 		  });
+		   
+		   
 })	    
 </script>
   </body>

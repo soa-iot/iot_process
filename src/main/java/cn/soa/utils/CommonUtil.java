@@ -39,6 +39,7 @@ public class CommonUtil {
 	
 	public static File imageSaved(String resavepeople, String rootPath, Date date) {
 		rootPath = rootPath.replace("file:", "");
+		//rootPath = "D:/files/";
 		File dirParent = new File(rootPath);
 		
 		if(!dirParent.exists()) {
@@ -54,4 +55,6 @@ public class CommonUtil {
 		
 		return dirDate;
 	}
+
 }
+
