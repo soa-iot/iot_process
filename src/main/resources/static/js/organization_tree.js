@@ -4,7 +4,6 @@ layui.use(['tree', 'layer'], function() {
 	var tree = layui.tree, layer = layui.layer, $ = layui.jquery;
 	var layer = layui.layer;
 
-	console.log($);
 	$.ajax({
 		url : '/iot_process/userOrganizationTree/userOrganizationTreeData',
 		type : 'post',
@@ -12,7 +11,7 @@ layui.use(['tree', 'layer'], function() {
 		data : {},
 		success : function(res) {
 
-			if (res == 2) {
+			if (res == 1) {
 				layer.msg('服务器处理异常，请联系管理员！！！');
 				return;
 			}
@@ -21,7 +20,7 @@ layui.use(['tree', 'layer'], function() {
 			var data = buildTree(res.data);
 
 			// 加载人员组织树
-			var org_tree = tree.render({
+			org_tree = tree.render({
 				elem : '#organization_tree',
 				data : data,
 				showCheckbox : true // 是否显示复选框
@@ -41,6 +40,8 @@ layui.use(['tree', 'layer'], function() {
 			$('.layui-tree-icon')
 					.after('<i class="my-icon layui-icon layui-icon-user" style = "font-size: 18px;margin-right:8px;color:#c0c4cc;;height: 100%;vertical-align: inherit;"></i>');
 
+					
+					
 			/*
 			 * $('#btn').on('click', function() {
 			 * console.log(org_tree.getChecked());
@@ -54,3 +55,16 @@ layui.use(['tree', 'layer'], function() {
 	});
 
 });
+
+/**
+ * 获取选中的数据
+ * @return {}
+ */
+function getCheckedData(){
+	var checkData = org_tree.getChecked('id');
+	return checkData;
+}
+
+
+
+
