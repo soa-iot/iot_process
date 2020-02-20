@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+ 
+<mapper namespace="cn.soa.dao.StagingWorkRequisitionMapper">
+
+	<!-- ===========================1、查询===============================  -->
+	<!-- 1.1、根据piid查找脚手架搭拆申请作业单	-->
+	<!-- StagingWorkRequisition findByPIID(String piid) -->
+	
+	<sql id="stagingSQL">
+		STAGING_WORK_ID stagingWorkID,
+		PIID piid,
+		APPLYDEPT applydept,
+		APPLYDATE applydate,
+		STAGING_LOCATION stagingLocation,
+		APPLYPEOPLE applypeople,
+		DEPTOWNER deptowner,
+		WORKDESCRIPTION workdescription,
+		TIPS tips,
+		ACTION action,
+		CACULATOR caculator,
+		WORK_AMOUNT workAmount,
+		STAGING_COMMENT stagingComment
+	</sql>
+	
+	<select id="findByPIID" resultType="cn.soa.entity.StagingWorkRequisition">
+		SELECT
+			<include refid="stagingSQL"></include>
+		FROM
+			CZ_STAGING_WORK_REQUISITION
+		WHERE
+			PIID = #{piid}
+	</select>
+	
+	
+	<!-- ===========================2、新增===============================  -->
+	<!-- 2.1、插入脚手架搭拆申请作业单数据	-->
+	<!-- Integer insertOne(StagingWorkRequisition staging) -->
+	<insert id="insertOne">
+		<selectKey keyProperty="stagingWorkID" order="BEFORE" resultType="string">
+			select sys_guid() from dual
+		</selectKey>
+		INSERT INTO
+			CZ_STAGING_WORK_REQUISITION
+		VALUES(
+				#{stagingWorkID}, #{piid}, #{applydept}, #{applydate}, #{stagingLocation},
+				#{applypeople}, #{deptowner}, #{workdescription}, #{tips}, #{action},
+				#{caculator}, #{workAmount}, #{stagingComment}
+			  )
+	</insert>
+	
+	<!-- ===========================3、修改===============================  -->
+	<!-- 3.1、更新脚手架搭拆申请作业单数据	-->
+	<!-- Integer updateOne(StagingWorkRequisition staging) -->
+	<update id="updateOne">
+		UPDATE 
+			CZ_STAGING_WORK_REQUISITION
+		<set>
+			<if test="applydept != null">
+				APPLYDEPT = #{applydept},
+			</if>
+			<if test="applydate != null">
+				APPLYDATE = #{applydate},
+			</if>
+			<if test="stagingLocation != null">
+				STAGING_LOCATION = #{stagingLocation},
+			</if>
+			<if test="applypeople != null">
+				APPLYPEOPLE = #{applypeople},
+			</if>
+			<if test="deptowner != null">
+				DEPTOWNER = #{deptowner},
+			</if>
+			<if test="workdescription != null">
+				WORKDESCRIPTION = #{workdescription},
+			</if>
+			<if test="tips != null">
+				TIPS = #{tips},
+			</if>
+			<if test="action != null">
+				ACTION = #{action},
+			</if>
+			<if test="caculator != null">
+				CACULATOR = #{caculator},
+			</if>
+			<if test="workAmount != null">
+				WORK_AMOUNT = #{workAmount},
+			</if>
+			<if test="stagingComment != null">
+				STAGING_COMMENT = #{stagingComment}
+			</if>
+		</set>
+		<where>
+			PIID = #{piid}
+		</where>
+	</update>
+	
+	
+	<!-- ===========================4、删除===============================  -->
+	
+</mapper>
+ 
+

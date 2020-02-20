@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+ 
+<mapper namespace="cn.soa.dao.UserRoleMapper">
+
+	<!-- ===========================1、查询===============================  -->
+	<!-- 1.1、查找仪表、电气、机械这三个班长	-->
+	<!-- List<RoleVO> findRepair() -->
+	
+	<resultMap type="cn.soa.entity.RoleVO" id="UserRoleMap">
+		<id property="rolID"  column="RROLID"/>
+		<result property="name"  column="ROLENAME"/>
+		<result property="state"  column="RSTATE"/>
+		<result property="createTime"  column="CREATE_TIME"/>
+		<result property="lastModifyTime"  column="LAST_MODIFY_TIME"/>
+		<result property="note"  column="RNOTE"/>
+		<result property="remark1"  column="RREMARK1"/>
+		<result property="remark2"  column="RREMARK2"/>
+		<collection property="users" ofType="cn.soa.entity.UserOrganization">
+			<id property="orgid"  column="ORGID"/>
+			<result property="name"  column="USERNAME"/>
+			<result property="parent_id"  column="PARENT_ID"/>
+			<result property="usernum"  column="USERNUM"/>
+			<result property="is_parent"  column="IS_PARENT"/>
+			<result property="state"  column="USTATE"/>
+			<result property="note"  column="UNOTE"/>
+			<result property="remark1"  column="UREMARK1"/>
+			<result property="remark2"  column="UREMARK2"/>
+		</collection>
+	</resultMap>
+	
+	<select id="findRepair"  resultMap="UserRoleMap">
+		SELECT
+			ORGID, uo.name AS USERNAME, USERNUM, ur.rolid AS RROLID, ur.state AS RSTATE, ur.name AS ROLENAME,
+			CREATE_TIME, LAST_MODIFY_TIME, ur.note AS RNOTE, ur.remark1 AS RREMARK1, ur.remark2 AS RREMARK2,
+			uo.state AS USTATE, uo.note AS UNOTE, uo.remark1 AS UREMARK1, uo.remark2 AS UREMARK2,IS_PARENT,PARENT_ID
+		FROM
+			IOT_USER_ORGANIZATION uo JOIN IOT_USER_USER_ROLE uur ON uo.usernum = uur.userid
+			JOIN IOT_USER_ROLE ur ON uur.rolid = ur.rolid
+		<where>
+			ur.name IN ('仪表班长', '管焊班班长', '钳工班班长', '电工班长', '电站班长')
+		</where>
+	</select>
+
+	<!-- 1.2、查找所在组下的用户列表	-->
+	<!-- List<String> findUserByOrgid(String orgID) -->
+	<select id="findUserByOrgid" resultType="string">
+		SELECT
+			uo.NAME
+		FROM
+			IOT_USER_ORGANIZATION uo JOIN 
+			(
+				SELECT USERNUM
+				FROM IOT_USER_ORGANIZATION 
+				WHERE ORGID = #{orgID, jdbcType=VARCHAR}
+			) org ON uo.parent_id = org.usernum
+	</select>
+	
+	<!-- 1.3、根据组织编号查找该组织名称	-->
+	<!-- String findOrgNameByOrgid(String orgID) -->
+	<select id="findOrgNameByOrgid" resultType="string">
+		SELECT  NAME
+		FROM  IOT_USER_ORGANIZATION 
+		WHERE  ORGID = #{orgID, jdbcType=VARCHAR}
+	</select>
+	
+	<!-- 1.4、根据用户名查找用户编号	-->
+	<!-- String findUsernumByName(String name) -->
+	<select id="findUsernumByName" resultType="string">
+		SELECT 
+			USERNUM
+		FROM
+			IOT_USER_ORGANIZATION
+		WHERE
+			name = #{name, jdbcType=VARCHAR}
+	</select>
+	
+	<!-- ===========================2、新增===============================  -->
+	<!-- 2.1、添加一条问题报告数据 	-->
+	<!-- public Integer insertOne(ProblemReportpho pho) -->
+
+	
+	<!-- ===========================3、修改===============================  -->
+	<!-- 3.1、修改暂存问题图片数据 	-->
+	<!-- public Integer updateTempPho(String tProblemRepId, String tempRepId, String piid) -->
+	
+	
+	<!-- ===========================4、删除===============================  -->
+	<!-- 4.1、删除问题图片数据 	-->
+	<!-- public Integer deleteList(String[] imgList); -->
+			
+	
+</mapper>
+ 
+

@@ -1,0 +1,378 @@
+公司本项目gitlab地址：https://github.com/soa-iot/iot_process.git
+
+
+#####################################################################################################
+	http请求
+#####################################################################################################
+1、获取所有的流程定义对象：
+	$.ajax({
+	     type: "GET"
+	     ,url: '/iot_process/process/processdefinitions' 
+	     ,data: {}
+	     ,contentType: "application/x-www-form-urlencoded"
+	     ,dataType: "json"
+	     ,success: function(jsonData){
+	     	//后端返回值： ResultJson<List<ProcessDefinition>>
+	     },
+	     ,error:function(){}		       
+	});
+	
+2、获取所有的流程定义对象id：
+	$.ajax({
+	     type: "GET"
+	     ,url: '/iot_process/process/processdefinitions/dfids' 
+	     ,data: {}
+	     ,contentType: "application/x-www-form-urlencoded"
+	     ,dataType: "json"
+	     ,success: function(jsonData){
+	     	//后端返回值： ResultJson<List<String>>
+	     },
+	     ,error:function(){}		       
+	});
+	
+3、根据用户名，获取该用户的所有待办任务
+	$.ajax({
+	     type: "GET"
+	     ,url: '/iot_process/process/tasks' 
+	     ,data: {"userName" : ""}
+	     ,contentType: "application/x-www-form-urlencoded"
+	     ,dataType: "json"
+	     ,success: function(jsonData){
+	     	//后端返回值： ResultJson<List<TodoTask>>
+	     },
+	     ,error:function(){}		       
+	});
+
+4、根据用户名，获取该用户的所有待办任务(layui表格专用)
+	$.ajax({
+	     type: "GET"
+	     ,url: '/iot_process/process/tasks/layui' 
+	     ,data: {"userName":""}
+	     ,contentType: "application/x-www-form-urlencoded"
+	     ,dataType: "json"
+	     ,success: function(jsonData){
+	     	//后端返回值： ResultJson<List<Task>>
+	     },
+	     ,error:function(){}		       
+	});
+	
+5、流程上报：
+	$.ajax({
+	     type: "POST"
+	     ,url: '/iot_process/process/{dfid}'    //dfid为流程定义id（暂时就是dfid="processPure2:1:4"）
+	     ,data: {"……": "……"}   //问题上报表单的内容
+	     ,contentType: "application/x-www-form-urlencoded"
+	     ,dataType: "json"
+	     ,success: function(jsonData){
+	     	//后端返回值： data="piid,bsid"(流程实例piid,业务数据bsid)
+	     },
+	     ,error:function(){}		       
+	});
+
+6、部署流程
+	$.ajax({
+	     type: "POST"
+	     ,url: '/iot_process/process/deployment'  
+	     ,data: {
+			"name": "",
+	     	"xmlUrl": "",
+	     	"pngUrl": ""
+		 }   //问题上报表单的内容
+	     ,contentType: "application/x-www-form-urlencoded"
+	     ,dataType: "json"
+	     ,success: function(jsonData){
+	     	//后端返回值： ResultJson<List<Task>>
+	     },
+	     ,error:function(){}		       
+	});
+
+
+7、部署流程(测试专用)
+	$.ajax({
+	     type: "GET"
+	     ,url: '/iot_process/process/deployment'   
+	     ,data: {
+	     	"name": "",
+	     	"xmlUrl": "",
+	     	"pngUrl": ""
+	     }   //问题上报表单的内容
+	     ,contentType: "application/x-www-form-urlencoded"
+	     ,dataType: "json"
+	     ,success: function(jsonData){
+	     	//后端返回值： ResultJson<List<Task>>
+	     },
+	     ,error:function(){}		       
+	});
+	
+	
+8、流程下一步接口（组任务）：
+	$.ajax({
+	     type: "PUT"
+	     ,url: '/iot_process/process/nodes/next/group/piid/{piid}'    //piid为流程实例id
+	     ,data: {
+	     	"isIngroup": ""    //问题评估专用--流程变量名称,流程变量值(前端选择"作业安排"时，值为1；
+			     								   属地单位为非维修非净化+前端选择"外部协调"时，值为2；
+			     								    属地单位为维修或净化+前端选择"下一步"时，值为3 )
+	     	,"comment": ""     //通用 -- 节点的处理信息
+	     	,"estimators": ""     //通用 -- 下一个节点问题处理人
+	     						         问题评估节点执行人变量名：estimators
+	     						         净化分配节点执行人变量名：puror
+	     						         维修分配节点执行人变量名：repairor
+	     						         作业安排节点执行人变量名：arrangor
+	     						         接收作业节点执行人变量名：receivor
+	     						         完成作业节点执行人变量名：complementor
+	     						         作业验收节点执行人变量名：checkor
+	     	,"userName": ""    //当前任务的完成人
+	     	,"operateName": ""    //当前操作名称
+	     }   //问题上报表单的内容
+	     ,contentType: "application/x-www-form-urlencoded"
+	     ,dataType: "json"
+	     ,success: function(jsonData){
+	     	//后端返回值： ResultJson<Boolean>
+	     },
+	     ,error:function(){}		       
+	});
+
+
+9、流程下一步接口（非组任务）：
+	$.ajax({
+	     type: "PUT"
+	     ,url: '/iot_process/process/nodes/next/piid/{piid}'    //piid为流程实例id
+	     ,data: {
+	     	,"comment": ""     //节点的处理信息
+	     	,"estimators": ""     // 下一个节点问题处理人
+	     						         问题评估节点执行人变量名：estimators
+	     						         净化分配节点执行人变量名：puror
+	     						         维修分配节点执行人变量名：repairor
+	     						         作业安排节点执行人变量名：arrangor
+	     						         接收作业节点执行人变量名：receivor
+	     						         完成作业节点执行人变量名：complementor
+	     						         作业验收节点执行人变量名：checkor
+	     	,"operateName": ""    //当前操作名称
+	     }  
+	     ,contentType: "application/x-www-form-urlencoded"
+	     ,dataType: "json"
+	     ,success: function(jsonData){
+	     	//后端返回值： ResultJson<Boolean>
+	     },
+	     ,error:function(){}		       
+	});
+	
+	
+10、已完成的流程的已完成的历史活动节点
+	$.ajax({
+	     type: "GET"
+	     ,url: '/iot_process/process/nodes/historyAct/piid/{piid}'    //piid为流程实例id
+	     ,data: { } 
+	     ,contentType: "application/x-www-form-urlencoded"
+	     ,dataType: "json"
+	     ,success: function(jsonData){
+	     	//后端返回值： ResultJson<List<Map<String,Object>>>
+	     },
+	     ,error:function(){}		       
+	});
+	
+
+11、已完成的流程的已完成的历史任务节点
+	$.ajax({
+	     type: "GET"
+	     ,url: '/iot_process/process/nodes/historyTask/piid/{piid}'    //piid为流程实例id
+	     ,data: {}  
+	     ,contentType: "application/x-www-form-urlencoded"
+	     ,dataType: "json"
+	     ,success: function(jsonData){
+	     	//后端返回值： ResultJson<List<Map<String,Object>>>
+	     },
+	     ,error:function(){}		       
+	});
+
+
+12、回退上一步（组任务）
+	$.ajax({
+	     type: "PUT"
+	     ,url: '/iot_process/process/nodes/before/group/piid/{piid}'    //piid为流程实例id
+	     ,data: {
+	     	"comment": ""  //处理信息
+	     	,"userName": "" //当前节点处理
+	     	,"operateName": ""    //当前操作名称
+	     }  
+	     ,contentType: "application/x-www-form-urlencoded"
+	     ,dataType: "json"
+	     ,success: function(jsonData){
+	     	//后端返回值： ResultJson<Boolean>
+	     },
+	     ,error:function(){}		       
+	});
+	
+
+13、回退上一步（非组任务）
+	$.ajax({
+	     type: "PUT"
+	     ,url: '/iot_process/process/nodes/before/piid/{piid}'    //piid为流程实例id
+	     ,data: {
+	     	"comment": ""  //处理信息
+	     	,"operateName": ""    //当前操作名称
+	     }  
+	     ,contentType: "application/x-www-form-urlencoded"
+	     ,dataType: "json"
+	     ,success: function(jsonData){
+	     	//后端返回值： ResultJson<Boolean>
+	     },
+	     ,error:function(){}		       
+	});
+	
+	
+14、闭环流程 - 非组任务
+	$.ajax({
+	     type: "PUT"
+	     ,url: '/iot_process/process/nodes/end/piid/{piid}'    //piid为流程实例id
+	     ,data: {
+	     	"comment": ""  //处理信息
+	     	,"operateName": ""    //当前操作名称
+	     }  
+	     ,contentType: "application/x-www-form-urlencoded"
+	     ,dataType: "json"
+	     ,success: function(jsonData){
+	     	//后端返回值： ResultJson<String>
+	     },
+	     ,error:function(){}		       
+	});
+	
+
+15、闭环流程 - 组任务
+	$.ajax({
+	     type: "PUT"
+	     ,url: '/iot_process/process/nodes/end/group/piid/{piid}'    //piid为流程实例id
+	     ,data: {
+	     	"comment": ""  //处理信息
+	     	,"userName": "" //当前节点处理
+	     	,"operateName": ""    //当前操作名称
+	     }  
+	     ,contentType: "application/x-www-form-urlencoded"
+	     ,dataType: "json"
+	     ,success: function(jsonData){
+	     	//后端返回值： ResultJson<String>
+	     },
+	     ,error:function(){}		       
+	});
+	
+	
+16、跳转 - 组任务
+	$.ajax({
+	     type: "PUT"
+	     ,url: '/iot_process/process/nodes/jump/group/piid/{piid}'    //piid为流程实例id
+	     , data{
+	     	"area": ""  //属地单位
+			,"actId": "receive"  //跳转节点id
+			,"": ""  //下一步流程变量
+			,"userName": ""  //当前节点任务执行人
+			,"comment": ""   //备注信息
+			,"operateName": ""    //当前操作名称
+	     } 
+	     ,contentType: "application/x-www-form-urlencoded"
+	     ,dataType: "json"
+	     ,success: function(jsonData){
+	     	//后端返回值： ResultJson<Boolean>
+	     },
+	     ,error:function(){}		       
+	});
+
+	
+		
+
+
+
+#####################################################################################################
+数据库(oracle)
+#####################################################################################################
+
+1、流程配置表：
+	1.1   流程变量的配置表
+		CREATE TABLE IOT_PROCESS_VARS_CONFIG(
+			VCID CHAR(36 BYTE) DEFAULT SYS_GUID() PRIMARY KEY ,
+			VARNAME VARCHAR2(68 CHAR)  NOT NULL UNIQUE ,
+			VARVALUE VARCHAR2(68 CHAR) DEFAULT '' NOT NULL ,
+			NAMETYPE NUMBER(3) DEFAULT 0 NOT NULL ,
+			VALUETYPE NUMBER(3) DEFAULT 0 NOT NULL ,
+			NOTE VARCHAR2(48 CHAR) DEFAULT '' NOT NULL ,
+			REMARK1 VARCHAR2(18 CHAR) DEFAULT '' NOT NULL ,
+			REMARK2 VARCHAR2(38 CHAR) DEFAULT '' NOT NULL 
+		)
+	
+2、流程变量配置表：
+	CREATE TABLE IOT_PROCESS_VARS_CONFIG(
+		VCID CHAR(36) PRIMARY KEY,
+		VARNAME VARCHAR2(48 CHAR) UNIQUE NOT NULL ,
+		VARVALUE VARCHAR2(48 CHAR) DEFAULT ' ' NOT NULL  ,
+		NAMETYPE NUMBER(3,0) DEFAULT 0 NOT NULL  ,
+		VALUETYPE NUMBER(3,0) DEFAULT 0 NOT NULL  ,
+		NOTE VARCHAR2(48 CHAR) DEFAULT ' ' NOT NULL  ,
+		REMARK1 VARCHAR2(48 CHAR) DEFAULT ' ' NOT NULL ,
+		REMARK2 VARCHAR2(48 CHAR) DEFAULT ' ' NOT NULL 
+	);
+	comment on table  "IOT_PROCESS_VARS_CONFIG"                is '流程变量初始化表';
+	comment on column "IOT_PROCESS_VARS_CONFIG"."VCID"         is '主键';
+	comment on column "IOT_PROCESS_VARS_CONFIG"."VARNAME"         is '变量名称';
+	comment on column "IOT_PROCESS_VARS_CONFIG"."VARVALUE"         is '初始化变量值';
+	comment on column "IOT_PROCESS_VARS_CONFIG"."NAMETYPE"         is '名称类型';
+	comment on column "IOT_PROCESS_VARS_CONFIG"."VALUETYPE"        is '值类型';
+	comment on column "IOT_PROCESS_VARS_CONFIG"."NOTE"         		is '描述';
+	comment on column "IOT_PROCESS_VARS_CONFIG"."REMARK1"         is '备用字段1';
+	comment on column "IOT_PROCESS_VARS_CONFIG"."REMARK2"         is '备用字段2';
+
+3、
+
+
+
+
+
+
+#####################################################################################################
+	数据库脚本(oracle)
+#####################################################################################################
+1、 activiti删除所有流程表的垃圾数据
+	delete from ACT_EVT_LOG;
+	delete from ACT_GE_BYTEARRAY;
+	
+	delete from ACT_HI_ACTINST;
+	delete from ACT_HI_ATTACHMENT;
+	delete from ACT_HI_COMMENT;
+	delete from ACT_HI_DETAIL;
+	delete from ACT_HI_IDENTITYLINK;
+	delete from ACT_HI_PROCINST;
+	delete from ACT_HI_TASKINST;
+	delete from ACT_HI_VARINST;
+	
+	delete from ACT_ID_GROUP;
+	delete from ACT_ID_INFO;
+	delete from ACT_ID_MEMBERSHIP;
+	delete from ACT_ID_USER;
+	
+	delete from ACT_PROCDEF_INFO;
+	
+	delete from ACT_RE_DEPLOYMENT;
+	delete from ACT_RE_MODEL;
+	delete from ACT_RE_PROCDEF;
+	
+	delete from ACT_RU_EVENT_SUBSCR;
+	delete from ACT_RU_EXECUTION;
+	delete from ACT_RU_IDENTITYLINK;
+	delete from ACT_RU_JOB;
+	delete from ACT_RU_TASK;
+	delete from ACT_RU_VARIABLE;
+
+	
+	
+2、
+select WEL_NAME,WEL_UNIT,EQU_MODEL,EQU_POSITION_NUM,EQU_MEMO_ONE from CZ_EQUIPMENT_INFO
+
+################################################################################
+动设备检维修所用数据库字段
+################################################################################
+
+SUPERVISORYPERSON   检修人员
+IMPACTS             检修原因
+ACTION              检修内容
+SUPERVISORYDATE     检修时间
+PROCESS_DESC        更换备品备件规格和数量
+OTHERS              备注

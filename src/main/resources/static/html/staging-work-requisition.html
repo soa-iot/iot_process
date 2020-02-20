@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>脚手架搭拆申请作业单</title>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta charset="UTF-8">
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <meta name="apple-mobile-web-app-capable" content="yes"/>
+    <link rel="stylesheet" href="../css/work-requisition.css" media="all">
+    <link rel="stylesheet" href="../jsPackage/layui-v2.4.2/css/layui.css" media="all">
+	<!-- <link rel="stylesheet" href="../css/estimate.css" media="all"> -->
+  </head>
+  <body>
+  
+  <div class="layui-collapse" lay-accordion="">
+	 <div class="layui-colla-item">
+		<h2 class="layui-colla-title h2c" id="pro">工单信息</h2>
+				
+		<div class="hbtn h2c">
+		   <button class="layui-btn layui-btn-normal layui-btn-sm btn" lay-submit lay-filter="clean-data">清&nbsp;&nbsp;空</button>
+		   <button class="layui-btn layui-btn-normal layui-btn-sm btn" lay-submit lay-filter="save-page">保&nbsp;&nbsp;存</button>
+		   <button class="layui-btn layui-btn-normal layui-btn-sm btn" lay-submit lay-filter="print-page">打&nbsp;&nbsp;印</button>
+		</div>	
+				
+		<div class="layui-colla-content layui-show"> 
+		  <div class="layui-container" >
+	    	<div style="width: 100%;">
+		     <div class="layui-row" style="border: 0; margin-bottom: 30px;">
+				<p class="title">
+					<span>中石油遂宁天然气净化有限公司</span> <br/>
+					 <span>脚手架搭拆申请作业单</span>
+				</p>
+			 </div>
+			 <form class="layui-from layui-form-pane">
+			 	<div class="layui-form-item layuir-row-two">
+			 		<div class="layui-input-inline">
+				   	  <input id="piid" name="piid" type="text" class="layui-input" style="display: none;">
+					</div>
+				</div>
+			    <div class="layui-form-item layuir-row-two">
+			    	<div class="layui-col-md2">&nbsp;</div>
+				    <div class="layui-inline"> 
+				      <label class="layui-form-label">申请部门</label>
+				      <div class="layui-input-inline">
+				        <input id="applydept" name="applydept" type="text" class="layui-input" autocomplete="off">
+				      </div>
+				    </div>
+				    <div class="layui-inline div-space" style="width: 110px;"></div>
+				    <div class="layui-inline">
+				      <label class="layui-form-label">申请时间</label>
+				      <div class="layui-input-inline">
+				    	<input id="applydate" name="applydate" type="text" class="layui-input" autocomplete="off">
+				    </div>
+				 </div>
+			  </div>
+			  <div class="layui-form-item">
+			  	  <div class="layui-col-md2">&nbsp;</div>
+			      <label class="layui-form-label" style="width: 150px;">脚手架搭拆地点</label>
+			      <div class="layui-input-inline">
+			        <input id="location" name="stagingLocation" type="text" class="layui-input" style="width: 600px;" autocomplete="off">
+			      </div>
+			  </div>
+			  <div class="layui-form-item">
+			    	<div class="layui-col-md2">&nbsp;</div>
+				    <div class="layui-inline"> 
+				      <label class="layui-form-label">申请人</label>
+				      <div class="layui-input-inline">
+				        <input id="applypeople" name="applypeople" type="text" class="layui-input" autocomplete="off">
+				      </div>
+				    </div>
+				    <div class="layui-inline div-space" style="width: 110px;"></div>
+				    <div class="layui-inline">
+				      <label class="layui-form-label">部门负责人</label>
+				      <div class="layui-input-inline">
+				    	<input id="deptowner" name="deptowner" type="text" class="layui-input" autocomplete="off">
+				    </div>
+				 </div>
+			  </div>
+			  <div class="layui-form-item" style="margin-bottom: 0px;">
+			  	  <div class="layui-col-md2">&nbsp;</div>
+			      <label class="layui-form-label" style="width: 150px;">工作内容描述</label>
+			  </div>
+			   <div class="layui-form-item">
+			  	  <div class="layui-col-md2">&nbsp;</div>
+			      <div class="layui-input-block">
+			         <textarea id="workdescription" name="workdescription" maxlength="145" class="layui-input" style="height:80px; width: 750px;" placeholder="请输入工作内容描述" autocomplete="off"></textarea>
+			      </div>
+			  </div>
+			  <div class="layui-form-item" style="margin-bottom: 0px;">
+			  	  <div class="layui-col-md2">&nbsp;</div>
+			      <label class="layui-form-label" style="width: 150px;">风险安全提示</label>
+			  </div>
+			   <div class="layui-form-item">
+			  	  <div class="layui-col-md2">&nbsp;</div>
+			      <div class="layui-input-block">
+			         <textarea id="tips" name="tips" maxlength="100" class="layui-input" style="height:80px; width: 750px;" placeholder="请输入风险安全提示" autocomplete="off"></textarea>
+			      </div>
+			  </div>
+			   <div class="layui-form-item" style="margin-bottom: 0px;">
+			  	  <div class="layui-col-md2">&nbsp;</div>
+			      <label class="layui-form-label" style="width: 150px;">应急措施</label>
+			  </div>
+			   <div class="layui-form-item">
+			  	  <div class="layui-col-md2">&nbsp;</div>
+			      <div class="layui-input-block">
+			         <textarea id="action" name="action" maxlength="100" class="layui-input" style="height:80px; width: 750px;" placeholder="请输入应急措施" autocomplete="off"></textarea>
+			      </div>
+			  </div>
+			   <div class="layui-form-item" style="margin-bottom: 0px;">
+			  	  <div class="layui-col-md2">&nbsp;</div>
+			      <label class="layui-form-label" style="width: 150px;">工作量计算式</label>
+			  </div>
+			   <div class="layui-form-item">
+			  	  <div class="layui-col-md2">&nbsp;</div>
+			      <div class="layui-input-block">
+			         <textarea id="caculator" name="caculator" maxlength="100" class="layui-input" style="height:80px; width: 750px;" placeholder="请输入工作量计算式" autocomplete="off"></textarea>
+			      </div>
+			  </div>
+			   <div class="layui-form-item" style="margin-bottom: 0px;">
+			  	  <div class="layui-col-md2">&nbsp;</div>
+			      <label class="layui-form-label" style="width: 150px;">工作量（m2）</label>
+			  </div>
+			   <div class="layui-form-item">
+			  	  <div class="layui-col-md2">&nbsp;</div>
+			      <div class="layui-input-block">
+			         <textarea id="workAmount" name="workAmount" maxlength="70" class="layui-input" style="height:80px; width: 750px;" placeholder="请输入工作量" autocomplete="off"></textarea>
+			      </div>
+			  </div>
+			  <div class="layui-form-item">
+			  	  <div class="layui-col-md2">&nbsp;</div>
+			      <label class="layui-form-label" style="width: 150px;">备注</label>
+			      <div class="layui-input-inline">
+			        <input id="comment" name="stagingComment" type="text" class="layui-input" style="width: 600px;" autocomplete="off">
+			      </div>
+			  </div>
+			</form> 
+			</div>
+			<div>&nbsp;</div>
+			</div>
+		</div>
+	 </div>
+  </div>
+  
+  <div id="base" class="layui-container" style="display: none">
+    	<div style="width: 100%; height: 252mm;">
+	     <div class="layui-row" >
+			<p class="title">
+				<span>中石油遂宁天然气净化有限公司</span> <br/>
+				 <span>脚手架搭拆申请作业单</span>
+			</p>
+			<p class="sub-p">
+				SL/QHSE.SC12&nbsp;
+			</p>
+		 </div>
+		 <div class="base-body">
+		 <div class="layui-row" style="border-top: 0;">
+			<div class="div-text div-text-double" style="border-right: 1px solid black; display: inline-block;">
+				<span class="body-text">申请部门：</span>
+				<span class="body-text" id="applydept_"></span>
+			</div>
+			<div class="div-text" style="display: inline-block; padding-left: 0px;">
+				<span class="body-text">申请时间：</span>
+				<span class="body-text" id="applydate_"></span>
+			</div>
+		 </div>
+		  <div class="layui-row" style="border-top: 0;">
+			<div class="layui-col-md12 div-text">
+				<span class="body-text">脚手架搭拆地点：</span>
+				<span class="body-text" id="location_"></span>
+			</div>
+		 </div>
+		 <div class="layui-row" style="border-top: 0;">
+			<div class="div-text div-text-double" style="border-right: 1px solid black; display: inline-block;">
+				<span class="body-text">申请人：</span>
+				<span class="body-text" id="applypeople_"></span>
+			</div>
+			<div class="div-text" style="display: inline-block; padding-left: 0px;">
+				<span class="body-text">部门负责人：</span>
+				<span class="body-text" id="deptowner_"></span>
+			</div>
+		 </div>
+		 <div class="layui-row" style="border-top: 0; height: 130px;">
+			<div class="layui-col-md12 div-text">
+				<span class="body-text">工作内容描述：</span> <br/>
+				<pre class="body-text" id="workdescription_"></pre>
+			</div>
+		 </div>
+		 <div class="layui-row" style="border-top: 0; height: 105px;">
+			<div class="layui-col-md12 div-text">
+				<span class="body-text">风险安全提示：</span><br/>
+				<pre class="body-text" id="tips_"></pre>
+			</div>
+		 </div>
+		 <div class="layui-row" style="border-top: 0; height: 105px;">
+			<div class="layui-col-md12 div-text">
+				<span class="body-text">应急措施：</span><br/>
+				<pre class="body-text" id="action_"></pre>
+			</div>
+		 </div>
+		 <div class="layui-row" style="border-top: 0; height: 75px;">
+			<div class="layui-col-md12 div-text">
+				<span class="body-text signature-text">批准人（签字）：</span>
+			</div>
+		 </div>
+		 <div class="layui-row" style="border-top: 0; height: 95px;">
+			<div class="layui-col-md12 div-text">
+				<span class="body-text">验收意见：</span>
+				<span class="body-text signature-text">批准人（签字）：</span>
+				<span class="body-text signature-date-text" >年<span style="color:rgba(255,255,255,0.0)">111</span>月<span style="color:rgba(255,255,255,0.0)">111</span>日</span>
+			</div>
+		 </div>
+		 <div class="layui-row" style="border-top: 0; height: 105px;">
+			<div class="layui-col-md12 div-text">
+				<span class="body-text">工作量计算式：</span> <br/>
+				<pre class="body-text" id="caculator_"></pre>
+			</div>
+		 </div>
+		 <div class="layui-row" style="border-top: 0; height: 105px;">
+			<div class="layui-col-md12 div-text">
+				<span class="body-text">工作量（m2）：</span> <br/>
+				<pre class="body-text" id="workAmount_" style="display:inline-block; width:450px;"></pre>
+				<span class="body-text signature-text-two">验收人（签字）：</span>
+				<span class="body-text signature-date-text-two">年<span style="color:rgba(255,255,255,0.0)">111</span>月<span style="color:rgba(255,255,255,0.0)">111</span>日</span>
+			</div>
+		 </div>
+		 <div class="layui-row" style="border-top: 0;">
+			<div class="div-text" style="border-right: 1px solid black; width:80px; text-align:center; display: inline-block;">
+				<span class="body-text">备注</span>
+			</div>
+			<div class="div-text" style="display: inline-block;">
+				<span class="body-text" id="comment_"></span>
+			</div>
+		 </div>
+		</div>
+		</div>
+		<div>&nbsp;</div>
+	</div>
+
+	<script src="../jsPackage/js/jquery-1.9.1.min.js"></script>
+	<script src="../jsPackage/js/jquery.print.js"></script>
+    <!-- 引入layui -->
+    <script type="text/javascript" src="../jsPackage/layui-v2.4.2/layui.js"></script>
+    <script src="../js/url_param.js"></script>
+    <script src="../js/staging-work-requisition.js"></script>
+    <script type="text/javascript">
+
+    </script>
+  </body>
+</html>

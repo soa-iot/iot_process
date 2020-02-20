@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>手动扭转节点</title>
+</head>
+<body>
+
+<!-- 新增巡检项实例
+Integer inserttaskInspectionRequires(List<TaskInspectionRequire> taskInspectionRequires), -->
+<insert id="inserttaskInspectionRequires"
+	parameterType="cn.zg.entity.taskInspection.TaskInspectionRequire">
+	
+	insert all 
+	
+	<foreach collection="taskInspectionRequire" index="index" separator=" " item="item">
+		into CZ_TASK_INSPECTION_REQUIRE
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="item.taskRequireId != null and item.taskRequireId != ''">
+				TASK_REQUIRE_ID,
+			</if>
+			<if test="item.taskContentId != null and item.taskContentId != ''">
+				TASK_CONTENT_ID,
+			</if>
+			<if test="item.taskRequireType != null">
+				TASK_REQUIRE_TYPE,
+			</if>
+			<if test="item.taskRequireContext != null and item.taskRequireContext != ''">
+				TASK_REQUIRE_CONTEXT,
+			</if>
+			<if test="item.taskRequireResDesc != null and item.taskRequireResDesc != ''">
+				TASK_REQUIRE_RES_DESC,
+			</if>
+			<if test="item.taskCcsParaId != null and item.taskCcsParaId != ''">
+				TASK_CCS_PARA_ID,
+			</if>
+			<if test="item.taskEquPositionNum != null and item.taskEquPositionNum != '' ">
+				TASK_EQU_POSITION_NUM,
+			</if>
+			<if test="item.taskContentOrder != null">
+				TASK_CONTENT_ORDER,
+			</if>
+			<if test="item.taskContentDesc != null and item.taskContentDesc != ''">
+				TASK_CONTENT_DESC,
+			</if>
+			<if test="item.planStartTime != null and item.planStartTime != '' ">
+				PLAN_START_TIME,
+			</if>
+			<if test="item.planIntervalTime != null">
+				PLAN_INTERVAL_TIME,
+			</if>
+			<if test="item.equPositionNum != null and item.equPositionNum != ''">
+				EQU_POSITION_NUM,
+			</if>
+			<if test="item.equName != null and item.equName != ''">
+				EQU_NAME,
+			</if>
+			<if test="item.remarkone != null and item.remarkone != ''">
+				REMARKONE,
+			</if>
+			<if test="item.remarktwo != null and item.remarktwo != ''">
+				REMARKTWO,
+			</if>
+			<if test="item.remarkthree!= null and item.remarkthree!= ''">
+				REMARKTHREE,
+			</if>
+			<if test="item.remarkfour!= null and item.remarkfour!= ''">
+				REMARKFOUR,
+			</if>
+		</trim>
+	
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+			<if test="item.taskRequireId != null and item.taskRequireId != ''">
+				#{item.taskRequireId},
+			</if>
+			<if test="item.taskContentId != null and item.taskContentId != ''">
+				#{item.taskContentId},
+			</if>
+			<if test="item.taskRequireType != null and item.taskRequireType != ''">
+				#{item.taskRequireType},
+			</if>
+			<if test="item.taskRequireContext != null and item.taskRequireContext != ''">
+				#{item.taskRequireContext},
+			</if>
+			<if test="item.taskRequireResDesc != null  and item.taskRequireResDesc != ''">
+				#{item.taskRequireResDesc},
+			</if>
+			<if test="item.taskCcsParaId != null and item.taskCcsParaId != ''">
+				#{item.taskCcsParaId},
+			</if>
+			<if test="item.taskEquPositionNum != null and item.taskEquPositionNum != ''">
+				#{item.taskEquPositionNum},
+			</if>
+			<if test="item.taskContentOrder != null">
+				#{item.taskContentOrder},
+			</if>
+			<if test="item.taskContentDesc != null and item.taskContentDesc != ''">
+				#{item.taskContentDesc},
+			</if>
+			<if test="item.planStartTime != null and item.planStartTime != '' ">
+				#{item.planStartTime},
+			</if>
+			<if test="item.planIntervalTime != null">
+				#{item.planIntervalTime},
+			</if>
+			<if test="item.equPositionNum != null and item.equPositionNum != ''">
+				#{item.equPositionNum},
+			</if>
+			<if test="item.equName != null and item.equName != ''">
+				#{item.equName},
+			</if>
+			<if test="item.remarkone != null and item.remarkone != ''">
+				#{item.remarkone},
+			</if>
+			<if test="item.remarktwo != null and item.remarktwo != ''">
+				#{item.remarktwo},
+			</if>
+			<if test="item.remarkthree!= null and item.remarkthree!= ''">
+				#{item.remarkthree},
+			</if>
+			<if test="item.remarkfour!= null and item.remarkfour!= ''">
+				#{item.remarkfour},
+			</if>
+		</trim>
+	</foreach>
+	select 1 from dual
+</insert>
+
+<script type="text/javascript" src="../jsPackage/js/jquery-1.9.1.min.js"></script>
+<script type="text/javascript" src="../js/test.js"></script>
+</body>
+</html>

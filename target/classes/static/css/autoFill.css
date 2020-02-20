@@ -1,0 +1,17 @@
+.show_div {
+	margin-left: 110px;
+	position: absolute;
+	width: 520px;
+	background-color: #FFF;
+	font-size: 16px;
+	z-index: 999;
+}
+
+.append_span {
+	display: block;
+}
+
+.append_span:hover {
+	cursor: pointer;
+	border-color: #9a9fa4;
+}

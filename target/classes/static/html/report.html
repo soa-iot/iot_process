@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>问题上报</title>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta charset="UTF-8">
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <meta name="apple-mobile-web-app-capable" content="yes"/>
+    <link rel="stylesheet" href="../jsPackage/layui-v2.4.2/css/layui.css">
+    <link rel="stylesheet" href="../css/report.css" media="all">
+    <link href="../css/jquery-ui.css" rel="stylesheet">
+	<link href="../css/autoFill.css" rel="stylesheet">
+    <script type="text/javascript" src="../js/report-publishImg.js"></script>
+  </head>
+  <body> 
+    <div id="base" class="layui-container">
+	      <!-- (问题信息) -->
+		  <div class="layui-row" >
+		  	 <!-- <div class="layui-col-xs1 layui-col-md2">&nbsp;</div> -->
+		  	 <form class="layui-form" lay-filter="report-form">
+		  	 	<!-- 隐藏字段 问题上报时间和上报部门-->
+		  	    <div class="layui-form-item" >
+			    <div class="layui-inline"> 
+			      <div class="layui-input-inline">
+			      	<!-- 问题上报时间 -->
+			        <input type="text" name="applydate" style="display: none;" class="layui-input">
+			        <!-- 问题上报部门 -->
+			      	<input type="text" name="depet" style="display: none;" class="layui-input">
+			      	<!-- 问题上报状态 -->
+			      	<input type="text" name="problemstate" value="UNFINISHED" style="display: none;" class="layui-input">
+			      	<!-- 操作节点名字-->
+			      	<input type="text" name="operateName" value="上报" style="display: none;" class="layui-input">
+			      </div>
+			    </div>
+		  	 	</div>
+			   <div class="layui-form-item">
+			    <div class="layui-inline layui-col-xs6 layui-col-md6"> 
+			      <label class="text-font layui-form-label">上 报 人</label>
+			      <div class="layui-input-inline">
+			        <input type="text" id="applypeople" name="applypeople" lay-verify="required|applypeople" placeholder="请输入上报人" class="layui-input">
+			      </div>
+			    </div>
+			    <div class="layui-inline layui-col-xs5 layui-col-md5">
+			      <label class="text-font layui-form-label">属地单位</label>
+			      <div class="layui-input-inline">
+			        <select id="problemtype" name="problemtype" lay-filter="problem-area">
+			          <option value="">请选择</option>
+			        </select>
+			      </div>
+			    </div>
+			  </div>
+			  
+			  <div class="layui-form-item">
+			    <div class="layui-inline layui-col-xs6 layui-col-md6">
+			      <label class="layui-form-label">问题区域</label>
+			      <div class="layui-input-inline">
+			        <select name="welName" id="welName" lay-search >
+			          <option value="">请选择</option>
+			        </select>
+			      </div>
+			    </div>
+			    <div class="layui-inline layui-col-xs5 layui-col-md5">
+			      <label class="text-font layui-form-label">所属专业</label>
+			      <div id="test-select" class="layui-input-inline">
+			        <select name="profession" id="profession">
+			           <option value="">请选择</option>
+				       <option value="管理">管理</option>
+				       <option value="工艺">工艺</option>
+				       <option value="机械">机械</option>
+				       <option value="电气">电气</option>
+				       <option value="仪表">仪表</option>
+				       <option value="环保">环保</option>
+				       <option value="化验">化验</option>
+				       <option value="物资">物资</option>
+				       <option value="土建">土建</option>
+				       <option value="HSE">HSE</option>
+				       <option value="消防">消防</option>
+				       <option value="其他">其他</option>
+				     </select>
+			      </div>
+			    </div>
+			  </div>
+			  
+			  <div class="layui-form-item">
+			    <div class="layui-inline layui-col-xs6 layui-col-md6" style="vertical-align: middle;">
+			      <label class="text-font layui-form-label">设备位号</label>
+				  <div class="layui-input-inline" style="width: 110px;">
+				    <input name="rfid" class="layui-input" id="rfid" type="text" disabled="disabled"/>
+				  </div>
+				  <div style="padding-top: 4px;"><button id="rfid-btn" type="button" class="layui-btn layui-btn-sm primary-btn">
+				  		<i class="layui-icon">&#xe715;</i>定位设备</button></div>
+			    </div>
+			    <div class="layui-inline  layui-col-xs5 layui-col-md5">
+			      <label class="text-font layui-form-label">问题类别</label>
+			      <div class="layui-input-inline">
+			        <select name="problemclass" id="problemclass" lay-filter="question-type">
+				       <option value="">请选择</option>
+				       <option value="分厂级检查">分厂级检查</option>
+				       <option value="总厂级检查">总厂级检查</option>
+				       <option value="体系审核">体系审核</option>
+				       <option value="地方安全环保检查">地方安全环保检查</option>
+				       <option value="总厂QHSE监督站">总厂QHSE监督站</option>
+				       <option value="分公司HSE督察中心">分公司HSE监督中心</option>
+				       <option value="工段级检查">工段级检查</option>
+				       <option value="分公司及以上检查">分公司及以上检查</option>
+				       <option value="不安全行为/状态">不安全行为/状态</option>
+				       <option value="事件">事件</option>
+				       <option value="其他">其他</option>
+				     </select>
+			      </div>
+			    </div>
+			  </div>
+			  
+			  <div class="layui-form-item" id="div-notsafe" style="display: none">
+			    <div class="layui-inline layui-col-xs6 layui-col-md6">
+			      <label class="text-font layui-form-label">不安全行为</label>
+			      <div class="layui-input-inline notsafe-select layui-form" lay-filter="notsafe-select">
+			        <select name="remarkfive" id="notsafe-select" lay-filter="notsafe" >
+			        </select>
+			      </div>
+			    </div>
+			    <div class="layui-inline layui-col-xs5 layui-col-md5">
+			      <label class="layui-form-label">具体行为</label>
+			      <div class="layui-input-inline notsafe-select layui-form" lay-filter="notsafe-select">
+			        <select name="remarksix" id="detail-select">
+				    </select>
+			      </div>
+			    </div>
+			  </div>
+			  
+			  <div class="layui-form-item">
+			      <label class="text-font layui-form-label">问题描述</label>
+			      <div class="layui-input-block">
+			        <textarea name="problemdescribe" id="problemdescribe" rows="5" style="width: 77%;" placeholder="请输入问题描述"></textarea>
+			      </div>
+			      <div class="show_div"></div>
+			  </div>
+			  
+			   <div class="layui-form-item" style="margin-bottom: 0px ">
+			   	<div class="layui-inline" style="margin-bottom: 30px ">
+			      	<div class="layui-form-item" style="margin-bottom: 10px ">
+	                    <label class="text-font layui-form-label">问题图片</label>
+	                    <!-- 多图片上传 -->
+	                    <div class="layui-input-inline" id="addProblemImg">
+	                         <button type="button" class="layui-btn layui-btn-sm layui-btn-normal primary-btn">
+	                         <i class="layui-icon">&#xe681;</i>选择图片</button> 
+	                    </div>
+	                </div>
+					<div id="problem-img" style="display: none;">
+					  <label class="layui-form-label">&nbsp;</label>
+					  <div class="layui-input-inline">
+						  <ul id="imgZmList" style="width:550px"></ul>
+					  </div>
+					</div>
+	  		  </div>
+			 </div>
+
+			  <div class="layui-form-item" id="problem_report" style="display: none;">
+			  	<div class="layui-col-md-offset5 layui-col-xs-offset5">
+			  		<button class="layui-btn saveBtn primary-btn" type="button" id="saveMassBtn">
+				           <i class="layui-icon">&#xe656;</i>问题批量上报</button> &nbsp;&nbsp;
+				    <button class="layui-btn saveBtn primary-btn" lay-submit lay-filter="saveBtn" id="saveBtn">
+				           <i class="layui-icon">&#xe621;</i>暂&nbsp;&nbsp;&nbsp;&nbsp;存&nbsp;&nbsp;</button> &nbsp;&nbsp;
+				    <button class="layui-btn primary-btn" type="button" lay-submit lay-filter="problem_report">
+				    		<i class="layui-icon">&#x1005;</i>问题上报</button>
+			    </div>
+			 </div>
+			 <div class="layui-form-item" id="problem_back" style="display: none;">
+			  	<div class="layui-col-md-offset6 layui-col-xs-offset7">
+				    <button class="layui-btn primary-btn" type="button" lay-submit lay-filter="problem_report_again">问题上报</button>
+			    </div>
+			 </div>
+		   </form>
+	  	</div>
+	 </div>
+	 
+	 <div id="problemMass" style="display: none;">
+	 	<form class="layui-form" style="width: 550px;">
+	 		<div class="layui-form-item">
+	 			<label class="layui-form-label" style="width: 550px; color: blue;">
+	 				<i class="layui-icon" style="color:blue;">&#xe66c;</i>提示：请先下载excel模板表，填入问题上报数据后上传excel表，然后点击上报
+	 			</label>
+	 		</div>
+	 		<div class="layui-form-item">
+			      <label class="text-font layui-form-label " style="width: 130px;">下载excel模板表</label>
+			      <div class="layui-input-block layui-form">
+			        <a href="/iot_process/report/download/template"><button id="template-btn" type="button" class="layui-btn layui-btn-sm primary-btn">
+				  		<i class="layui-icon">&#xe601;</i>&nbsp;下&nbsp;&nbsp;载&nbsp;</button></a>
+			      </div>
+	 		</div>
+	 		<div class="layui-form-item">
+			      <label class="text-font layui-form-label" style="width: 130px;">上传excel表</label>
+			      <div class="layui-input-block layui-form">
+			        <button id="upload-excel-btn" type="button" class="layui-btn layui-btn-sm primary-btn">
+				  		<i class="layui-icon">&#xe681;</i>&nbsp;上&nbsp;&nbsp;传&nbsp;</button>
+			      </div>
+	 		</div>
+	 		<div class="layui-form-item" style="display: none;" id="response-div">
+			      <label class="text-font layui-form-label" style="width: 130px;">上报结果：</label>
+			      <div class="layui-form" style="padding-top: 10px;">
+				       <p id="reponse-text"></p>
+			      </div>
+	 		</div>
+	 	</form>
+	 </div>
+	 
+	<script src="../jsPackage/js/jquery-1.9.1.min.js"></script>
+	<script src="../jsPackage/own/universal.js"></script>
+    <script type="text/javascript" src="../jsPackage/layui-v2.4.2/layui.js"></script>
+    <script type="text/javascript" src="../js/url_param.js"></script>
+	<script type="text/javascript" src="../jsPackage/js/jquery-ui.min.js"></script>
+	<script type="text/javascript" src="../js/autoFill.js"></script>
+	<script type="text/javascript" src="../jsPackage/js/Convert_Pinyin.js"></script>
+    <script type="text/javascript" src="../js/report.js">
+    </script>
+  </body>
+</html>

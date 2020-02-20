@@ -1,0 +1,160 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+ 
+<mapper namespace="cn.soa.dao.ProblemReportphoMapper">
+
+	<!-- ProblemReportpho===========================1、查询===============================  -->
+	
+	<select id="findByPiid"  resultType="cn.soa.entity.ProblemReportpho">
+		select 
+			t_problem_pho_id tProblemPhoId,
+			t_problem_rep_id tProblemRepId,
+			problemnum,
+			pho_name phoName,
+			pho_address phoAddress,
+			pho_dispiay_name phoDispiayName,
+			pho_upload_date phoUploadDate,
+			pho_upload_people phoUploadPeople,
+			remark,
+			remarkone,
+			remarktwo,
+			remarkthree,
+			piid
+		from 
+			cz_task_problem_reportpho 
+		where 
+			piid = #{piid}
+		and
+			remark=#{remark}
+	</select>
+	
+	<!-- ===========================2、新增===============================  -->
+	<!-- 2.1、添加一条问题报告数据 	-->
+	<!-- public Integer insertOne(ProblemReportpho pho) -->
+	<insert id="insertOne" parameterType="cn.soa.entity.ProblemReportpho">
+		INSERT INTO CZ_TASK_PROBLEM_REPORTPHO
+			<trim prefix="(" suffix=")" suffixOverrides=",">
+				<if test="tProblemPhoId != null and tProblemPhoId != ''">
+					T_PROBLEM_PHO_ID,
+				</if>
+				<if test="tProblemRepId != null and tProblemRepId != ''">
+					T_PROBLEM_REP_ID,
+				</if>
+				<if test="piid != null and piid != ''">
+					PIID,
+				</if>
+				<if test="problemnum != null and problemnum != ''">
+					PROBLEMNUM,
+				</if>
+				<if test="phoName != null and phoName != ''">
+					PHO_NAME,
+				</if>
+				<if test="phoAddress != null and phoAddress != ''">
+					PHO_ADDRESS,
+				</if>
+				<if test="phoDispiayName != null and phoDispiayName != ''">
+					PHO_DISPIAY_NAME,
+				</if>
+				<if test="phoUploadDate != null">
+					PHO_UPLOAD_DATE,
+				</if>
+				<if test="phoUploadPeople != null and phoUploadPeople != ''">
+					PHO_UPLOAD_PEOPLE,
+				</if>
+				<if test="remark != null and remark != ''">
+					REMARK,
+				</if>
+				<if test="remarkone != null and remarkone != ''">
+					REMARKONE,
+				</if>
+				<if test="remarktwo != null and remarktwo != ''">
+					REMARKTWO,
+				</if>
+				<if test="remarkthree != null and remarkthree != ''">
+					REMARKTHREE,
+				</if>
+			</trim>
+		VALUES
+			<trim prefix="(" suffix=")" suffixOverrides=",">
+				<if test="tProblemPhoId != null and tProblemPhoId != ''">
+					#{tProblemPhoId},
+				</if>
+				<if test="tProblemRepId != null and tProblemRepId != ''">
+					#{tProblemRepId},
+				</if>
+				<if test="piid != null and piid != ''">
+					#{piid},
+				</if>
+				<if test="problemnum != null and problemnum != ''">
+					PROBLEMNUM,
+				</if>
+				<if test="phoName != null and phoName != ''">
+					#{phoName},
+				</if>
+				<if test="phoAddress != null and phoAddress != ''">
+					#{phoAddress},
+				</if>
+				<if test="phoDispiayName != null and phoDispiayName != ''">
+					#{phoDispiayName},
+				</if>
+				<if test="phoUploadDate != null">
+					#{phoUploadDate},
+				</if>
+				<if test="phoUploadPeople != null and phoUploadPeople != ''">
+					#{phoUploadPeople},
+				</if>
+				<if test="remark != null and remark != ''">
+					#{remark},
+				</if>
+				<if test="remarkone != null and remarkone != ''">
+					#{remarkone},
+				</if>
+				<if test="remarktwo != null and remarktwo != ''">
+					#{remarktwo},
+				</if>
+				<if test="remarkthree != null and remarkthree != ''">
+					#{remarkthree},
+				</if>
+			</trim>
+	</insert>
+	
+	
+	<!-- ===========================3、修改===============================  -->
+	<!-- 3.1、修改暂存问题图片数据 	-->
+	<!-- public Integer updateTempPho(String tProblemRepId, String tempRepId, String piid) -->
+	<update id="updateTempPho">
+		UPDATE
+			CZ_TASK_PROBLEM_REPORTPHO
+		<set>
+			<if test="piid != null and piid != ''">
+				PIID = #{piid},
+			</if>
+			<if test="tProblemRepId != null and tProblemRepId != ''">
+				T_PROBLEM_REP_ID = #{tProblemRepId}
+			</if>
+		</set>
+		<where>
+			T_PROBLEM_REP_ID = #{tempRepId}
+		</where>
+		
+	</update>
+	
+	<!-- ===========================4、删除===============================  -->
+	<!-- 4.1、删除问题图片数据 	-->
+	<!-- public Integer deleteList(String[] imgList); -->
+			
+	<delete id="deleteList">
+		DELETE FROM 
+			CZ_TASK_PROBLEM_REPORTPHO
+		<where>
+			T_PROBLEM_PHO_ID IN
+			<foreach collection="array" index="index" item="item" open="(" separator="," close=")">
+				#{item}
+			</foreach>
+		</where>
+	</delete>
+	
+</mapper>
+ 
+
