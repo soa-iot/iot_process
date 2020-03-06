@@ -47,7 +47,6 @@ import cn.soa.service.inter.UnsafeSI;
 import cn.soa.service.inter.UserManagerSI;
 import cn.soa.utils.CommonUtil;
 import lombok.extern.slf4j.Slf4j;
-import oracle.jdbc.proxy.annotation.Post;
 
 /**
  * @ClassName: ReportC
