@@ -24,13 +24,13 @@
 			var ins1 = laydate.render({
 		    	elem: '#startTime',
 		    	type: 'date',
-		    	value: nowDate.getFullYear() + "-" + month + "-" + now
+		    	value: year + "-" + month + "-" + now
 			})
 			
 			var ins2 = laydate.render({
 		    	elem: '#endTime',
 		    	type: 'date',
-		    	value: year + "-" + month1+ "-" + now1
+		    	value: nowDate.getFullYear() + "-" + month1+ "-" + now1
 			})
 //			renderTime('#startTime');
 //			renderTime('#endTime');

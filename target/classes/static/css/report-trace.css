@@ -29,10 +29,10 @@ body,.layui-table-body tr{
 	font-size: small;
 }
 
-.layui-inline .layui-form-label{
+/* .layui-inline .layui-form-label{
 	width: 50px;
 	padding-left: 0px;
-}
+} */
 
 .layui-inline .layui-input-inline{
 	margin-right: 0px;

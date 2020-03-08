@@ -1,6 +1,5 @@
 package cn.soa.service.impl;
 
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -15,14 +14,14 @@ import org.springframework.stereotype.Service;
 
 import cn.soa.dao.EquipmentInfoMapper;
 import cn.soa.dao.ProblemInfoMapper;
-import cn.soa.dao.ProblemTypeAreaMapper;
 import cn.soa.dao.activity.HisActMapper;
+import cn.soa.entity.EventTotal;
+import cn.soa.entity.EventTotalData;
+import cn.soa.entity.FinishedTotal;
 import cn.soa.entity.ProblemInfo;
-import cn.soa.entity.ProblemTypeArea;
 import cn.soa.entity.UserOrganization;
 import cn.soa.entity.activity.HistoryAct;
 import cn.soa.service.inter.ProblemInfoSI;
-import javassist.expr.NewArray;
 
 /**
  * 问题评估业务逻辑层实现类
@@ -50,12 +49,10 @@ public class ProblemInfoS implements ProblemInfoSI {
 	 */
 	@Override
 	public List<ProblemInfo> queryProblempro(ProblemInfo problemInfo, Integer page, Integer pageSize,String startTime,String endTime) {
-		// TODO Auto-generated method stub
 		return problemInfoMapper.queryProblempro(problemInfo, page, pageSize,startTime,endTime);
 	}
 	@Override
 	public int count(ProblemInfo problemInfo,String startTime,String endTime) {
-		// TODO Auto-generated method stub
 		return problemInfoMapper.count(problemInfo,startTime,endTime);
 	}
 	/**
@@ -143,8 +140,10 @@ public class ProblemInfoS implements ProblemInfoSI {
 	public Integer updateProblemDescribeByPiid(ProblemInfo problemInfo, String equipName, String positionNum, String serialNum) {
 		try {
 			Integer rows = problemInfoMapper.updateProblemDescribeByPiid(problemInfo);
-			equipMapper.insertRepairInfo(problemInfo, equipName, positionNum, serialNum);
-			
+			if(problemInfo.getSupervisorydate() != null) {
+				equipMapper.insertRepairInfo(problemInfo, equipName, positionNum, serialNum);
+			}
+
 			return rows;
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -448,4 +447,122 @@ public class ProblemInfoS implements ProblemInfoSI {
 			return null;
 		}	
 	}
+	
+	/**
+	 * 事故事件情况统计
+	 * @param date
+	 * @return
+	 */
+	@Override
+	public List<EventTotal> findEventByApplydate(String date,String startTime,String endTime){
+		try {
+			List<EventTotalData> eventTotalDatas = problemInfoMapper.findEventByApplydate(date,startTime,endTime);
+			List<EventTotal> eventTotals = new ArrayList<EventTotal>();
+			
+			String[] eventTotalNames = {"生产办","综合办","HSE办公室","设备办","财务经营办","厂领导","净化工段","维修工段"};
+			for (int i = 0; i < eventTotalNames.length; i++) {
+				EventTotal eventTotal = new EventTotal();
+				eventTotal.setDepet(eventTotalNames[i]);
+				eventTotals.add(eventTotal);
+			}
+			
+			for (int i = 0; i < eventTotals.size(); i++) {
+				
+				for (int j = 0; j < eventTotalDatas.size(); j++) {
+					
+					EventTotal eventTotal = eventTotals.get(i);
+					EventTotalData eventTotalData = eventTotalDatas.get(j);
+					
+					int ticket_no = eventTotalData.getTicket_no();
+					String problemclass = eventTotalData.getProblemclass();
+					int con = eventTotalData.getCoun();
+					
+					if (eventTotal.getDepet().equals(eventTotalData.getDepet())) {
+						
+						eventTotal.setTotal(eventTotal.getTotal() + con);
+						if (ticket_no == 0) {
+							if ("其他".equals(problemclass)) {
+								eventTotal.setOrdinaryevent(con);
+							}else {
+								eventTotal.setOrdinaryeventUnsafebehavior(con);
+							}
+						}else if (ticket_no == 1) {
+							if ("其他".equals(problemclass)) {
+								eventTotal.setAccidentevent(con);
+							}else {
+								eventTotal.setAccidenteventUnsafebehavior(con);
+							}
+						}else if (ticket_no == 2) {
+							if ("其他".equals(problemclass)) {
+								eventTotal.setRisksevent(con);
+							}else {
+								eventTotal.setRiskseventUnsafebehavior(con);
+							}
+						}
+					}
+					
+				}
+			}
+			
+			EventTotal eventTotal = null;
+			
+			for (int i = 0; i < eventTotals.size(); i++) {
+				for (int j = i; j < eventTotals.size(); j++) {
+					eventTotal = eventTotals.get(i);
+					if (eventTotals.get(i).getTotal() < eventTotals.get(j).getTotal()) {
+						eventTotals.set(i, eventTotals.get(j));
+						eventTotals.set(j, eventTotal);
+					}
+				}
+			}
+
+			return eventTotals;
+		} catch (Exception e2) {
+			e2.printStackTrace();
+			return null;
+		}
+	}
+	
+	/**
+	 * 问题完成情况统计
+	 * @param date
+	 * @return
+	 */
+	public List<FinishedTotal> findFinishedByApplydate(String date,String startTime,String endTime){
+		try {
+			List<FinishedTotal> finishedTotalData = problemInfoMapper.findFinishedByApplydate(date,startTime,endTime);
+			
+			
+			String[] finishedTotalNames = {"生产办","综合办","HSE办公室","设备办","财务经营办","厂领导","净化工段","维修工段"};
+			List<FinishedTotal> finishedTotales =new ArrayList<FinishedTotal>();
+			for (int i = 0; i < finishedTotalNames.length; i++) {
+				FinishedTotal finishedTotal = new FinishedTotal();
+				finishedTotal.setDepet(finishedTotalNames[i]);
+				finishedTotales.add(finishedTotal);
+			}
+			
+			for (int i = 0; i < finishedTotales.size(); i++) {
+				for (int j = 0; j < finishedTotalData.size(); j++) {
+					if (finishedTotalData.get(j).getDepet().equals(finishedTotales.get(i).getDepet())) {
+						finishedTotales.set(i, finishedTotalData.get(j));
+					}
+				}
+			}
+			
+			 FinishedTotal eventTotal = null;
+			for (int i = 0; i < finishedTotales.size(); i++) {
+				for (int j = i; j < finishedTotales.size(); j++) {
+					eventTotal = finishedTotales.get(i);
+					if (finishedTotales.get(i).getDepets() < finishedTotales.get(j).getDepets()) {
+						finishedTotales.set(i, finishedTotales.get(j));
+						finishedTotales.set(j, eventTotal);
+					}
+				}
+			}
+			return finishedTotales;
+		} catch (Exception e2) {
+			e2.printStackTrace();
+			return null;
+		}
+	};
 }

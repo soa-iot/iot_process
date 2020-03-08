@@ -42,7 +42,7 @@ layui.use(['tree', 'layer', 'form'], function() {
 		    		 $("#comment_assign").val("");
 		    		 updateEstimated();
 		    		 layer.msg("作业安排成功,问题流转到:"+receivor,{icon:1, time: 2000, offset: '100px'}, function(){
-		    			 top.location.href = "http://10.89.90.118:10239/CZ_PIOTMS/index.action";
+		    			// top.location.href = "http://10.89.90.118:10239/CZ_PIOTMS/index.action";
 		    		 })
 		    	 }else{
 		    		 layer.msg("作业安排失败",{icon:2, time: 2000, offset: '100px'});
@@ -245,9 +245,10 @@ layui.use(['tree', 'layer', 'form'], function() {
 		var data = {};
 		
 		data.ticketNo = $("#ticketNo").val();
-		data.remark = $("sele").val();
+		data.remark = $("#sele").val();
 		data.rectificationperiod = ($("#sdate").val() == ''?null:$("#sdate").val());
-		//data.problemdescribe = $("#problem_describe").val();
+		data.problemdescribe = $("#problem_describe").val();
+		data.piid = piidp;
 		
 		$.ajax({
 			async: false,
@@ -256,7 +257,7 @@ layui.use(['tree', 'layer', 'form'], function() {
 			data: data,
 			dataType: "JSON",
 			success: function(json){
-				
+				console.log(josn);
 			},
 			error: function(){
 				

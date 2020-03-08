@@ -28,6 +28,7 @@ import cn.soa.entity.ProblemInfo;
 import cn.soa.entity.ProblemInfoVO;
 import cn.soa.entity.ProblemTypeArea;
 import cn.soa.entity.ResultJson;
+import cn.soa.service.inter.ActivitySI;
 import cn.soa.service.inter.ProblemInfoSI;
 import cn.soa.service.inter.ReportSI;
 import cn.soa.utils.ImportExcelUtil;
@@ -42,6 +43,8 @@ public class ReportS implements ReportSI {
 	private ProblemInfoMapper reportMapper;
 	@Autowired
 	private ProblemInfoSI probelInfoS;
+	@Autowired
+	private ActivitySI activityS;
 	@Autowired
 	private ProblemReportphoMapper phoMapper;
 	@Autowired
@@ -288,6 +291,62 @@ public class ReportS implements ReportSI {
 			return "全部问题上报失败，请检查网络是否正常";
 		}
 		return "部分问题上报成功，其中第"+errRecord.toString()+"行数据问题上报失败";
+	}
+	
+	/**
+	 * 删除问题上报记录
+	 * @param tProblemRepId - 问题上报主键ID
+	 */
+	@Override
+	@Transactional
+	public Boolean deleteProblemInfo(String tProblemRepId, String deleteComment, String piid, String resavepeople, boolean isFinished) {
+		log.info("-----开始删除问题上报记录-----");
+		try {
+			
+			//已整改的话就不用闭环流程
+			if(!isFinished) {
+				//闭环流程
+				String result = activityS.endProcessByPiidInComment(piid, deleteComment, resavepeople, "删除");
+				log.info("------result: {}", result);
+				if(result == null) {
+					log.info("-----删除问题上报记录失败-----");
+					return false;
+				}
+			}
+			
+			//删除问题上报表记录
+			reportMapper.deleteProblemInfo(tProblemRepId);
+			
+			log.info("-----删除问题上报记录成功-----");
+			return true;
+		}catch (Exception e) {
+			log.info("-----删除问题上报记录发生错误-----");
+			log.info("-{}", e);
+			throw new RuntimeException("删除问题上报记录发生错误");
+		}
+	}
+	
+	/**
+	 * 查询问题完成情况统计
+	 * @param startDate - 开始日期
+	 * @param endDate - 截止日期
+	 * @return
+	 */
+	@Override
+	public List<Map<String, String>> getReportFinishRecords(String startDate, String endDate) {
+		log.info("-----开始查询问题完成情况统计-----");
+		try {
+			List<Map<String, String>> result = problemTypeAreaMapper.findReportFinishRecords(startDate, endDate);
+			if(result == null) {
+				result = new ArrayList<>();
+			}
+			log.info("-----查询问题完成情况统计成功-----");
+			return result;
+		}catch (Exception e) {
+			log.info("-----查询问题完成情况统计发生错误-----");
+			log.info("-{}", e);
+			return null;
+		}
 	}
 }
 

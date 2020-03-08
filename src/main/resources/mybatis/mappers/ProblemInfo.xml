@@ -90,7 +90,7 @@
 									when  PROBLEMTYPE='生产办' then  '生产办' 
 									when  PROBLEMTYPE='综合办' then  '综合办' 
 								else null end problemtype 
-  			from  CZ_TASK_PROBLEM_REPORT_NEW where piid is not null
+  			from  CZ_TASK_PROBLEM_REPORT_NEW where piid is not null AND isdownload is null
 ) problemreport
            <where>			
     	<if test ="record!=null">
@@ -121,7 +121,7 @@
 								when  PROBLEMTYPE='生产办' then  '生产办' 
 								when  PROBLEMTYPE='综合办' then  '综合办' 
 								else null end problemtype 
-  			from  CZ_TASK_PROBLEM_REPORT_NEW 
+  			from  CZ_TASK_PROBLEM_REPORT_NEW WHERE isdownload is null
   		) a
   		           <where>			
     	<if test ="record!=null">
@@ -135,6 +135,7 @@
     	  <if test='endTime!=null'>
     		and to_char(applydate,'YYYY-MM-DD') &lt;=#{endTime}
     	 </if>
+    	 
     	  </where>	
   </select>
 		<!-- lixuefeng新增用于问题条件查询，返回list -->
@@ -206,7 +207,7 @@
 		from 
 			CZ_TASK_PROBLEM_REPORT_NEW 
 		where 
-			piid = #{piid}
+			piid = #{piid} AND isdownload is null
 	</select>
 	
 	<!-- 分页查找问题上报信息  -->
@@ -391,9 +392,6 @@
 					   <if test="record.rfid != null and record.rfid != ''">
 					   		and RFID = #{record.rfid}
 					   </if>
-					   <if test="record.isdownload != null and record.isdownload != ''">
-					   		and isdownload = #{record.isdownload}
-					   </if>
 					   <if test="record.problemnum != null">
 					   		and PROBLEMNUM = #{record.problemnum}
 					   </if>
@@ -478,6 +476,7 @@
 					<if test="limit != null and limit != ''">
 						and ROWNUM &lt;= (${limit}*${page})
 					</if>
+					and isdownload is null
 				</where>
 			) probleminfo 
 		<where>
@@ -671,9 +670,6 @@
 					   <if test="record.rfid != null and record.rfid != ''">
 					   		and RFID = #{record.rfid}
 					   </if>
-					   <if test="record.isdownload != null and record.isdownload != ''">
-					   		and isdownload = #{record.isdownload}
-					   </if>
 					   <if test="record.problemnum != null">
 					   		and PROBLEMNUM = #{record.problemnum}
 					   </if>
@@ -758,6 +754,7 @@
 					<if test="limit != null and limit != ''">
 						and ROWNUM &lt;= (${limit}*${page})
 					</if>
+					AND isdownload is null
 				</where>
 			) probleminfo 
 		<where>
@@ -929,9 +926,6 @@
 					   <if test="record.rfid != null and record.rfid != ''">
 					   		and RFID = #{record.rfid}
 					   </if>
-					   <if test="record.isdownload != null and record.isdownload != ''">
-					   		and isdownload = #{record.isdownload}
-					   </if>
 					   <if test="record.problemnum != null">
 					   		and PROBLEMNUM = #{record.problemnum}
 					   </if>
@@ -1013,6 +1007,7 @@
 			    	<if test="endTime!=null and endTime!=''">
 			    		and to_char(applydate,'YYYY-MM-DD') &lt;=#{endTime}
 			    	</if>
+			    	AND isdownload is null
 				</where>
 		</select>
 		
@@ -1178,9 +1173,6 @@
 					   <if test="record.rfid != null and record.rfid != ''">
 					   		and RFID = #{record.rfid}
 					   </if>
-					   <if test="record.isdownload != null and record.isdownload != ''">
-					   		and isdownload = #{record.isdownload}
-					   </if>
 					   <if test="record.problemnum != null">
 					   		and PROBLEMNUM = #{record.problemnum}
 					   </if>
@@ -1262,6 +1254,7 @@
 			    	<if test="endTime!=null and endTime!=''">
 			    		and to_char(applydate,'YYYY-MM-DD') &lt;=#{endTime}
 			    	</if>
+			    	AND isdownload is null
 				</where>
 		</select>
 	
@@ -1274,7 +1267,7 @@
 		FROM
 			CZ_TASK_PROBLEM_REPORT_NEW
 		WHERE
-			T_PROBLEM_REP_ID = #{RepId, jdbcType=VARCHAR} AND PIID is null			
+			T_PROBLEM_REP_ID = #{RepId, jdbcType=VARCHAR} AND PIID is null AND isdownload is null			
 	</select>
 	
 	<!-- 1.3、根据当前登录人或piid查找问题报告  -->
@@ -1325,13 +1318,14 @@
 	    			1 = 2
 	    		</otherwise>
 	    	</choose>
+	    	AND isdownload is null
 	    </where>			
 	</select>
 	
 	<!-- 1.4、根据问题报告主键id查找问题报告    -->
 	<!-- public Integer findMaxProblemNum() -->
 	<select id="findMaxProblemNum" resultType="java.lang.Integer">
-		SELECT MAX(PROBLEMNUM) ma FROM CZ_TASK_PROBLEM_REPORT_NEW
+		SELECT MAX(PROBLEMNUM) ma FROM CZ_TASK_PROBLEM_REPORT_NEW WHERE isdownload is null
 	</select>
 	
 	<!-- 1.5、根据用户名查找上报申请用户    -->
@@ -1343,7 +1337,7 @@
 	<!-- 1.6、查询所有未完成的问题上报任务    -->
 	<select id="findUnfinished" resultType="cn.soa.entity.ProblemInfo">
 		SELECT * FROM CZ_TASK_PROBLEM_REPORT_NEW 
-		WHERE PROBLEMSTATE = 'UNFINISHED'
+		WHERE PROBLEMSTATE = 'UNFINISHED' and isdownload is null
 	</select>
 	
 	<!-- 1.6、查询所有问题状态为‘未超期’和未完成的的问题   -->
@@ -1352,6 +1346,7 @@
 		WHERE REMARKTHREE like '%未超期%' 
 		and PROBLEMSTATE = 'UNFINISHED' 
 		and remark like '%指定日期%'
+		and isdownload is null
 	</select>
 	
 	<select id="selectUnfinishAndNoPosition" resultType="cn.soa.entity.ProblemInfo">
@@ -1361,9 +1356,147 @@
 			CZ_TASK_PROBLEM_REPORT_NEW
 		where
 			RFID !='其它设备' and problemstate ='UNFINISHED'
-			order by APPLYDATE DESC
+			and isdownload is null
+		order by APPLYDATE DESC
 	</select>
 	
+	<!-- 问题完成情况统计
+	List<FinishedTotal> findFinishedByApplydate(String date,String startTime,String endTime); -->
+	<select id="findFinishedByApplydate" resultType="cn.soa.entity.FinishedTotal">
+	
+		SELECT  
+			DEPET,sum(depets) depets,
+			sum(FINISHED) FINISHED,
+			sum(normalfinished) normalfinished,
+			sum(DirectFINISHED) DirectFINISHED,
+			sum(UNFINISHED) UNFINISHED 
+		from (
+			SELECT 
+				CASE  
+			 		when  d.DEPET='化验班' then  '净化工段' 
+					when  d.DEPET='分析班' then  '净化工段'
+					when  d.DEPET='行政班' then  '净化工段'
+					when  d.DEPET='净化1班' then  '净化工段'
+					when  d.DEPET='净化2班' then  '净化工段' 
+					when  d.DEPET='净化3班' then  '净化工段' 
+					when  d.DEPET='净化4班' then  '净化工段' 
+					when  d.DEPET='电站' 	 then  '维修工段' 
+					when  d.DEPET='电站班' then  '维修工段'
+					when  d.DEPET='维修班' then  '维修工段' 
+					when  d.DEPET='仪表班' then  '维修工段'
+					when  d.DEPET='钳工班' then  '维修工段'  
+					when  d.DEPET='管焊班' then  '维修工段' 
+					when  d.DEPET='电工班' then  '维修工段'
+					when  d.DEPET='生产办公室' then  '生产办'
+					when  d.DEPET='财务办公室' then  '财务经营办'  
+					when  d.DEPET='设备办公室' then  '设备办'  
+					else d.DEPET end DEPET,
+				depets,
+				FINISHED,
+				normalfinished,
+				DirectFINISHED,UNFINISHED
+			from (
+				SELECT 
+					DEPET ,
+					count(depet) depets,
+					sum(DECODE(PROBLEMSTATE,'FINISHED',1,0)) FINISHED,
+					sum(DECODE(PROBLEMSTATE,'UNFINISHED',1,0)) UNFINISHED
+				from 
+					CZ_TASK_PROBLEM_REPORT_NEW
+				<where>
+					isdownload is null
+					<if test="date != null and date != ''">
+						and TO_CHAR(APPLYDATE,'yyyy-mm') = #{date} 
+					</if>
+					<if test="startTime != null and startTime != ''">
+						and APPLYDATE &gt;= TO_DATE(#{startTime},'yyyy-mm-dd hh24:mi:ss')
+					</if>
+					<if test="endTime != null and endTime != ''">
+						and APPLYDATE &lt;= TO_DATE(#{endTime},'yyyy-mm-dd hh24:mi:ss')
+					</if>
+				</where>
+				GROUP BY DEPET
+			) d LEFT JOIN (
+				SELECT  
+				 	DEPET ,
+					sum(DECODE(ACT_NAME_,'作业验收',1,0)) normalfinished,
+					sum(DECODE(ACT_NAME_,'闭环流程',1,0))-sum(DECODE(ACT_NAME_,'作业验收',1,0)) DirectFINISHED  
+				FROM 
+					ACT_HI_ACTINST a, (
+						SELECT 
+						piid,
+						depet,
+						APPLYDATE 
+					FROM 
+						CZ_TASK_PROBLEM_REPORT_NEW 
+					<where>
+						PROBLEMSTATE = 'FINISHED'
+						and isdownload is null
+						<if test="date != null and date != ''">
+							and TO_CHAR(APPLYDATE,'yyyy-mm') = #{date} 
+						</if>
+						<if test="startTime != null and startTime != ''">
+							and APPLYDATE &gt;= TO_DATE(#{startTime},'yyyy-mm-dd hh24:mi:ss')
+						</if>
+						<if test="endTime != null and endTime != ''">
+							and APPLYDATE &lt;= TO_DATE(#{endTime},'yyyy-mm-dd hh24:mi:ss')
+						</if>
+					</where>
+					) b
+				<where>
+					a.PROC_INST_ID_ = b.piid
+				</where>
+					GROUP BY DEPET) c ON d.DEPET = c.DEPET)
+	GROUP BY DEPET
+
+	</select>
+	
+	<!-- 事故事件情况统计
+	List<EventTotal> findEventByApplydate(String date) -->
+	<select id="findEventByApplydate" resultType="cn.soa.entity.EventTotalData">
+		select 
+			DEPET,TICKET_NO,PROBLEMCLASS,count(1) coun 
+		from (
+			SELECT 
+			 	CASE  
+			 		when  DEPET='化验班' then  '净化工段' 
+					when  DEPET='分析班' then  '净化工段'
+					when  DEPET='行政班' then  '净化工段'
+					when  DEPET='净化1班' then  '净化工段'
+					when  DEPET='净化2班' then  '净化工段' 
+					when  DEPET='净化3班' then  '净化工段' 
+					when  DEPET='净化4班' then  '净化工段' 
+					when  DEPET='电站' 	 then  '维修工段' 
+					when  DEPET='电站班' then  '维修工段'
+					when  DEPET='维修班' then  '维修工段' 
+					when  DEPET='仪表班' then  '维修工段'
+					when  DEPET='钳工班' then  '维修工段'  
+					when  DEPET='管焊班' then  '维修工段' 
+					when  DEPET='电工班' then  '维修工段'
+					when  DEPET='生产办公室' then  '生产办'
+					when  DEPET='财务办公室' then  '财务经营办'  
+					when  DEPET='设备办公室' then  '设备办'  
+					else DEPET end DEPET ,
+					piid,TICKET_NO,
+				CASE  when  PROBLEMCLASS='不安全行为/状态' then  '不安全行为/状态' 
+					else '其他' end PROBLEMCLASS
+			from 
+				CZ_TASK_PROBLEM_REPORT_NEW 
+				<where>
+					isdownload is null and TICKET_NO is not null
+					<if test="date != null and date != ''">
+						and TO_CHAR(APPLYDATE,'yyyy-mm') = #{date} 
+					</if>
+					<if test="startTime != null and startTime != ''">
+						and APPLYDATE &gt;= TO_DATE(#{startTime},'yyyy-mm-dd hh24:mi:ss')
+					</if>
+					<if test="endTime != null and endTime != ''">
+						and APPLYDATE &lt;= TO_DATE(#{endTime},'yyyy-mm-dd hh24:mi:ss')
+					</if>
+				</where>) 
+		GROUP BY DEPET,TICKET_NO,PROBLEMCLASS
+
+	</select>
 	
 	<!-- ===========================2、新增===============================  -->
 	<!-- 2.1、添加一条问题报告数据 	-->
@@ -1937,9 +2070,6 @@
 			   <if test="rfid != null and rfid != ''">
 			   		RFID = #{rfid},
 			   </if>
-			   <if test="isdownload != null and isdownload != ''">
-			   		isdownload = #{isdownload},
-			   </if>
 			   <if test="problemnum != null">
 			   		PROBLEMNUM = #{problemnum},
 			   </if>
@@ -1986,6 +2116,16 @@
 			<where>
 				T_PROBLEM_REP_ID = #{tProblemRepId}
 			</where>
+	</update>
+	
+	<!-- 3.2 删除问题上报记录 -->
+	<!-- Integer deleteProblemInfo(String tProblemRepId); -->
+	<update id="deleteProblemInfo">
+		UPDATE 
+			CZ_TASK_PROBLEM_REPORT_NEW 
+		SET ISDOWNLOAD = '0'
+		WHERE
+			T_PROBLEM_REP_ID = #{tProblemRepId}
 	</update>
 
 	<!-- 根据流程标识字段更新问题问题评估字段 -->

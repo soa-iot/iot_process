@@ -1,11 +1,15 @@
 package cn.soa.dao;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
+import cn.soa.entity.EventTotal;
+import cn.soa.entity.EventTotalData;
+import cn.soa.entity.FinishedTotal;
 import cn.soa.entity.ProblemInfo;
 import cn.soa.entity.ProblemInfoVO;
 import cn.soa.entity.UserOrganization;
@@ -229,4 +233,29 @@ public interface ProblemInfoMapper {
 	 * @return: int        
 	 */
 	List<ProblemInfo> selectUnfinishAndNoPosition();
+	
+	/**
+	 * 事故事件情况统计
+	 * @param date
+	 * @return
+	 */
+	List<EventTotalData> findEventByApplydate(@Param("date")String date,
+			@Param("startTime")String startTime,
+			@Param("endTime")String endTime);
+	
+	/**
+	 * 问题完成情况统计
+	 * @param date
+	 * @return
+	 */
+	List<FinishedTotal> findFinishedByApplydate(@Param("date")String date,
+			@Param("startTime")String startTime,
+			@Param("endTime")String endTime);
+	
+	/**   
+	 * @Title: deleteProblemInfo   
+	 * @Description: 删除问题上报记录
+	 * @return: int        
+	 */
+	Integer deleteProblemInfo(String tProblemRepId);
 }
