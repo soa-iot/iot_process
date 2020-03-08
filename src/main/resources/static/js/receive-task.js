@@ -30,7 +30,38 @@ layui.use([ 'element', 'layer' ], function() {
 var piid = GetQueryString("piid");
 
 layui.use('table', function(){
-	  var table = layui.table;
+	  var table = layui.table
+	  ,tabtada = null;
+		
+		$.ajax({  
+			async:false,
+			url : "/iot_process/process/nodes/all/piid/"+piid,  
+			type : "get",
+			dataType : "json", 
+			success: function( json) {
+				console.log(json);
+				if (json.state==0) {
+					console.log(json.data);
+					if (json.data[json.data.length - 1].tenant_ID_ == null) {
+						var data = json.data[json.data.length - 1];
+						console.log(data);
+						tabtada = {
+								"nodeComment": "待处理...",
+								"nodeName": json.data[json.data.length - 1].act_NAME_,
+								"nodeExecutor": json.data[json.data.length - 1].assignee_,
+								"nodeEndTime": " ",
+								"nodeId": " "
+						};
+					}else{
+						tabtada = null;
+					}
+					
+
+				}else{
+					//layer.msg("提交失败！",{time: 3000,icon:2,offset:"100px"});
+				}
+			}  
+		});
 	  
 	  //第一个实例
 	  table.render({
@@ -39,6 +70,10 @@ layui.use('table', function(){
 	   // ,page: true //开启分页
 	    ,parseData: function(res) { //res 即为原始返回的数据
 	    	//后端返回值： ResultJson<List<Map<String,Object>>>
+	    	
+	    	if (tabtada != null) {
+				res.data[res.data.length] = tabtada;
+			}
             return {
                 "code": res.state, //解析接口状态
                 "msg": res.message, //解析提示文本
@@ -50,7 +85,13 @@ layui.use('table', function(){
 	      {field: 'nodeExecutor', title: '处理人', width:'25%'}
 	      ,{field: 'nodeName', title: '处理节点', width:'25%'}
 	      ,{field: 'nodeComment', title: '处理说明', width:'25%'}
-	      ,{field: 'nodeEndTime', title: '时间', width:'25%',templet:"<div>{{layui.util.toDateString(d.nodeEndTime,'yyyy-MM-dd HH:mm:ss')}}</div>"} 
+	      ,{field: 'nodeEndTime', title: '时间', width:'25%',templet:function(d){
+			  if(d.nodeEndTime ==" "){
+				  return d.nodeEndTime;
+			  }else{
+				  return layui.util.toDateString(d.nodeEndTime,'yyyy-MM-dd HH:mm:ss');
+			  }
+	  }} 
 	    ]]
 	  });
 

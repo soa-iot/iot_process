@@ -64,4 +64,19 @@ public interface ReportSI {
 	 * 读取excel表批量问题上报
 	 */
 	String massProblemReport(InputStream is, String fileName, String resavepeople, String depet);
+	
+	/**   
+	 * @Title: deleteProblemInfo   
+	 * @Description: 删除问题上报记录
+	 * @return: int        
+	 */
+	Boolean deleteProblemInfo(String tProblemRepId, String deleteComment, String piid, String resavepeople, boolean isFinished);
+	
+	/**
+	 * 查询问题完成情况统计
+	 * @param startDate - 开始日期
+	 * @param endDate - 截止日期
+	 * @return
+	 */
+	List<Map<String,String>> getReportFinishRecords(String startDate, String endDate);
 }

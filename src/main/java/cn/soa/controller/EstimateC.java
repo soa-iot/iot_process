@@ -8,6 +8,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import cn.soa.entity.EventTotal;
+import cn.soa.entity.FinishedTotal;
 import cn.soa.entity.LayuiTree;
 import cn.soa.entity.ProblemInfo;
 import cn.soa.entity.ProblemReportpho;
@@ -139,4 +141,53 @@ public class EstimateC {
 		
 	}
 	
+	/**
+	 * 事故事件情况统计
+	 * @param date
+	 * @return
+	 */
+	@GetMapping("eventtotal")
+	public ResultJson<List<EventTotal>> findEventByApplydate(String date,String startTime,String endTime){
+		
+		if (startTime != null && !"".equals(startTime)) {
+			startTime += " 00:00:00";
+		}
+		if (endTime != null && !"".equals(endTime)) {
+			endTime += " 23:59:59";
+		}
+		
+		
+		List<EventTotal> eventTotals = problemInfoSI.findEventByApplydate(date,startTime,endTime);
+		
+		if (eventTotals != null) {
+			return new ResultJson<List<EventTotal>>(0,"查询成功",eventTotals);
+		}else {
+			return new ResultJson<List<EventTotal>>(1,"查询数据为空",eventTotals);
+		}
+	}
+	
+	/**
+	 * 问题完成情况统计
+	 * @param date
+	 * @return
+	 */
+	@GetMapping("finished")
+	public ResultJson<List<FinishedTotal>> findFinishedByApplydate(String date,String startTime,String endTime){
+		
+		if (startTime != null && !"".equals(startTime)) {
+			startTime += " 00:00:00";
+		}
+		if (endTime != null && !"".equals(endTime)) {
+			endTime += " 23:59:59";
+		}
+		
+		
+		List<FinishedTotal> finishedTotals = problemInfoSI.findFinishedByApplydate(date,startTime,endTime);
+		
+		if (finishedTotals != null) {
+			return new ResultJson<List<FinishedTotal>>(0,"查询成功",finishedTotals);
+		}else {
+			return new ResultJson<List<FinishedTotal>>(1,"查询数据为空",finishedTotals);
+		}
+	}
 }

@@ -119,18 +119,19 @@ layui.use(['jquery','form','layer','table','excel'], function(){
 		    };
 		},
 		cols: [[{field:'id', title:'编号', width:'5%', sort:false, type:'numbers', fixed:'left', align:'center'},
-			{field:'applydate', title:'上报日期', width:'10%', sort:true, align:'center'},    //, templet:"<div>{{layui.util.toDateString(d.applydate,'yyyy-MM-dd HH:mm:ss')}}</div>"
+			{field:'problemdescribe', title:'问题描述', width:'30%', sort:true, align:'center'},
+			{field:'maintenanceman', title:'责任人', width:'10%', sort:true, align:'center'}, 
+			{field:'applydate', title:'上报日期', width:'10%', sort:true, align:'center'}, //, templet:"<div>{{layui.util.toDateString(d.applydate,'yyyy-MM-dd HH:mm:ss')}}</div>"
+			{field:'rectificationperiod', title:'整改日期', width:'8%', sort:true, align:'center'},
+			{field:'remarkthree', title:'是否超期', width:'8%', sort:true, align:'center'},
+			{field:'problemstate', title:'问题状态', width:'7%', sort:true, align:'center'},
 			{field:'applypeople', title:'上报人', width:'7%', sort:true, align:'center'},
 			{field:'welName', title:'装置单元', width:'9%', sort:true, align:'center'},
 			{field:'problemclass', title:'问题类别', width:'9%', sort:true, align:'center'},
 			{field:'profession', title:'专业', width:'7%', sort:true, align:'center'},
 			{field:'depet', title:'部门', width:'8%', sort:true, align:'center'},
-			{field:'rectificationperiod', title:'整改日期', width:'8%', sort:true, align:'center'},
-			{field:'remarkthree', title:'是否超期', width:'8%', sort:true, align:'center'},
-			{field:'problemdescribe', title:'问题描述', width:'16%', sort:true, align:'center'},
-			{field:'problemstate', title:'问题状态', width:'7%', sort:true, align:'center'},
 			{field:'piid', title:'流程ID', width:'8%', sort:false, hide:true},
-			{fixed:'right',  title:'处理过程', minWidth:105, width:'15.7%', align:'center', toolbar:'#barBtn'} ]]  
+			{fixed:'right',  title:'处理过程', minWidth:105, width:'15%', align:'center', toolbar:'#barBtn'} ]]  
 	});
 	
 	if(areaName != null && beginTime != null && endTime != null){
@@ -242,6 +243,7 @@ layui.use(['jquery','form','layer','table','excel'], function(){
     			'dueDate': $("#dueDate").val(),
     			'duedateRange': $("#duedateRange").val(),
     			'remarkthree':  $("#remarkthree").val(),
+    			'ticketNo': $("#ticketNo").val(),
     			'piidArray': piids
 			},
 			dataType: "json",
@@ -262,13 +264,14 @@ layui.use(['jquery','form','layer','table','excel'], function(){
 			    	}
 					// 1. 数组头部新增表头
 					data.unshift({
-						applydate: '上报日期',
-						applypeople: '上报人', 
-						depet: '部门',
+						problemdescribe: '问题描述',
 						maintenanceman: '问题待处理责任人',
-						remarktwo: '当前进度',
+						applydate: '上报日期',
 						rectificationperiod: '计划完成时间',
 						remarkthree: '是否超期',
+						applypeople: '上报人', 
+						depet: '部门',
+						remarktwo: '当前进度',
 						problemtype: '属地单位',
 						welName: '问题区域',
 						profession: '专业',
@@ -276,19 +279,17 @@ layui.use(['jquery','form','layer','table','excel'], function(){
 						problemclass: '问题类别',
 						remarkfive: '不安全行为',
 						remarksix: '具体行为',
-						problemdescribe: '问题描述',
 						problemstate: '问题状态',
 						
 					});
 					//2. 过滤多余属性
-					var exportData = excel.filterExportData(data, ['applydate', 'applypeople', 'depet', 'maintenanceman', 'remarktwo', 
-						'rectificationperiod', 'remarkthree', 'problemtype', 'welName', 'profession', 'rfid', 'problemclass', 'remarkfive', 'remarksix', 'problemdescribe', 'problemstate']);
-					console.log(123);
+					var exportData = excel.filterExportData(data, ['problemdescribe','maintenanceman','applydate','rectificationperiod', 'remarkthree', 'problemstate', 'applypeople', 'depet', 'remarktwo', 
+						 'problemtype', 'welName', 'profession', 'rfid', 'problemclass', 'remarkfive', 'remarksix']);
 					//2.1 设置列宽,N列为180， 其他列默认为100
 					var colConf = excel.makeColConfig({
-						'A': 120,
-					    'O': 200,
-					    'P': 100
+						'A': 250, 'B': 150, 'C': 120, 'D': 100, 'E': 100,
+						'F': 100, 'G': 100, 'H': 100, 'I': 100, 'J': 100,
+						'K': 100, 'L': 100, 'M': 100, 'N': 100, 'O': 100, 'P': 100
 					}, 100);
 					
 					// 2.2 调用设置样式的函数，传入设置的范围，支持回调
@@ -364,13 +365,14 @@ layui.use(['jquery','form','layer','table','excel'], function(){
     			'duedateRange': $("#duedateRange").val(),
     			'remarkthree':  $("#remarkthree").val(), 
     			'remark': $("#remark").val(),
+    			'ticketNo': $("#ticketNo").val(),
     			'sortField': sortField,
     			'sortType': sortType,
     			'piidArray': piids_
     	   }
     	})
 	}
-	
+	 
 	/**
 	 * 监听头工具栏事件 
 	 */ 
@@ -378,20 +380,57 @@ layui.use(['jquery','form','layer','table','excel'], function(){
 	  table.on('toolbar(reportTrace)', function(obj){
 	     //var checkStatus = table.checkStatus(obj.config.id);
 		 console.log(obj);
+		var myself = $.trim($(".layui-input-block .layui-form-radioed").text());
+		if(myself.match("否") == null){
+			$.ajax({
+	    		  async: false,
+	    		  type: 'GET',
+	    		  url: '/iot_process/process/userId/piid',
+	    		  data: {"userId": resavepeople},
+	    		  dataType: 'json',
+	    		  success: function(json){
+	    			  if(json.state == 0){
+	    				  piids = json.data;
+	    			  }
+	    		  }
+	    	  })
+	    	  piids = (piids == null||piids == '')?['nodata']:piids;
+	    	  //isreload = true;
+		}else{
+			piids = '';
+		}
+		
 		 switch(obj.event){
 		 case 'reset':
 			 console.log('reset');
 			 problemState = '';
-			 $("#form-query select").val('');
-			 $(".layui-unselect").val('');
-			 $("#form-query input").val('');
+			 //清空表单
+			 form.val("form-query", {  //所在元素属性 lay-filter="" 对应的值
+				 "profession": "",
+				 "problemdescribe": "",
+				 "startdate": "",
+				 "enddate": "",
+				 "problemclass": "",
+				 "welName": "",
+				 "depet": "",
+				 "problemstate": "",
+				 "applypeople": "",
+				 "maintenanceman": "",
+				 "remark": "",
+				 "ticketNo": "",
+				 "dueDate": "",
+				 "duedateRange": "",
+				 "remarkthree": "",
+				 "myself": "no" 
+			
+			 });
+			 form.render();
 			 break;
 	      case 'querydata':
 	    	console.log('querydata');
 	    	problemState = '';
 	    	isreload = true;
-	    	piids = '';
-	    	reloadTable(null, null, null);
+	    	reloadTable(null, null, piids);
 	        break;
 	      case 'querydata-all':
 	    	  console.log('querydata-all');
@@ -418,6 +457,7 @@ layui.use(['jquery','form','layer','table','excel'], function(){
 	      			'dueDate': '',
 	      			'duedateRange': '',
 	      			'remarkthree':  '',
+	      			'ticketNo': '',
 	      			'sortField': null,
 	    			'sortType': null,
 	      			'piidArray': ''
@@ -463,26 +503,7 @@ layui.use(['jquery','form','layer','table','excel'], function(){
 	      case 'export':
 	    	  console.log('export');
 	    	  exportExcel();
-	    	  break;
-	      case 'queryself':
-	    	  console.log('queryself');
-	    	  problemState = '';
-	    	  $.ajax({
-	    		  async: false,
-	    		  type: 'GET',
-	    		  url: '/iot_process/process/userId/piid',
-	    		  data: {"userId": resavepeople},
-	    		  dataType: 'json',
-	    		  success: function(json){
-	    			  if(json.state == 0){
-	    				  piids = json.data;
-	    			  }
-	    		  }
-	    	  })
-	    	  piids = (piids == null||piids == '')?['nodata']:piids;
-	    	  isreload = true;
-	    	  reloadTable(null, null, piids);
-	    	  
+	    	  break; 
 	    };
 	  });
 	

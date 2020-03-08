@@ -5,6 +5,8 @@ import java.util.Map;
 
 import org.springframework.stereotype.Service;
 
+import cn.soa.entity.EventTotal;
+import cn.soa.entity.FinishedTotal;
 import cn.soa.entity.ProblemInfo;
 import cn.soa.entity.ProblemTypeArea;
 import cn.soa.entity.UserOrganization;
@@ -105,4 +107,17 @@ public interface ProblemInfoSI {
 	 */  
 	List<ProblemInfo> findUnfinishAndNoPositionS();
 	
+	/**
+	 * 事故事件情况统计
+	 * @param date
+	 * @return
+	 */
+	List<EventTotal> findEventByApplydate(String date,String startTime,String endTime);
+	
+	/**
+	 * 问题完成情况统计
+	 * @param date
+	 * @return
+	 */
+	List<FinishedTotal> findFinishedByApplydate(String date,String startTime,String endTime);
 }

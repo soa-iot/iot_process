@@ -31,21 +31,65 @@
 			ON pta1.parent_id = pta2.problem_id ORDER BY pta2.problem_id DESC, pta1.problem_id ASC
 
 	</select>
-
 	
-	<!-- ===========================2、新增===============================  -->
-	<!-- 2.1、添加一条问题报告数据 	-->
-	<!-- public Integer insertOne(ProblemReportpho pho) -->
+	<!-- 1.2、查询问题完成情况统计	-->
+	<!-- List<Map<String,String>> findReportFinishRecords(
+			@Param("startDate") String startDate, @Param("endDate") String endDate); -->
+	<select id="findReportFinishRecords" resultType="map"> 
+		SELECT
+			org.department departName, COUNT(1) total, COUNT(CASE WHEN rep.PROBLEMSTATE='FINISHED' THEN 1 ELSE NULL END) finished, COUNT(CASE WHEN rep.PROBLEMSTATE='UNFINISHED' THEN 1 ELSE NULL END) unFinished
+		FROM
+					(
+						SELECT
+							rep.*, 
+							(case when INSTR(rep.MAINTENANCEMAN, ',')>0 then SUBSTR(rep.MAINTENANCEMAN,0,(INSTR(rep.MAINTENANCEMAN, ',')-1))
+								else rep.MAINTENANCEMAN
+								END) OWNER
+							FROM 
+								CZ_TASK_PROBLEM_REPORT_NEW rep
+							<where>
+								rep.ISDOWNLOAD is NULL
+								<if test="startDate != null and startDate != ''">
+									AND to_char(applydate,'YYYY-MM-DD') &gt;=#{startDate}
+								</if>
+								<if test="endDate != null and endDate != ''">
+									AND to_char(applydate,'YYYY-MM-DD') &lt;=#{endDate}
+								</if>
+							</where>
+					) rep JOIN 
+					(
+						SELECT
+							org.*,
+							(
+								CASE  when  org.PARENT_ID='化验班' then  '净化工段' 
+											when  org.PARENT_ID='分析班' then  '净化工段'
+											when  org.PARENT_ID='行政班' then  '净化工段'
+											when  org.PARENT_ID='净化1班' then  '净化工段'
+											when  org.PARENT_ID='净化2班' then  '净化工段' 
+											when  org.PARENT_ID='净化3班' then  '净化工段' 
+											when  org.PARENT_ID='净化4班' then  '净化工段' 
+											when  org.PARENT_ID='电站' 	 then  '维修工段' 
+											when  org.PARENT_ID='电站班' then  '维修工段'
+											when  org.PARENT_ID='维修班' then  '维修工段' 
+											when  org.PARENT_ID='仪表班' then  '维修工段'
+											when  org.PARENT_ID='钳工班' then  '维修工段'  
+											when  org.PARENT_ID='管焊班' then  '维修工段' 
+											when  org.PARENT_ID='电工班' then  '维修工段' 
+											else org.PARENT_ID end
+							) department
+						FROM
+							IOT_USER_ORGANIZATION org
+					)org ON rep.OWNER=org.NAME
+		GROUP BY
+			org.department
+		ORDER BY total DESC
+	</select>
 
+	<!-- ===========================2、新增===============================  -->
 	
 	<!-- ===========================3、修改===============================  -->
-	<!-- 3.1、修改暂存问题图片数据 	-->
-	<!-- public Integer updateTempPho(String tProblemRepId, String tempRepId, String piid) -->
-	
 	
 	<!-- ===========================4、删除===============================  -->
-	<!-- 4.1、删除问题图片数据 	-->
-	<!-- public Integer deleteList(String[] imgList); -->
 			
 	
 </mapper>

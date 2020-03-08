@@ -421,4 +421,46 @@ public class ReportC {
 		log.info("------插入检维修信息成功------");
 		return new ResultJson<Void>(ResultJson.SUCCESS, "插入检维修信息成功");
 	}
+	
+	/**
+	 * 上报问题删除
+	 * @param tProblemRepId - 上报问题ID
+	 * @return
+	 */
+	@RequestMapping("/problem/delete")
+	public ResultJson<Boolean> deleteProblemInfo(String tProblemRepId, String deleteComment, String piid, String resavepeople, boolean isFinished){
+		System.out.println("进入ReportC...deleteProblemInfo...");
+		log.info("------问题上报主键 tProblemRepId：{}", tProblemRepId);
+		log.info("------流程ID piid：{}", piid);
+		log.info("------删除原因 deleteComment：{}", deleteComment);
+		log.info("------当前登录人 resavepeople：{}", resavepeople);
+		log.info("-----是否已整改 isFinished: {}", isFinished);
+		
+		try {
+			Boolean result = reportS.deleteProblemInfo(tProblemRepId, deleteComment, piid, resavepeople, isFinished);
+			if(result) {
+				return new ResultJson<>(ResultJson.SUCCESS, "删除问题上报记录成功", result);
+			}
+			return new ResultJson<>(ResultJson.ERROR, "删除问题上报记录失败", result);
+		}catch (RuntimeException e) {
+			return new ResultJson<>(ResultJson.ERROR, "删除问题上报记录失败", false);
+		}
+	}
+	
+	/**
+	 * 查询问题完成情况统计
+	 * @param startDate - 开始日期
+	 * @param endDate - 截止日期
+	 * @return
+	 */
+	@RequestMapping("/finish/record")
+	public ResultJson<List<Map<String, String>>> getReportFinishRecords(String startDate, String endDate){
+		System.out.println("进入ReportC...getReportFinishRecords...");
+		log.info("------查询时间 startDate：{}, endDate: {}", startDate, endDate);
+		List<Map<String, String>> result = reportS.getReportFinishRecords(startDate, endDate);
+		if(result != null) {
+			return new ResultJson<>(ResultJson.SUCCESS, "查询问题完成情况统计成功", result);
+		}
+		return new ResultJson<>(ResultJson.ERROR, "查询问题完成情况统计失败", result);
+	}
 }

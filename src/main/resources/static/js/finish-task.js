@@ -66,8 +66,6 @@ layui.use(['form','tree','jquery','upload','layer','table'], function(){
 		  if($('#imgZmList').children().length == 0){
 			  layer.msg("现场施工图必须上传", {icon: 7, offset: '100px'});
 			  return;
-		  }else{
-			  finishTask();
 		  }
 		  console.log(data.field) //当前容器的全部表单字段，名值对形式：{name: value}
 		  //上传问题图片
