@@ -11,6 +11,7 @@ import java.util.Map;
 import javax.management.RuntimeErrorException;
 import javax.transaction.Transactional;
 
+import org.activiti.engine.history.HistoricTaskInstance;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -20,9 +21,12 @@ import cn.soa.dao.MonitorMapper;
 import cn.soa.entity.Monitor;
 import cn.soa.entity.TodoTask;
 import cn.soa.entity.User;
+import cn.soa.entity.activity.IdentityLink;
 import cn.soa.entity.bo.MQIdempotent;
+import cn.soa.service.inter.AcitivityIdentitySI;
 import cn.soa.service.inter.RollBackProcessInter;
 import cn.soa.utils.JavaUtils;
+import cn.soa.utils.SpringUtils;
 import lombok.extern.slf4j.Slf4j;
 
 /**
@@ -65,25 +69,70 @@ public class RollBackProcessS implements RollBackProcessInter{
 		
 		//查找所有的代办任务
 		List<TodoTask> unfinishedTasks = activityS.getAllTasksByUsername(user.getName());
+		if( unfinishedTasks.size()==0) {
+			log.info("---S--unfinishedTasks-当前离职人员没有待办任务");
+			return true; 
+		}
 		log.info("---S--unfinishedTasks-" + unfinishedTasks);
 			
 		//task过滤(规则：1、两个人执行的不会退； 2、一个人执行的+上一个节点执行人只有他)
-		
+		List<String> backPiids = new ArrayList<String>();
+		try {
+			backPiids = filter( unfinishedTasks, user );
+		} catch (Exception e) {
+			e.printStackTrace();
+			log.info("获取需要执行回退的任务失败");
+			return false;
+		}
 		
 		//执行回退
-		List<String> piids = new ArrayList<String>();
-		unfinishedTasks.forEach(t ->{
-			piids.add(t.getPiid());
-		});
+		if(backPiids.size()==0) {
+			log.info("---S--unfinishedTasks-当前离职人员有待办任务,单都是组任务，不需要回退");
+			return false;
+		}
+		if(backPiids.size()==0) {
+			log.info("---S--unfinishedTasks-当前离职人员有待办任务,单都是组任务，不需要回退");
+			return true;
+		}
 		Map<String,Object> map = new HashMap<String,Object>();
 		map.put("comment", "因员工 (" + user.getName() + ")离职，检维修流程自动回退，请您重新处理该流程 ");
 		try {			
-			excuteRollBack(piids, map, user);
+			excuteRollBack(backPiids, map, user);
 		} catch (Exception e) {
 			e.printStackTrace();	
 			return false;
 		}
 		return true;	
+	}
+	
+	/**   
+	 * @Title: filter   
+	 * @Description: 过滤不需要回退的任务   
+	 * @return: List<String>        
+	 */  
+	List<String> filter( List<TodoTask> unfinishedTasks, User user ){
+		List<String> backPiids = new ArrayList<String>();
+		unfinishedTasks.forEach(t -> {
+			AcitivityIdentitySI acitivityIdentityS = SpringUtils.getObject(AcitivityIdentitySI.class);
+			List<IdentityLink> identitys = acitivityIdentityS.findCandidateByTsid(t.getTsid());
+			if( identitys.size() == 1 ) {
+				//查询上一个节点执行人情况
+				HistoricTaskInstance historyTasks = activityS.getBeforeTasksByTsid(t.getTsid());
+				if( historyTasks.getAssignee() != user.getName() ) {
+					backPiids.add(t.getPiid());
+				}else {
+					//如果前一个节点还是当前离职人员，则回退两次
+					backPiids.add(t.getPiid());
+					backPiids.add(t.getPiid());
+				}			
+			}else if(  identitys.size() == 0 ){
+				log.info("---S--删除人员后的该人员的任务流程回退异常，候选执行人为空--" + identitys.toString() );
+			}else {
+				log.info("---S--删除人员后的该人员的任务流程回退,问题{}为多人执行的组任务，不用回退", t.getPiid());
+			}			
+		});
+		log.info("需要执行回退的piid={}",backPiids.toString());
+		return backPiids;
 	}
 	
 	/**   
