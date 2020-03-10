@@ -9,6 +9,7 @@
 	<!-- 1.1、根据id查询用户信息 -->
 	<select id="countByKey"  resultType="int">
 		select count(*) from iot_process_mq_idempotent
+		where key = #{idempotent}
 	</select>
 	
 	<!-- ===========================2、新增===============================  -->
