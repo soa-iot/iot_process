@@ -69,7 +69,7 @@ public class RollBackProcessS implements RollBackProcessInter{
 		
 		//查找所有的代办任务
 		List<TodoTask> unfinishedTasks = activityS.getAllTasksByUsername(user.getName());
-		if( unfinishedTasks.size()==0) {
+		if( unfinishedTasks == null || unfinishedTasks.size()==0) {
 			log.info("---S--unfinishedTasks-当前离职人员没有待办任务");
 			return true; 
 		}
@@ -156,8 +156,6 @@ public class RollBackProcessS implements RollBackProcessInter{
 	public void excuteRollBack( List<String> piids, 
 			Map<String,Object> map,  User user ) {	
 		List<String> errorPiids = new ArrayList<String>();
-		map.put("operateName", "离职回退");
-		log.info(map.toString());
 		//保存等
 		if (!saveIdempotent(user)) {
 			//回退失败的流程，记录
@@ -177,6 +175,7 @@ public class RollBackProcessS implements RollBackProcessInter{
 				Map<String,Object> map1 = new HashMap<String,Object>();
 				map1.put("comment", "因员工 (" + user.getName() + ")离职，检维修流程自动回退，请您重新处理该流程 ");
 				map1.put("operateName", "离职回退");
+				map1.put("userName", user.getName()+"(系统自动)");
 				activityS.backToBeforeNodeByPiidInGroup(piid, map1);
 			} catch (Exception e) {
 				e.printStackTrace();
