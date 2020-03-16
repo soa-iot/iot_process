@@ -9,8 +9,11 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 import cn.soa.entity.UserOrganization;
 import cn.soa.service.inter.UserManagerSI;
+import cn.soa.utils.SpringUtils;
 
 /**
  * @ClassName: FindEstimatorByArea
@@ -21,24 +24,26 @@ import cn.soa.service.inter.UserManagerSI;
 @Service
 public class FindEstimatorByArea implements ExecutionListener{
 	private static Logger logger = LoggerFactory.getLogger( FindEstimatorByArea.class );
-	
-	@Autowired
-	private UserManagerSI userManagerS;
 
 	@Override
 	public void notify(DelegateExecution execution) throws Exception {
+		UserManagerSI userManagerS= SpringUtils.getObject(UserManagerSI.class);
 		String area  = (String) execution.getVariable("area");
-		logger.debug( "------流程变量属地单位------" + area );
+		logger.info( "------流程变量属地单位-11111111-----" );
+		logger.info( "------流程变量属地单位------" + area );
+		logger.info( "------流程变量属地单位---userManagerS---" + userManagerS );
 
 		List<UserOrganization> users = userManagerS.findUserByArea( area );
-		logger.debug( "------问题评估变量执行人------" + users.toString() );
+		logger.info( "------问题评估变量执行人------" + users.toString() );
 		
 		String userStr = "";
-		for( UserOrganization u : users ) {
-			userStr = u.getName().trim() + ","  + userStr;
+		ObjectMapper mapper = new ObjectMapper();
+		for( int i = 0; i < users.size(); i++  ) {
+			UserOrganization resource = mapper.convertValue(users.get(i), UserOrganization.class);
+			userStr = resource.getName().trim() + ","  + userStr;
 		}
 		userStr = userStr.substring( 0, userStr.length() - 1 );
-		logger.debug( "------问题评估变量执行人------" + userStr);
+		logger.info( "------问题评估变量执行人------" + userStr);
 		execution.setVariable( "estimators", userStr );
 	}
 

@@ -4,6 +4,8 @@ import java.io.Serializable;
 
 import org.springframework.validation.annotation.Validated;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -24,6 +26,7 @@ public class TodoTask implements Serializable {
 	private String describle ;
 	private String area;
 	private String currentnode ;
+	@JsonFormat(timezone = "GMT+8",pattern = "yyyy-MM-dd HH:mm:ss")
 	private String reporttime ;
 	private String reportperson ;
 }	

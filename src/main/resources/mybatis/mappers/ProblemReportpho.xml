@@ -25,6 +25,8 @@
 			cz_task_problem_reportpho 
 		where 
 			piid = #{piid}
+		and
+			remark=#{remark}
 	</select>
 	
 	<!-- ===========================2、新增===============================  -->

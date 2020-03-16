@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.activiti.engine.history.HistoricActivityInstance;
+import org.activiti.engine.history.HistoricTaskInstance;
 import org.activiti.engine.impl.persistence.entity.ProcessDefinitionEntity;
 import org.activiti.engine.impl.persistence.entity.TaskEntity;
 import org.activiti.engine.impl.pvm.PvmTransition;
@@ -14,6 +15,7 @@ import org.activiti.engine.task.Task;
 import org.springframework.stereotype.Service;
 
 import cn.soa.entity.TodoTask;
+import cn.soa.entity.activity.HistoryAct;
 
 @Service
 public interface ActivitySI {
@@ -51,8 +53,15 @@ public interface ActivitySI {
 	 * @Description: 启动流程    
 	 * @return: void        
 	 */  
-	String startProcess( String dfid, String bsid, Map<String, Object> vars);
+	String startProcessByDfid( String dfid, String bsid, Map<String, Object> vars);
 
+	/**   
+	 * @Title: startProcess   
+	 * @Description: 启动流程   
+	 * @return: String        
+	 */  
+	String startProcess(String bsid, Map<String, Object> vars);
+	
 	/**   
 	 * @Title: startProcessNobsid   
 	 * @Description: 启动流程(无业务主键id)    
@@ -135,7 +144,7 @@ public interface ActivitySI {
 	 * @Description: 流程跳转(不提供流程变量)    
 	 * @return: void        
 	 */  
-	void transferProcessNoVars(String tsid, String actId);
+	void transferProcessNoVars(String tsid, String actId, String userName);
 
 	/**   
 	 * @Title: endProcess   
@@ -149,7 +158,7 @@ public interface ActivitySI {
 	 * @Description: 终止流程（批准信息）   
 	 * @return: String        
 	 */  
-	String endProcessByTsidInComment(String tsid, String comment);
+	String endProcessByTsidInComment(String tsid, String comment, String userName);
 
 	/**   
 	 * @Title: getHistoryNodesByPiid   
@@ -170,21 +179,21 @@ public interface ActivitySI {
 	 * @Description: 根据任务tsid，查询流程当前节点的上一个节点   
 	 * @return: HistoricActivityInstance        
 	 */  
-	HistoricActivityInstance getBeforeNodesByTsid(String tsid);
+	HistoricTaskInstance getBeforeTasksByTsid(String tsid);
 
 	/**   
 	 * @Title: getBeforeNodesByPiid   
 	 * @Description: 根据流程piid，查询流程当前节点的上一个节点  
 	 * @return: HistoricActivityInstance        
 	 */  
-	HistoricActivityInstance getBeforeNodesByPiid(String piid);
+	HistoricActivityInstance getBeforeTasksByPiid(String piid);
 
 	/**   
-	 * @Title: backToBeforeNode   
+	 * @Title: backToBeforeNodeByTsid 
 	 * @Description: 根据流程任务tsid，回退流程当前节点的上一个节点    
 	 * @return: boolean        
 	 */  
-	boolean backToBeforeNode(String tsid);
+	boolean backToBeforeNodeByTsid(String tsid);
 
 	/**   
 	 * @Title: getAllHistoryInfos   
@@ -254,7 +263,74 @@ public interface ActivitySI {
 	 * @Description: 根据流程piid，获取当前流程的历史节点信息  
 	 * @return: List<Map<String,Object>>        
 	 */  
-	List<Map<String, Object>> getHisInfosByPiid(String piid);
+	List<Map<String, Object>> getHisActNodesByPiid(String piid);
+
+	/**   
+	 * @Title: getHisTaskNodesByPiid   
+	 * @Description: 根据流程piid，查询该流程的历史任务节点    
+	 * @return: List<HistoricTaskInstance>        
+	 */  
+	List<HistoricTaskInstance> getHisTaskNodesByPiid(String piid);
+
+	/**   
+	 * @Title: getHisTaskNodeInfosByPiid   
+	 * @Description:  根据流程piid，获取当前流程的任务节点信息 
+	 * @return: List<Map<String,Object>>        
+	 */  
+	List<Map<String, Object>> getHisTaskNodeInfosByPiid(String piid);
+
+	/**   
+	 * @Title: nextNodeByPIID1   
+	 * @Description: 执行流转下一个节点 (根据任务piid) - 非组任务  
+	 * @return: boolean        
+	 */  
+	boolean nextNodeByPIID1(String piid, Map<String, Object> map);
+
+	/**   
+	 * @Title: getHisTaskNodesByTsid   
+	 * @Description: 根据流程tsid，查询该流程的历史任务节点    
+	 * @return: List<HistoricTaskInstance>        
+	 */  
+	List<HistoricTaskInstance> getHisTaskNodesByTsid(String tsid);
+
+	/**   
+	 * @Title: backToBeforeNodeByPiid   
+	 * @Description:  根据流程任务piid，回退流程当前节点的上一个节点   - 非组任务
+	 * @return: boolean        
+	 */  
+	boolean backToBeforeNodeByPiid(String piid, String comment );
+	
+	/**   
+	 * @Title: backToBeforeNodeByPiid   
+	 * @Description:  根据流程任务piid，回退流程当前节点的上一个节点   - 组任务
+	 * @return: boolean        
+	 */  
+	boolean backToBeforeNodeByPiidInGroup(String piid, Map<String,Object> map );
+
+	/**   
+	 * @Title: endProcessByPiid   
+	 * @Description:终止流程（piid）   
+	 * @return: String        
+	 */  
+	String endProcessByPiidInComment(String piid, String comment, String userName, String operateName );
+
+	/**   
+	 * @Title: transferProcessInVarsByPiid   
+	 * @Description: 流程跳转(提供流程变量) - piid    
+	 * @return: boolean        
+	 */  
+	boolean transferProcessByPiid(String piid, Map<String, Object> vars);
+
+	String getActiveTsidByPiid(String piid);
+
+	/**   
+	 * @Title: findAllHisActsBypiid   
+	 * @Description: 根据任务piid,查询当前流程实例的所有任务节点（包括完成和未完成,）      
+	 * @return: List<HistoryAct>        
+	 */  
+	List<HistoryAct> findAllHisActsBypiid(String piid);
+
+	
 
 	
 }

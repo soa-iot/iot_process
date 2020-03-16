@@ -28,8 +28,8 @@ public class ProblemReportphoS implements ProblemReportphoSI {
 	 * @return 图片信息实体
 	 */
 	@Override
-	public List<ProblemReportpho> getByPiid(String piid) {
-		return findByPiid(piid);
+	public List<ProblemReportpho> getByPiid(String piid,String remark) {
+		return findByPiid(piid,remark);
 
 	}
 
@@ -39,9 +39,9 @@ public class ProblemReportphoS implements ProblemReportphoSI {
 	 * @param piid 流程标识字段
 	 * @return 图片信息实体
 	 */
-	private List<ProblemReportpho> findByPiid(String piid) {
+	private List<ProblemReportpho> findByPiid(String piid,String remark) {
 		try {
-			 List<ProblemReportpho> problemReportphos = problemReportphoMapper.findByPiid(piid);
+			 List<ProblemReportpho> problemReportphos = problemReportphoMapper.findByPiid(piid,remark);
 			return problemReportphos;
 		} catch (Exception e) {
 			e.printStackTrace();

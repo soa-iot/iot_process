@@ -22,5 +22,16 @@ public interface UserOrganizationTreeService {
 	 * @return
 	 */
 	public List<UserOrganization> getUserOrganizationTreeData();
+	
+	/**
+	 * 根据属地查询当前属地的下一级组织或人员service层
+	 * @return
+	 */
+	List<UserOrganization> getUserOrganizationByName(String name,String username);
 
+	/**
+	 * 获取净化技术干部/维修技术干部service层
+	 * @return
+	 */
+	List<UserOrganization> getUserOrganizationByOrgan(String organ,String username);
 }

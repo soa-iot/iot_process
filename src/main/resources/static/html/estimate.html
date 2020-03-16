@@ -2,41 +2,37 @@
 <html>
 <head>
 <meta charset="UTF-8">
-<title>问题评估（非净化工段）</title>
+<title>问题评估</title>
 <link rel="stylesheet" href="../jsPackage/layui-v2.4.2/css/layui.css" media="all">
 <link rel="stylesheet" href="../css/estimate.css" media="all">
-<style type="text/css">
-	
-</style>
 </head>
 <body>
 
-	<!-- 问题评估（非净化工段） -->
+	<!-- 问题评估 -->
 	<div class="pro-div">
 
 		<!-- 问题处理 -->
-		<div class="layui-collapse" lay-accordion="">
+		<div class="layui-collapse layui-form " lay-accordion="">
 			<div class="layui-colla-item">
 				<h2 class="layui-colla-title h2c" id="pro">问题处理</h2>
 				<div class="hbtn h2c site-demo-button">
-					<button class="layui-btn layui-btn-normal layui-btn-sm btn problem_describe">回退</button>
-					<button class="layui-btn layui-btn-normal layui-btn-sm btn problem_describe" id="complete">闭环处理</button>
-					<button class="layui-btn layui-btn-normal layui-btn-sm btn problem_describe" id="work_plan"  data-method="offset" data-type="t" >作业安排</button>
-					<button class="layui-btn layui-btn-normal layui-btn-sm btn problem_describe" id="coordinate"   data-method="offset" data-type="t" >外部协调</button>
+					<!-- <button class="layui-btn layui-btn-normal layui-btn-sm problem_describe btn" id="rollback"><span class="layui-icon">&#xe65a;</span>&nbsp;回退</button>
+					<button class="layui-btn layui-btn-normal layui-btn-sm btn problem_describe" id="complete"><span class="layui-icon">&#xe63c;</span>&nbsp;闭环处理</button>
+					<button class="layui-btn layui-btn-normal layui-btn-sm btn problem_describe" id="work_plan"  data-method="offset" data-type="t" ><span class="layui-icon">&#xe770;</span>&nbsp;作业安排</button> -->
+					<button class="layui-btn layui-btn-normal layui-btn-sm btn problem_describe" id="coordinatec" data-method="offset" data-type="t" ><span class="layui-icon">&#xe770;</span>&nbsp;下一步</button>
 				</div>
 				<div id="work_plan_tree"></div>
-				<div id="organization_tree" class=""></div>
+				<div id="coordinate_tree"></div>
 				
 				<div class="layui-colla-content layui-show" >
 					<form id="estimate">
-					<div class="layui-inline">
+					<div class="layui-form-item">
 						<label class="layui-form-label labelr">事件/隐患标记</label>
 						<div class="layui-input-inline layui-input-top">
-							<select class="layui-input  layui-input-one" name="ticketNo" id="ticketNo"
-								lay-verify="required" lay-search="">
-								<option value="其他事件">其他事件</option>
-								<option value="事故事件">事故事件</option>
-								<option value="隐患事件">隐患事件</option>
+							<select class="layui-input  layui-input-one"  name="ticketNo" id="ticketNo" >
+								<option value="0">一般问题</option>
+								<option value="1">事故事件</option>
+								<option value="2">隐患</option>
 							</select>
 						</div>
 					</div>
@@ -44,15 +40,14 @@
 					<div class="layui-form-item">
 						<div class="layui-inline">
 							<label class="layui-form-label labelr">整改日期</label>
-							<div class="layui-input-inline layui-input-top">
-								<select id="sele" class="layui-input layui-input-one" name="remark"
-								lay-verify="required" lay-search="">
+							<div class="layui-input-inline layui-input-top ">
+								<select id="sele"  lay-filter="dateChange" class="layui-input layui-input-one " name="remark" >
 								<option value="指定日期">指定日期</option>
 								<option value="大修时整改">大修时整改</option>
 							</select>
 							</div>
 						</div>
-						<div class="layui-inline">
+						<div class="layui-inline" id="sdateall">
 							<label class="layui-form-label">指定日期</label>
 							<div class="layui-input-inline  layui-input-top">
 								<input type="text" class="layui-input layui-input-one" id="sdate"
@@ -65,50 +60,19 @@
 						<label class="layui-form-label">处理说明</label>
 						<div class="layui-input-block right-marg">
 							<textarea name="tite" id="comment" placeholder="请输入内容"
-								class="layui-textarea" name="desc">250-GT-115分析化验one</textarea>
+								class="layui-textarea" name="desc"></textarea>
 						</div>
 					</div>
 
 					<div>
 						<label class="layui-form-label">处理过程</label>
-						<div class="layui-input-block right-marg">
-							<table class="layui-table layui-input-block tdp">
-								<colgroup>
-									<col width="150">
-									<col width="150">
-									<col width="200">
-									<col  width="200">
-								</colgroup>
-								<thead>
-									<tr>
-										<th>处理人</th>
-										<th>处理节点</th>
-										<th>操作</th>
-										<th>处理说明</th>
-										<th>时间</th>
-									</tr>
-								</thead>
-								<tbody>
-									<tr>
-										<td></td>
-										<td></td>
-										<td></td>
-										<td></td>
-										<td></td>
-									</tr>
-									<tr>
-										<td></td>
-										<td></td>
-										<td></td>
-										<td></td>
-										<td></td>
-									</tr>
-								</tbody>
-							</table>
+						<div class="layui-input-block right-table">
+						
+							<table id="process"  lay-skin="row"></table>
 						</div>
 					</div>
 
-</form>
+					</form>
 				</div>
 			</div>
 		</div>
@@ -201,9 +165,12 @@
 					<div class="layui-form-item layui-form-text bott">
 						<label class="layui-form-label">问题图片</label>
 						<div class="layui-input-block">
-							<div class="layui-carousel" id="test2" lay-filter="test1">
+							<div class="layui-carousel imgshow" id = "test11" lay-filter="test1">
 								<div carousel-item="" id="imag">
-									
+								<!-- <div>
+									<img alt="432" src="../images/report/u170.png">
+									<img alt="432" src="../images/report/u166.png">
+									</div> -->
 								</div>
 
 							</div>
@@ -218,8 +185,8 @@
 				<h2 class="layui-colla-title h2c">工单信息</h2>
 				<div class="layui-colla-content layui-show">
 					<div class="btn-div">
-						<button class="layui-btn layui-btn-normal layui-btn-sm pbtn problem_describe">脚手架搭拆申请单</button>
-						<button class="layui-btn layui-btn-normal layui-btn-sm pbtn problem_describe">防腐（保温）申请单</button>
+						<a class="pbtn problem_describe staging-requisition" target="_blank" href="#">脚手架搭拆申请单</a>
+						<a class="pbtn problem_describe anticor-requisition" target="_blank" href="#">防腐（保温）申请单</a>
 					</div>
 				</div>
 			</div>
@@ -227,10 +194,14 @@
 
 	</div>
 	<script type="text/javascript" src="../jsPackage/js/jquery-1.9.1.min.js"></script>
+
+	<script type="text/javascript" src="../jsPackage/js/jquery.cookie.js"></script>
+	<script type="text/javascript" src="../jsPackage/layui-v2.4.2/layui.js" charset="utf-8"></script>
+	<script type="text/javascript" src="../js/url_param.js"></script>
 	<script type="text/javascript" src="../js/tree_util.js"></script>
-	<script src="../jsPackage/layui-v2.4.2/layui.js" charset="utf-8"></script>
+	<script type="text/javascript" src="../js/global.js"></script>
+	<script type="text/javascript" src="../js/estimate_1.js"></script>
 	<script type="text/javascript" src="../js/estimate.js"></script>
-	<script type="text/javascript" src="../js/jquery-3.4.1.min.js"></script>
 	<script type="text/javascript" src="../js/organization_tree.js"></script>
 </body>
 </html>

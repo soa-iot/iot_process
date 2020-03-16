@@ -1,49 +1,77 @@
-
-/**
- * <一句话功能描述>
- * <p> 人员组织树控制层
- * @author 陈宇林
- * @version [版本号, 2019年6月4日]
- * @see [相关类/方法]
- * @since [产品/模块版本]
- */
 package cn.soa.controller;
 
+import cn.soa.entity.ResponseObject;
+import cn.soa.entity.ResultJson;
+import cn.soa.service.inter.UserManagerSI;
+import cn.soa.service.inter.UserOrganizationTreeService;
 import java.util.List;
-
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import cn.soa.entity.ResponseObject;
-import cn.soa.entity.UserOrganization;
-import cn.soa.service.inter.UserOrganizationTreeService;
-
 @RestController
-@RequestMapping("/userOrganizationTree")
+@RequestMapping({"/userOrganizationTree"})
 public class UserOrganizationTreeController {
 
-	@Autowired
-	private UserOrganizationTreeService userOrganizationTreeService;
+   @Autowired
+   private UserOrganizationTreeService userOrganizationTreeService;
+   @Autowired
+   private UserManagerSI userManagerS;
 
-	/**
-	 * 获取人员组织树的数据
-	 * 
-	 * @return
-	 */
-	@RequestMapping("/userOrganizationTreeData")
-	public ResponseObject<List<UserOrganization>> userOrganizationTreeData() {
 
-		ResponseObject<List<UserOrganization>> resObj;
-		try {
-			List<UserOrganization> result = userOrganizationTreeService.getUserOrganizationTreeData();
-			resObj = new ResponseObject<List<UserOrganization>>(0, "success", result);
-		} catch (Exception e) {
-			e.printStackTrace();
-			resObj = new ResponseObject<List<UserOrganization>>(1, "failed>>>" + e.getMessage(), null);
-		}
+   @RequestMapping({"/userOrganizationTreeData"})
+   public ResponseObject userOrganizationTreeData() {
+      ResponseObject resObj;
+      try {
+         List e = this.userOrganizationTreeService.getUserOrganizationTreeData();
+         resObj = new ResponseObject(0, "success", e);
+      } catch (Exception var3) {
+         var3.printStackTrace();
+         resObj = new ResponseObject(1, "failed>>>" + var3.getMessage(), (Object)null);
+      }
 
-		return resObj;
-	}
+      return resObj;
+   }
 
+   @GetMapping({"/userOrganizationArea"})
+   public ResponseObject getUserOrganizationByNameTreeData(String area, String username) {
+      System.err.println("-------------------------------------------属地单位：" + area);
+
+      ResponseObject resObj;
+      try {
+         List e = this.userOrganizationTreeService.getUserOrganizationByName(area, username);
+         resObj = new ResponseObject(0, "success", e);
+      } catch (Exception var5) {
+         var5.printStackTrace();
+         resObj = new ResponseObject(1, "failed>>>" + var5.getMessage(), (Object)null);
+      }
+
+      return resObj;
+   }
+
+   @PostMapping({"/users"})
+   public ResultJson getUserByOrgid(String dept) {
+      System.err.println("部门名称：" + dept);
+      List result = this.userManagerS.findUserByDept(dept);
+      return new ResultJson(result);
+   }
+
+   @GetMapping({"/userOrganizationOrgan"})
+   public ResponseObject getUserOrganizationByOrgan(String organ, String username) {
+      System.err.println("-------------------------------------------所在组织：" + organ);
+      System.err.println("-------------------------------------------用户名：" + username);
+
+      ResponseObject resObj;
+      try {
+         List e = this.userOrganizationTreeService.getUserOrganizationByOrgan(organ, username);
+         resObj = new ResponseObject(0, "success", e);
+      } catch (Exception var5) {
+         var5.printStackTrace();
+         resObj = new ResponseObject(1, "failed>>>" + var5.getMessage(), (Object)null);
+      }
+
+      return resObj;
+   }
 }

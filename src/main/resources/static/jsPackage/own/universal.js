@@ -40,6 +40,14 @@ var generateHTML = function(wholePageHtml, pageName){
     save_link.dispatchEvent(ev);
 }
 
+
+/**
+ * 前端打印方法
+ */
+var p = function( info ){
+	console.log( info );
+}
+
 /**
  * 获取当前时间
  * seperator1日期分割符号
@@ -55,13 +63,24 @@ var getNowTime = function( seperator1 , seperator2 ){
 }
 
 /**
- * 获取当前日期
+ * 获取当前日期 
  * seperator日期分割符号
  */
 var getFullNowDate = function getNowDate(seperator){
 	var nowDate = new Date();
 	return  nowDate.getFullYear() + seperator + 
 			(nowDate.getMonth() + 1) + seperator + nowDate.getDate();
+}
+
+/**
+ * 获取当前日期，标准的格式（YYYY-MM-DD）
+ */
+var getFullNowDate1 = function getNowDate(){
+	var nowDate = new Date()
+	,month = (nowDate.getMonth() + 1) > 9 ? nowDate.getMonth() : "0" + (nowDate.getMonth())
+	,now = (nowDate.getDate()) > 9 ? nowDate.getDate() : "0" + (nowDate.getDate());
+	return  nowDate.getFullYear() + "-" + 
+			month + "-" + now;
 }
 
 /**
@@ -73,6 +92,8 @@ var getFullLastMonthDate = function(seperator){
 	return  nowDate.getFullYear() + seperator + 
 			nowDate.getMonth() + seperator + nowDate.getDate();
 }
+
+
 
 /*-----------------------------------
       url相关方法

@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>防腐（保温）作业申请单</title>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta charset="UTF-8">
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <meta name="apple-mobile-web-app-capable" content="yes"/>
+    <link rel="stylesheet" href="../css/work-requisition.css" media="all">
+    <link rel="stylesheet" href="../jsPackage/layui-v2.4.2/css/layui.css" media="all">
+  </head>
+  <body>
+   
+   <div class="layui-collapse" lay-accordion=""> 
+	 <div class="layui-colla-item">
+		<h2 class="layui-colla-title h2c" id="pro">工单信息</h2>
+				
+		<div class="hbtn h2c">
+		   <button class="layui-btn layui-btn-normal layui-btn-sm btn" lay-submit lay-filter="clean-data">清&nbsp;&nbsp;空</button>
+		   <button class="layui-btn layui-btn-normal layui-btn-sm btn" lay-submit lay-filter="save-page1">保&nbsp;&nbsp;存</button>
+		   <button class="layui-btn layui-btn-normal layui-btn-sm btn" lay-submit lay-filter="print-page1">打&nbsp;&nbsp;印</button>
+		</div>	
+				
+		<div class="layui-colla-content layui-show"> 
+		  <div class="layui-container" >
+	    	<div style="width: 100%;">
+		     <div class="layui-row" style="border: 0; margin-bottom: 30px;">
+				<p class="title">
+					<span>中石油遂宁天然气净化有限公司</span> <br/>
+				    <span>防腐（保温）作业申请单</span>
+				</p>
+			 </div>
+			 <form class="layui-from layui-form-pane">
+			    <div class="layui-form-item layuir-row-two">
+			    	<div class="layui-col-md2">&nbsp;</div>
+				    <div class="layui-inline"> 
+				      <label class="layui-form-label">申请单位</label>
+				      <div class="layui-input-inline">
+				        <input id="applydept" type="text" class="layui-input" autocomplete="off">
+				      </div>
+				    </div>
+				    <div class="layui-inline div-space" style="width: 110px;"></div>
+				    <div class="layui-inline">
+				      <label class="layui-form-label">申请时间</label>
+				      <div class="layui-input-inline">
+				    	<input id="applydate" type="text" class="layui-input" autocomplete="off">
+				    </div>
+				 </div>
+			  </div>
+			  <div class="layui-form-item">
+			    	<div class="layui-col-md2">&nbsp;</div>
+				    <div class="layui-inline"> 
+				      <label class="layui-form-label">部门申请人</label>
+				      <div class="layui-input-inline">
+				        <input id="applypeople" type="text" class="layui-input" autocomplete="off">
+				      </div>
+				    </div>
+				    <div class="layui-inline div-space" style="width: 110px;"></div>
+				    <div class="layui-inline">
+				      <label class="layui-form-label">部门负责人</label>
+				      <div class="layui-input-inline">
+				    	<input id="deptowner" type="text" class="layui-input" autocomplete="off">
+				    </div>
+				 </div>
+			  </div>
+			  <div class="layui-form-item" style="margin-bottom: 0px;">
+			  	  <div class="layui-col-md2">&nbsp;</div>
+			      <label class="layui-form-label" style="width: 200px;">防腐（保温）项目及要求</label>
+			  </div>
+			   <div class="layui-form-item">
+			  	  <div class="layui-col-md2">&nbsp;</div>
+			      <div class="layui-input-block">
+			         <textarea id="requirement" maxlength="145" class="layui-input" style="height:145px; width: 750px;" placeholder="请输入防腐（保温）项目及要求" autocomplete="off"></textarea>
+			      </div>
+			  </div>
+			  <div class="layui-form-item" style="margin-bottom: 0px;">
+			  	  <div class="layui-col-md2">&nbsp;</div>
+			      <label class="layui-form-label" style="width: 200px;">防腐（保温）内容及工作量</label>
+			  </div>
+			   <div class="layui-form-item">
+			  	  <div class="layui-col-md2">&nbsp;</div>
+			      <div class="layui-input-block">
+			         <table class="layui-hide" id="anticorrosion"></table>
+			      </div>
+			  </div>
+			</form> 
+			</div>
+			<div>&nbsp;</div>
+			</div>
+		</div>
+	 </div>
+  </div>
+  
+  <div id="base" class="layui-container" style="display: none;">
+		<div style="width: 100%; height: 252mm;">
+			<div class="layui-row" >
+				<p class="title">
+					<span>中石油遂宁天然气净化有限公司</span> <br/>
+					<span>防腐（保温）作业申请单</span>
+				</p>
+			</div>
+				<div class="layui-row" style="border: 0;">
+					<table class="table-one">
+						<tr>
+							<td colspan="2" class="td-left">申请单位</td>
+							<td colspan="2" class="td-left-one" id="applydept_">&nbsp;</td>
+							<td class="td-left">申请时间</td>
+							<td class="td-left-one" id="applydate_">&nbsp;</td>
+						</tr>
+						<tr style="border-bottom: 0px;">
+							<td colspan="6" class="td-left">防腐（保温）项目及要求：</td>
+						</tr>
+						<tr style="border-top: 0px;">
+							<td colspan="6" class="td-left" style="height: 42mm; vertical-align: top;">
+								<pre id="requirement_" style="border: 0px; width: 99%; height: 99%;">&nbsp;</pre>
+							</td>
+						</tr>
+						<tr>
+							<td colspan="2" class="td-left">部门申请人</td>
+							<td colspan="2" class="td-left-one" id="applypeople_">&nbsp;</td>
+							<td class="td-left">部门负责人</td>
+							<td class="td-left-one" id="deptowner_">&nbsp;</td>
+						</tr>
+						<tr>
+							<td colspan="6" class="td-left">防腐（保温）内容及工作量</td>
+						</tr>
+						<tr style="text-align: center;">
+							<td>序号</td>
+							<td colspan="2">防腐（保温）内容</td>
+							<td>规格型号</td>
+							<td>数量</td>
+							<td>备注</td>
+						</tr>
+						<tr style="text-align: center; font-size: 14px;">
+							<td>1</td>
+							<td colspan="2" class="content-1">&nbsp;</td>
+							<td class="content-2">&nbsp;</td>
+							<td class="content-3">&nbsp;</td>
+							<td class="content-4">&nbsp;</td>
+						</tr>
+						<tr style="text-align: center; font-size: 14px;">
+							<td>2</td>
+							<td colspan="2" class="content-1">&nbsp;</td>
+							<td class="content-2">&nbsp;</td>
+							<td class="content-3">&nbsp;</td>
+							<td class="content-4">&nbsp;</td>
+						</tr>
+						<tr style="text-align: center; font-size: 14px;">
+							<td>3</td>
+							<td colspan="2" class="content-1">&nbsp;</td>
+							<td class="content-2">&nbsp;</td>
+							<td class="content-3">&nbsp;</td>
+							<td class="content-4">&nbsp;</td>
+						</tr>
+						<tr style="text-align: center; font-size: 14px;">
+							<td>4</td>
+							<td colspan="2" class="content-1">&nbsp;</td>
+							<td class="content-2">&nbsp;</td>
+							<td class="content-3">&nbsp;</td>
+							<td class="content-4">&nbsp;</td>
+						</tr>
+						<tr style="text-align: center; font-size: 14px;">
+							<td>5</td>
+							<td colspan="2" class="content-1">&nbsp;</td>
+							<td class="content-2">&nbsp;</td>
+							<td class="content-3">&nbsp;</td>
+							<td class="content-4">&nbsp;</td>
+						</tr>
+						<tr style="text-align: center; font-size: 14px;">
+							<td>6</td>
+							<td colspan="2" class="content-1">&nbsp;</td>
+							<td class="content-2">&nbsp;</td>
+							<td class="content-3">&nbsp;</td>
+							<td class="content-4">&nbsp;</td>
+						</tr>
+						<tr style="text-align: center; font-size: 14px;">
+							<td>7</td>
+							<td colspan="2" class="content-1">&nbsp;</td>
+							<td class="content-2">&nbsp;</td>
+							<td class="content-3">&nbsp;</td>
+							<td class="content-4">&nbsp;</td>
+						</tr>
+						<tr style="text-align: center; font-size: 14px;">
+							<td>8</td>
+							<td colspan="2" class="content-1">&nbsp;</td>
+							<td class="content-2">&nbsp;</td>
+							<td class="content-3">&nbsp;</td>
+							<td class="content-4">&nbsp;</td>
+						</tr>
+						<tr>
+							<td colspan="2" class="td-left" style="height: 18mm; border-right: 0px;">部门审批:</td>
+							<td colspan="2">&nbsp;</td>
+							<td class="td-left" style="border-right: 0px;">单位负责人:</td>
+							<td>&nbsp;</td>
+						</tr>
+						<tr style="border-bottom: 0px;">
+							<td colspan="6" class="td-left">注意事项: </td>
+						</tr>
+						<tr style="border-top: 0px;">
+							<td colspan="6" class="td-left" style="height: 20mm;">&nbsp;</td>
+						</tr>
+						<tr>
+							<td colspan="6" class="td-left">说明：此单用于防腐（保温)作业的依据。</td>
+						</tr>
+						<tr style="border-left: 0px; border-bottom: 0px;">
+							<td style="width: 7%" class="td-hidden">&nbsp;</td>
+							<td style="width: 7%" class="td-hidden">&nbsp;</td>
+							<td style="width: 23%" class="td-hidden">&nbsp;</td>
+							<td style="width: 15%" class="td-hidden">&nbsp;</td>
+							<td style="width: 14%" class="td-hidden">&nbsp;</td>
+							<td style="width: 34%;" class="td-hidden">&nbsp;</td>
+						</tr>
+					</table>
+				</div>
+		</div>
+	</div>
+	
+
+
+	<script src="../jsPackage/js/jquery-1.9.1.min.js"></script>
+	<script src="../jsPackage/js/jquery.print.js"></script>
+    <!-- 引入layui -->
+    <script type="text/javascript" src="../jsPackage/layui-v2.4.2/layui.js"></script>
+    <script src="../js/url_param.js"></script>
+    <script src="../js/anticor-work-requisition.js"></script>
+    <script type="text/javascript">
+    
+    </script>
+  </body>
+</html>

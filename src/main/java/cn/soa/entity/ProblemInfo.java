@@ -3,7 +3,11 @@ package cn.soa.entity;
 import java.io.Serializable;
 import java.util.Date;
 
+import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.format.annotation.DateTimeFormat.ISO;
 import org.springframework.validation.annotation.Validated;
+
+import com.fasterxml.jackson.annotation.JsonFormat;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -44,6 +48,8 @@ public class ProblemInfo implements Serializable {
 	private String supervisoryperson;
 	private String maintenanceman;
 	private String rectificationmeasures;
+	@DateTimeFormat(iso=ISO.DATE)
+	@JsonFormat(pattern="yyyy-MM-dd",timezone="GMT+8")
 	private Date rectificationperiod;
 	private String isSms;
 	private String smsConment;

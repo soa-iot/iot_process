@@ -28,11 +28,18 @@ public class ProcessVariableS implements ProcessVariableSI {
 	public Map<String, Object> addVarsStartProcess( ProblemInfo problemInfo ) {
 		Map<String, Object> vars = new HashMap<String,Object>();
 		if( StringUtils.isBlank( problemInfo.getProblemtype() ) ) {
-			logger.debug( "---------流程启动节点进行流程变量的处理----------------  " );
+			logger.debug( "---------流程启动节点进行流程变量-属地单位的处理----------------  " );
 			logger.debug( "---------属地单位--------------  " + problemInfo.getProblemtype() );
 			return null;
 		}
-		vars.put( "area", problemInfo.getProblemtype().trim() );		
+		if( StringUtils.isBlank( problemInfo.getApplypeople() ) ) {
+			logger.debug( "---------流程启动节点进行流程变量-问题上报人的处理----------------  " );
+			logger.debug( "---------上报人员--------------  " + problemInfo.getApplypeople() );
+			return null;
+		}
+		
+		vars.put( "area", problemInfo.getProblemtype().trim() );
+		vars.put( "reporter", problemInfo.getApplypeople().trim() );
 		return vars;
 	}
 

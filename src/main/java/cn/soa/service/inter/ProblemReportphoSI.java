@@ -19,5 +19,5 @@ public interface ProblemReportphoSI {
 	 * @param piid 流程标识字段
 	 * @return 图片信息实体
 	 */
-	List<ProblemReportpho> getByPiid(String piid);
+	List<ProblemReportpho> getByPiid(String piid,String remark);
 }

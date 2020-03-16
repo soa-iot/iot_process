@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+ 
+<mapper namespace="cn.soa.dao.activity.HisActMapper">
+
+	<!-- ===========================1、查询===============================  -->
+	
+	<!-- 1.1、根据任务piid,查询当前流程实例的所有节点（包括完成和未完成） -->
+	<select id="findAllHisActsBypiid"  resultType="cn.soa.entity.activity.HistoryAct">
+		select * from ACT_HI_ACTINST
+		where PROC_INST_ID_ = #{ piid }
+		order by START_TIME_
+	</select>
+	
+	<!-- 1.2、根据任务piid,查询当前流程实例的最后一个节点 -->
+	<select id="findLastActByPiids"  resultType="cn.soa.entity.activity.HistoryAct">
+		SELECT * FROM ACT_HI_ACTINST 
+		WHERE ID_ IN (
+			SELECT max(ID_) FROM ACT_HI_ACTINST  
+			where PROC_INST_ID_ in 
+			<foreach collection="piids" index="index" item="item" open="(" separator="," close=")"> 
+				#{item}
+			</foreach>
+			group by PROC_INST_ID_
+		)
+	</select>
+	
+	
+	
+	
+	<!-- ===========================2、新增===============================  -->
+	<!-- 2.2、根据id增加组织 ，返回id			
+	<insert id="saveUserBackId"  parameterType="cn.soa.entity.UserOrganization">		
+		<selectKey resultType ="java.lang.Integer" keyProperty= "userOrgan.orgid" keyColumn="orgid" order= "AFTER">
+			SELECT LAST_INSERT_ID()
+		</selectKey >
+	<insert id="saveConfigBackId"  useGeneratedKeys="true" keyProperty="orgid" keyColumn="orgid" parameterType="cn.soa.entity.UserOrganization">
+		insert into iot_user_organization
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="name != null">
+				name,
+			</if>
+			<if test="parent_id != null">
+				parent_id,
+			</if>
+			<if test="usernum != null">
+				usernum,
+			</if>
+			<if test="user_password != null">
+				user_password,
+			</if>
+			<if test="is_parent != null">
+				is_parent,
+			</if>
+			<if test="state != null">
+				state,
+			</if>
+			<if test="note != null">
+				note,
+			</if>
+			<if test="remark1 != null">
+				remark1,
+			</if>
+			<if test="remark2 != null">
+				remark2
+			</if>
+		</trim>
+		values
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="name != null ">
+				#{name,jdbcType=VARCHAR},
+			</if>
+			<if test="parent_id != null">
+				#{parent_id,jdbcType=VARCHAR},
+			</if>
+			<if test="usernum != null">
+				#{usernum,jdbcType=VARCHAR},	  
+			</if>
+			<if test="user_password != null">
+				#{user_password,jdbcType=VARCHAR},
+			</if>
+			<if test="is_parent != null">
+				#{is_parent,jdbcType=INTEGER},
+			</if>
+			<if test="state != null">
+				#{state,jdbcType=INTEGER},
+			</if>
+			<if test="note != null">
+				#{note,jdbcType=VARCHAR},
+			</if>
+			<if test="remark1 != null">
+				#{remark1,jdbcType=INTEGER},
+			</if>
+			<if test="remark2 != null">
+				#{remark2,jdbcType=VARCHAR}
+			</if>
+		</trim>
+	</insert>-->
+	
+	<!-- ===========================3、修改===============================  -->
+	<!-- 给每个节点增加操作名称 -->
+	<update id="updateOprateName" >
+		update ACT_HI_ACTINST
+		set TENANT_ID_ = #{ operateName }
+		where PROC_INST_ID_ = #{ piid } and TASK_ID_ = #{ tsid }
+	</update>
+</mapper>
+ 
+

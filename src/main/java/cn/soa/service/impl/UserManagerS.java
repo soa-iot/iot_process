@@ -13,7 +13,11 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
+import cn.soa.dao.UserOrganizationTreeMapper;
+import cn.soa.dao.UserRoleMapper;
+import cn.soa.entity.LayuiTree;
 import cn.soa.entity.ResultJson;
+import cn.soa.entity.RoleVO;
 import cn.soa.entity.UserOrganization;
 import cn.soa.service.inter.UserManagerSI;
 
@@ -30,6 +34,12 @@ public class UserManagerS implements UserManagerSI {
 	
 	@Autowired
 	private RestTemplate restTemplate; 
+	
+	@Autowired
+	private UserRoleMapper userRoleMapper;
+	
+	@Autowired
+	private UserOrganizationTreeMapper userOrganizationTreeMapper;
 	
 	
 	public void findOrganByUsernameS( String usernum, String url, int level ) {
@@ -146,15 +156,53 @@ public class UserManagerS implements UserManagerSI {
 	public List<UserOrganization> findUserByArea( String area ){
 		HashMap<String, String> map = new HashMap<>();
 		map.put( "roleName", area );
-		String url = "http://" + ip + ":" + port + "/iot_usermanager/user/roleName";
+		String url = "http://" + ip + ":" + port + "/iot_usermanager/user/roleName?roleName={roleName}";
 		ResponseEntity<ResultJson> organ = restTemplate.getForEntity( url, ResultJson.class, map);
 		ResultJson r = organ.getBody();
-		if( r.getState() == 1 || r.getData() != null ) {
+		if( r.getState() == 1 || r.getData() == null ) {
 			logger.debug( "-------获取人员数据失败--------" );
 			return null;
 		}		
-		List<UserOrganization> users = (List<UserOrganization>) r.getData(); 
+		List<UserOrganization> users =  (List<UserOrganization>) r.getData();
 		logger.debug( users.toString() );		
 		return users;
+	}
+	
+	
+	/**
+	 * 查找所在组下的用户列表
+	 * @param orgID  组织标号
+	 * @return 用户列表树形结构
+	 */
+	@Override
+	public List<LayuiTree> findUserByDept(String dept) {
+		List<UserOrganization> result = userOrganizationTreeMapper.findUserOrganizationByName(dept);
+		
+		if(result == null) {
+			logger.debug("-------获取所在组下的用户列表数据失败--------");
+			return null;
+		}
+		//将查找结果填充到layui树形结构实体类中
+		List<LayuiTree> treeList = new ArrayList<>();
+		LayuiTree tree = new LayuiTree();
+		tree.setLabel(dept);
+		List<LayuiTree> subTree = new ArrayList<>();
+		for(UserOrganization user : result) {
+			subTree.add(new LayuiTree(user.getName()));
+		}
+		tree.setChildren(subTree);
+		treeList.add(tree);
+		
+		return treeList;
+	}
+	
+	/**
+	 * 根据用户名查找用户编号
+	 * @param  name 用户名
+	 * @return 用户编号
+	 */
+	@Override
+	public String getUsernumByName(String name) {
+		return userRoleMapper.findUsernumByName(name);
 	}
 }

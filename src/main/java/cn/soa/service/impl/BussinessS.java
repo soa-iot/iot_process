@@ -8,7 +8,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import cn.soa.dao.ProblemInfoMapper;
-import cn.soa.dao.ReportMapper;
 import cn.soa.entity.ProblemInfo;
 import cn.soa.service.inter.ActivitySI;
 import cn.soa.service.inter.BussinessSI;

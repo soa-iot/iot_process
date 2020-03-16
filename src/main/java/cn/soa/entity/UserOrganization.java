@@ -102,4 +102,5 @@ public class UserOrganization implements Serializable{
 		this.is_parent = is_parent;
 		this.note = note;
 	}
+	
 }

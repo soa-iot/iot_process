@@ -13,7 +13,7 @@ function buildTree(user_organizations) {
 
 	$.each(rootDatas, function(index, item) {
 				var node = {};
-				node.id = item.name+','+item.is_parent;
+				node.id = item.name+','+item.is_parent+','+item.parent_id;
 				node.label = item.name;
 				node.children = getChildNodes(user_organizations, item);
 				tree_data.push(node);
@@ -32,7 +32,7 @@ function getChildNodes(user_organizations, user_organization) {
 	$.each(user_organizations, function(index, item) {
 				if (item.parent_id == user_organization.usernum) {
 					var node = {};
-					node.id = item.name+','+item.is_parent;
+					node.id = item.name+','+item.is_parent+','+item.parent_id;
 					node.label = item.name;
 					node.children = getChildNodes(user_organizations, item);
 					children.push(node);

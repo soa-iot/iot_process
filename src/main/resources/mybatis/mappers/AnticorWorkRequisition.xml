@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+ 
+<mapper namespace="cn.soa.dao.AnticorWorkRequisitionMapper">
+
+	<!-- ===========================1、查询===============================  -->
+	<!-- 1.1、根据piid查找防腐保温申请作业单	-->
+	<!-- AnticorWorkRequisition findByPIID(String piid) -->
+	<resultMap type="cn.soa.entity.AnticorWorkRequisition" id="anticorResultMap">
+		<result property="piid" column="PIID" />
+		<result property="applydept" column="APPLYDEPT" />
+		<result property="applydate" column="APPLYDATE" />
+		<result property="applypeople" column="APPLYPEOPLE" />
+		<result property="deptowner" column="DEPTOWNER" />
+		<result property="requirement" column="REQUIREMENT" />
+		<collection property="workTables" ofType="cn.soa.entity.WorkTable">
+			<id property="tableNo" column="TABLE_NO" />
+			<result property="tableContent" column="TABLE_CONTENT" />
+			<result property="tableVersion" column="TABLE_VERSION" />
+			<result property="tableNumber" column="TABLE_NUMBER" />
+			<result property="tableComment" column="TABLE_COMMENT" />
+		</collection>
+	</resultMap>
+	
+	<select id="findByPIID" resultMap="anticorResultMap">
+		SELECT 
+			PIID,APPLYDEPT,APPLYDATE,APPLYPEOPLE,DEPTOWNER,REQUIREMENT,
+			TABLE_NO,TABLE_CONTENT,TABLE_VERSION,TABLE_NUMBER,TABLE_COMMENT
+		FROM
+			CZ_ANTICOR_WORK_REQUISITION
+		WHERE
+			PIID = #{piid}
+	</select>
+
+	<!-- ===========================2、新增===============================  -->
+	<!-- 2.1、插入防腐保温申请作业单	-->
+	<!-- Integer insertOne(AnticorWorkRequisition anticor) -->
+	<insert id="insertOne" parameterType="cn.soa.entity.AnticorWorkRequisition" useGeneratedKeys="false">
+		INSERT INTO
+				CZ_ANTICOR_WORK_REQUISITION
+				(ANTICOR_WORK_ID,PIID,APPLYDEPT,APPLYDATE,APPLYPEOPLE,DEPTOWNER,REQUIREMENT,
+				 TABLE_NO,TABLE_CONTENT,TABLE_VERSION,TABLE_NUMBER,TABLE_COMMENT)
+		SELECT res.*
+		FROM(
+		<foreach collection="workTables" index="index" item="item" separator="union all">		
+				SELECT
+				    (select sys_guid() from dual) ANTICOR_WORK_ID,
+					#{piid} PIID,
+					#{applydept} APPLYDEPT,
+					#{applydate} APPLYDATE,
+					#{applypeople} APPLYPEOPLE,
+					#{deptowner} DEPTOWNER,
+					#{requirement} REQUIREMENT,
+					#{item.tableNo} TABLE_NO,
+					#{item.tableContent} TABLE_CONTENT,
+					#{item.tableVersion} TABLE_VERSION,
+					#{item.tableNumber} TABLE_NUMBER,
+					#{item.tableComment} TABLE_COMMENT
+				FROM dual
+		</foreach>
+		) res
+	</insert>
+	
+	<!-- ===========================3、修改===============================  -->
+	
+	
+	<!-- ===========================4、删除===============================  -->
+	<!-- 4.1、删除防腐保温申请作业单数据	-->
+	<!-- Integer deleteByPiid(String piid) -->
+	<delete id="deleteByPiid">
+		DELETE FROM
+			CZ_ANTICOR_WORK_REQUISITION
+		WHERE
+			PIID = #{piid}
+	</delete>
+	
+</mapper>
+ 
+

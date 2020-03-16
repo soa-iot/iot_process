@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+ 
+<mapper namespace="cn.soa.dao.UserRoleMapper">
+
+	<!-- ===========================1、查询===============================  -->
+	<!-- 1.1、查询生产办评估人	-->
+	<!-- List<String> findPurors(); -->
+	<select id="findPurors" resultType="string">
+		SELECT
+			USERNUM
+		FROM
+			IOT_USER_ORGANIZATION
+		WHERE
+			PARENT_ID = '生产办公室'
+	</select>
+	
+	<!-- 1.2、查询领导批示人	-->
+	<!-- List<String> findVerifors(); -->
+	<select id="findVerifors" resultType="string">
+		SELECT
+			USERNUM
+		FROM
+			IOT_USER_ORGANIZATION
+		WHERE
+			PARENT_ID = '厂办'
+	</select>
+	
+	<!-- 1.3、查询作业验收的执行人	-->
+	<!-- List<String> findCheckors(); -->
+	<select id="findCheckors" resultType="string">
+		SELECT
+			USERNUM
+		FROM
+			IOT_USER_ORGANIZATION
+		WHERE
+			PARENT_ID = '项目部'
+	</select>
+
+	<!-- 1.2、查找所在组下的用户列表	-->
+	<!-- List<String> findUserByOrgid(String orgID) -->
+	<select id="findUserByOrgid" resultType="string">
+		SELECT
+			uo.NAME
+		FROM
+			IOT_USER_ORGANIZATION uo JOIN 
+			(
+				SELECT USERNUM
+				FROM IOT_USER_ORGANIZATION 
+				WHERE ORGID = #{orgID, jdbcType=VARCHAR}
+			) org ON uo.parent_id = org.usernum
+	</select>
+	
+	<!-- 1.3、根据组织编号查找该组织名称	-->
+	<!-- String findOrgNameByOrgid(String orgID) -->
+	<select id="findOrgNameByOrgid" resultType="string">
+		SELECT  NAME
+		FROM  IOT_USER_ORGANIZATION 
+		WHERE  ORGID = #{orgID, jdbcType=VARCHAR}
+	</select>
+	
+	<!-- 1.4、根据用户名查找用户编号	-->
+	<!-- String findUsernumByName(String name) -->
+	<select id="findUsernumByName" resultType="string">
+		SELECT 
+			USERNUM
+		FROM
+			IOT_USER_ORGANIZATION
+		WHERE
+			name = #{name, jdbcType=VARCHAR}
+	</select>
+	
+	<!-- ===========================2、新增===============================  -->
+
+	<!-- ===========================3、修改===============================  -->
+
+	<!-- ===========================4、删除===============================  -->
+			
+	
+</mapper>
+ 
+

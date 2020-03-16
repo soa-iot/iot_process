@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>问题上报</title>
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+<meta charset="UTF-8">
+<meta http-equiv="content-type" content="text/html; charset=utf-8" />
+<meta name="viewport"
+	content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<link rel="stylesheet" href="../jsPackage/layui-v2.4.2/css/layui.css">
+<link rel="stylesheet" href="../css/report.css" media="all">
+<body style="background-color: #FAFDFD;margin-left:8px;margin-right:8px;width:98%;height:100%">
+	<div class="layui-row layui-col-space12" style="background-color: #FAFDFD;">
+		<div class="layui-col-md12" style="margin-top:20px;display:none">
+			<div style="font-size:36px;text-align:center;font-weight:500;color:#666666">&nbsp待&nbsp办&nbsp任&nbsp务&nbsp列&nbsp表&nbsp</div>
+		</div>
+		<div class="layui-col-md11">
+			<table class="layui-table" lay-filter="test" id="pending"  style="margin: -5px;"></table>
+		</div>
+	</div>
+
+
+	<!-- 让IE8/9支持媒体查询，从而兼容栅格 -->
+	<!--[if lt IE 9]>
+	  <script src="https://cdn.staticfile.org/html5shiv/r29/html5.min.js"></script>
+	  <script src="https://cdn.staticfile.org/respond.js/1.4.2/respond.min.js"></script>
+	<![endif]-->
+
+
+	<script type="text/html" id="barDemo">
+ 		 <a class="layui-btn layui-btn-xs" lay-event="edit" style="font-size:13px">&nbsp&nbsp&nbsp&nbsp处&nbsp&nbsp&nbsp&nbsp理&nbsp&nbsp&nbsp&nbsp</a>
+	</script>
+	<script src="../jsPackage/js/jquery-1.9.1.min.js"></script>
+	<script src="../jsPackage/js/jquery.cookie.js"></script>
+	<!-- 引入layui -->
+	<script type="text/javascript" src="../jsPackage/layui-v2.4.2/layui.all.js"></script>
+	<script type="text/javascript">
+    	//加载layui内置模块
+		  var form = layui.form
+		  ,table = layui.table; //重点处,使用jQuery
+		  window.addEventListener('message', function(e) {
+		        var data = JSON.parse(e.data);
+		        console.log(data);
+		        if (data) {
+		        	//需要的基本信息写入cookie
+		        	$.cookie('name',data.name);
+		        	$.cookie('organ',data.organ);
+		        }
+		        
+		        table.render({
+				    elem: '#pending'
+				    ,url: '/iot_process/process/tasks/layui' //数据接口
+				    ,where:{
+				    	"userName":$.cookie("name").replace(/"/g,"")
+				    }
+			  		,skin:'line'
+				    ,cols: [[ //表头
+						{type:'numbers', title: '序号',width:'8.25%'}
+				      ,{field: 'piid', title: 'ID',width:'12%', hide:true}
+				      ,{field: 'area', title: '属地',width:'165', hide:true}
+				      ,{field: 'currentnode', title: '流程节点',width:'16%'}
+				      ,{field: 'describle', title: '问题描述',width:'26%'}
+				      ,{field: 'reportperson', title: '上报人',width:'16%'}
+				      ,{field: 'tip', title: '是否超期',width:'16%'}
+				      ,{fixed: 'right',title: '操作', width: '18%', align:'center', toolbar: '#barDemo'}
+				    ]]
+			   });
+			  //监听行工具事件
+			  table.on('tool(test)', function(obj){ //注：tool 是工具条事件名，test 是 table 原始容器的属性 lay-filter="对应的值"
+			    var data = obj.data //获得当前行数据
+			    ,layEvent = obj.event; //获得 lay-event 对应的值
+			    if(layEvent === 'edit'){
+			    	//根据属地判断跳转页面
+			    	console.log(data.currentnode);
+			    	var  toHtml={"问题上报":'report.html',"问题评估":"estimate-team-leader.html","作业安排":"assign-task.html","作业接收":"receive-task.html","作业完成":"finish-task.html","作业验收":"acceptance.html","生产办评估":"estimate-pure.html","问题分配":"estimate-pure.html","领导审核":"estimate.html"};
+			    	/* if(data.currentnode=="问题评估"){
+				    	switch(data.area){		    		
+				    	case "生产办":
+				    	case "净化工段":			    		
+				    	case "维修工段":
+				    	case "项目部":
+			    			html="estimate-team-leader.html";
+			    			break;
+			    		 default:
+			    			html="estimate-repair.html"; 
+				    	}
+			    	}else{ */
+			    		html=toHtml[data.currentnode]
+			    	//}
+					parent.parent.location.href=html+"?piid="+data.piid+"&area="+data.area;
+			    }
+			  });  
+		    }, false); 
+  		    
+</script>
+</body>
+</html>

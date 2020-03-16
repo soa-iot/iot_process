@@ -1,10 +1,28 @@
 package cn.soa.service.impl;
 
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import cn.soa.dao.EquipmentInfoMapper;
 import cn.soa.dao.ProblemInfoMapper;
+import cn.soa.dao.ProblemTypeAreaMapper;
+import cn.soa.dao.activity.HisActMapper;
+import cn.soa.entity.EventTotal;
+import cn.soa.entity.FinishedTotal;
 import cn.soa.entity.ProblemInfo;
+import cn.soa.entity.ProblemTypeArea;
+import cn.soa.entity.UserOrganization;
+import cn.soa.entity.activity.HistoryAct;
 import cn.soa.service.inter.ProblemInfoSI;
 
 /**
@@ -15,10 +33,58 @@ import cn.soa.service.inter.ProblemInfoSI;
  */
 @Service
 public class ProblemInfoS implements ProblemInfoSI {
+	private static Logger logger = LoggerFactory.getLogger( ProblemInfoS.class );
 
 	@Autowired
 	private ProblemInfoMapper problemInfoMapper;
-
+	
+	@Autowired
+	private HisActMapper hisActMapper;
+	
+	@Autowired
+	private EquipmentInfoMapper equipMapper;
+	
+	/**
+	 * lixuefeng:新增接口用于问题查询，多个维度，可分页
+	 * @param piid 流程标识字段
+	 * @return 问题评估信息实体
+	 */
+	@Override
+	public List<ProblemInfo> queryProblempro(ProblemInfo problemInfo, Integer page, Integer pageSize,String startTime,String endTime) {
+		// TODO Auto-generated method stub
+		return problemInfoMapper.queryProblempro(problemInfo, page, pageSize,startTime,endTime);
+	}
+	@Override
+	public int count(ProblemInfo problemInfo,String startTime,String endTime) {
+		// TODO Auto-generated method stub
+		return problemInfoMapper.count(problemInfo,startTime,endTime);
+	}
+	/**
+	 * 根据流程标识字段查询问题评估信息
+	 * @param piid 流程标识字段
+	 * @return 问题评估信息实体
+	 */
+	public List<Map<String ,Object>> statisticalTaskProblempro(String beginTime,String endTime){
+		
+		return problemInfoMapper.statisticalTaskProblempro(beginTime, endTime);
+		
+		
+	};
+	
+	/**   
+	 * <p>Title: statisticalTaskProblempro</p>   
+	 * <p>查看问题超期数量  </p>  
+	 * @param beginTime
+	 * @param endTime
+	 * @return   
+	 * @see cn.soa.service.inter.ProblemInfoSI#statisticalTaskProblempro(java.lang.String, java.lang.String)   
+	 */ 
+	@Override
+	public List<Map<String ,Object>> findTimeStateS(String beginTime,String endTime){
+		return problemInfoMapper.findTimeState(beginTime, endTime);
+		
+		
+	};
 	/**
 	 * 根据流程标识字段查询问题评估信息
 	 * 
@@ -37,9 +103,9 @@ public class ProblemInfoS implements ProblemInfoSI {
 	 * @return 数据库更新数量
 	 */
 	@Override
-	public Integer changeProblemDescribeByPiid(String piid, String problemdescribe) {
+	public Integer changeProblemDescribeByPiid(ProblemInfo problemInfo) {
 		
-		return updateProblemDescribeByPiid(piid, problemdescribe);
+		return updateProblemDescribeByPiid(problemInfo, null, null, null);
 	}
 
 	/**   
@@ -75,14 +141,68 @@ public class ProblemInfoS implements ProblemInfoSI {
 	 * @param piid 流程标识字段
 	 * @return 数据库更新数量
 	 */
-	public Integer updateProblemDescribeByPiid(String piid,String problemdescribe) {
+	public Integer updateProblemDescribeByPiid(ProblemInfo problemInfo, String equipName, String positionNum, String serialNum) {
 		try {
-			Integer rows = problemInfoMapper.updateProblemDescribeByPiid(piid, problemdescribe);
+			Integer rows = problemInfoMapper.updateProblemDescribeByPiid(problemInfo);
+			if(problemInfo.getSupervisorydate() != null) {
+				equipMapper.insertRepairInfo(problemInfo, equipName, positionNum, serialNum);
+			}
+
 			return rows;
 		} catch (Exception e) {
 			e.printStackTrace();
 			return -1;
 		}
+	}
+	
+	/**
+	 * 根据属地名称去找另外的属地
+	 * @param problemtype
+	 * @return
+	 */
+	public List<UserOrganization> getDeptByProblemtype(String problemtype){
+		
+		List<UserOrganization> list = findDeptByProblemtype(problemtype);
+		String parentId = null;
+		
+		//如果是维修工段，则去掉净化工段和其子节点
+		if ("维修工段".equals(problemtype)) {
+			for (int i = 0; i < list.size(); i++) {
+				if (list.get(i).getName().equals("净化工段")) {
+					parentId=list.get(i).getUsernum();
+					list.remove(i);
+				}
+			}
+		}
+		if (parentId != null) {
+			List<UserOrganization> list2 = new ArrayList<>();
+			for (int j = 0; j < list.size(); j++) {
+				if (list.get(j).getParent_id().equals(parentId)) {
+					list2.add(list.get(j));
+				}
+			}
+			System.err.println(list2);
+			list.removeAll(list2);
+		}
+		return list;
+	}
+	
+	/**
+	 * 根据用部分problemdescribe查询对应的数据
+	 * @param problemdescribele
+	 * @return ProblemInfo集合
+	 */
+	public List<ProblemInfo> getAutoFill(String problemdescribe){
+		return findByProblemdescribe(problemdescribe);
+	}
+	
+	/**
+	 * 根据用部分problemdescribe查询对应的数据
+	 * @param problemdescribele
+	 * @return ProblemInfo集合
+	 */
+	private List<ProblemInfo> findByProblemdescribe(String problemdescribe){
+		return problemInfoMapper.findByProblemdescribe(problemdescribe);
 	}
 	
 	/**   
@@ -100,4 +220,357 @@ public class ProblemInfoS implements ProblemInfoSI {
 			return -1;
 		}
 	}
+	
+	/**
+	 * 根据属地名称去找另外的属地
+	 * @param problemtype
+	 * @return
+	 */
+	private List<UserOrganization> findDeptByProblemtype(String problemtype){
+		try {
+			List<UserOrganization> userOrganizations = problemInfoMapper.findDeptByProblemtype(problemtype);
+			return userOrganizations;
+		} catch (Exception e) {
+			e.printStackTrace();
+			return null;
+		}	
+	}
+	
+	/**   
+	 * @Title: deleteByPiid   
+	 * @Description: 根据piid删除问题上报记录 
+	 * @return: int        
+	 */  
+	@Override
+	public int deleteByPiid( String piid ) {
+		try {
+			int i = problemInfoMapper.deleteByPiid(piid);
+			return i;
+		} catch (Exception e) {
+			e.printStackTrace();
+			return -1;
+		}
+	}
+	
+	/**   
+	 * @Title: deleteByPiid   
+	 * @Description: 根据tsid删除问题上报记录 
+	 * @return: int        
+	 */  
+	@Override
+	public int deleteByBsid( String bsid ) {
+		try {
+			int i = problemInfoMapper.deleteByBsid( bsid );
+			return i;
+		} catch (Exception e) {
+			e.printStackTrace();
+			return -1;
+		}
+	}
+	
+	/**   
+	 * @Title: updatePiidByBsid   
+	 * @Description: 根据bsid，更新业务表数据的piid    
+	 * @return: int        
+	 */ 
+	@Override
+	public int updatePiidByBsid( String bsid, String biid ) {
+		try {
+			int i = problemInfoMapper.updatePiidByBsid( bsid, biid );
+			return i;
+		} catch (Exception e) {
+			e.printStackTrace();
+			return -1;
+		}
+	}
+	
+	/**   
+	 * @Title: modifyProblemState   
+	 * @Description: 修改问题是否超期的状态  
+	 * @return: boolean        
+	 */  
+	public boolean modifyNodeCurrentState() {
+		logger.info( "---------修改问题是否超期的状态  ------------" );
+		try {
+			/*
+			 * 查找所有未完成的任务和未超期的任务
+			 */
+			List<ProblemInfo> problems = problemInfoMapper.findUnfinishedAndTimeover();
+			logger.info( "---------需要修改超期的状态的问题-----------"  + problems );
+			
+			if( problems == null ) return false;
+			logger.info( "---------需要修改超期的状态的问题数  ------------" );
+			logger.info( problems.size() + "" );
+			
+			/*
+			 * 查找流程历史节点表，得到超期状态
+			 */
+			Map<String, String> timeState = new HashMap<String,String>();
+			List<String> piids = new ArrayList<String>();
+			for( ProblemInfo p : problems ) {
+				if( p == null ) continue;
+				if( p.toString() == null ) continue;
+				piids.add( p.getPiid() );
+			}
+			logger.info( "---------需要修改超期的状态的问题的piid  ------------" );
+			piids.forEach( p-> logger.info( p.toString() ));
+			List<HistoryAct> lastActs = getLastActByPiidsS( piids );
+			//判断状态
+			for( HistoryAct h : lastActs ) {
+				if( "endEvent".equals( h.getACT_TYPE_())  ) {
+					timeState.put( h.getPROC_INST_ID_(), " "); 
+					continue;
+				}else if( h.getEND_TIME_() == null  ){
+					Date startTime = h.getSTART_TIME_();
+					//判断标准为2天
+					long standard = 2*24*60*60*1000;
+					long start = startTime.getTime();
+					if( start - System.currentTimeMillis() > standard ) {
+						timeState.put( h.getPROC_INST_ID_(), "超期"); 
+					}else {
+						timeState.put( h.getPROC_INST_ID_(), "未超期"); 
+					}
+					logger.info( "---------所有流程的超期状态  ------------" + timeState );
+				}else {
+					logger.info( "---------获取节点结束时间有误  ------------" + h.getEND_TIME_() );
+				}				
+			}			
+			
+			//修改超期状态
+			for( Entry<String,String> e : timeState.entrySet() )  {
+				String state = e.getKey();
+				String piid = e.getValue();
+				try {
+					int i = problemInfoMapper.updateTimeoverState( state, piid );
+					if( i <= 0 ) logger.info( "------更新失败，piid为  ------------" + piid );
+				} catch (Exception e2) {
+					e2.printStackTrace();
+					continue;
+				}			
+			}
+			
+		} catch (Exception e) {
+			e.printStackTrace();
+			return false;
+		}
+		return false;
+	}
+
+	/**   
+	 * @Title: getLastActByPiids   
+	 * @Description: 根据任务piid,查询当前流程实例的最后一个节点    
+	 * @return: List<HistoryAct>        
+	 */  
+	public List<HistoryAct> getLastActByPiidsS( List<String> piids ){
+		logger.info( "--S-------根据任务piid,查询当前流程实例的最后一个节点  --------" );
+		try {
+			List<HistoryAct> lastActs = hisActMapper.findLastActByPiids(piids);
+			logger.info( "--S-------查询当前流程实例的最后一个节点  --------" + lastActs );
+			if( lastActs == null ) return null;
+			lastActs.forEach( l-> logger.info( "--S------------" + l.toString() ));	
+			return lastActs;
+		} catch (Exception e) {
+			e.printStackTrace();
+			return null;
+		}
+	}
+	
+	/**   
+	 * @Title: modifyProblemState   
+	 * @Description: 查询所有问题状态为‘未超期’和未完成的的问题  
+	 * @return: boolean        
+	 */  
+	@Override
+	public boolean modifyProblemState() {
+		try {
+			logger.info( "--------- 查询所有问题状态为‘未超期’和未完成的的问题  ------------" );
+			/*
+			 * 查找所有未完成的任务和未超期的任务
+			 */
+			List<ProblemInfo> problems = problemInfoMapper.findUnfinishedAndTimeover();
+			logger.info( "---------需要检查超期的状态的问题-----------"  + problems );
+			
+			if( problems == null ) return false;
+			logger.info( "---------需要检查超期的状态的问题数  ------------" );
+			logger.info( problems.size() + "" );
+			
+
+			/*
+			 * 循环判断得到超期状态
+			 */
+			Map<String, String> timeState = new HashMap<String,String>();
+			for( ProblemInfo p : problems ) {
+				try {
+					if( p.getRemark() == null ) continue;
+					if( "指定日期".equals( p.getRemark() ) ) {
+						Date requireDate = p.getRectificationperiod();
+						if( requireDate.getTime() + 1000*24*60*60 > System.currentTimeMillis() ) {
+							timeState.put( p.getPiid(), "未超期" );
+						}else {
+							timeState.put( p.getPiid(), "超期" );
+						}
+					}else {
+						timeState.put( p.getPiid(), "未超期" );
+					}
+				} catch (Exception e) {
+					e.printStackTrace();
+					continue;
+				}
+			}
+			
+			//修改超期状态
+			for( Entry<String,String> e : timeState.entrySet() )  {
+				String piid = e.getKey();
+				String  state= e.getValue();
+				try {
+					int i = problemInfoMapper.updateTimeoverState( state, piid );
+					if( i <= 0 ) {
+						logger.info( "------更新失败，piid为  ------------" + piid );					
+					}else {
+						logger.info( "------更新成功，piid为  ------------" + piid );	
+					}
+				} catch (Exception e2) {
+					e2.printStackTrace();
+					continue;
+				}			
+			}
+			return true;
+		} catch (Exception e) {
+			e.printStackTrace();
+			return false;
+		}
+	}
+	
+	@Override
+	public List<ProblemInfo> findUnfinishAndNoPositionS() {
+		try {
+			List<ProblemInfo> ps = problemInfoMapper.selectUnfinishAndNoPosition();
+			return ps;
+		} catch (Exception e2) {
+			e2.printStackTrace();
+			return null;
+		}	
+	}
+	
+	/**
+	 * 事故事件情况统计
+	 * @param date
+	 * @return
+	 */
+	@Override
+	public List<EventTotal> findEventByApplydate(String date,String startTime,String endTime){
+		try {
+			List<EventTotal> eventTotalData = problemInfoMapper.findEventByApplydate(date,startTime,endTime);
+			List<EventTotal> eventTotals = null;
+			
+			if (eventTotalData != null && eventTotalData.size()> 0) {
+				eventTotals = new ArrayList<EventTotal>();
+				EventTotal eventTotal1 = new EventTotal();
+				eventTotal1.setDepet("净化工段");
+				EventTotal eventTotal2 = new EventTotal();
+				eventTotal2.setDepet("维修工段");
+				for (int i = 0; i < eventTotalData.size(); i++) {
+					EventTotal eventTotal = eventTotalData.get(i);
+					if ("净化工段".equals(eventTotal.getParent_id()) || "净化工段".equals(eventTotal.getDepet())) {
+						eventTotal1.setAccidentevent(eventTotal.getAccidentevent()+eventTotal1.getAccidentevent());
+						eventTotal1.setOrdinaryevent(eventTotal.getOrdinaryevent()+eventTotal1.getOrdinaryevent());
+						eventTotal1.setRisksevent(eventTotal.getRisksevent()+eventTotal1.getRisksevent());
+						eventTotal1.setTotal(eventTotal.getTotal()+eventTotal1.getTotal());
+						eventTotal1.setUnsafebehavior(eventTotal.getUnsafebehavior()+eventTotal1.getUnsafebehavior());
+					}else if ("维修工段".equals(eventTotal.getParent_id()) || "维修工段".equals(eventTotal.getDepet())) {
+						eventTotal2.setAccidentevent(eventTotal.getAccidentevent()+eventTotal2.getAccidentevent());
+						eventTotal2.setOrdinaryevent(eventTotal.getOrdinaryevent()+eventTotal2.getOrdinaryevent());
+						eventTotal2.setRisksevent(eventTotal.getRisksevent()+eventTotal2.getRisksevent());
+						eventTotal2.setTotal(eventTotal.getTotal()+eventTotal2.getTotal());
+						eventTotal2.setUnsafebehavior(eventTotal.getUnsafebehavior()+eventTotal2.getUnsafebehavior());
+					}else {
+						eventTotals.add(eventTotal);
+					}
+				}
+				eventTotals.add(eventTotal1);
+				eventTotals.add(eventTotal2);
+			}
+			
+			String[] eventTotalNames = {"生产办公室","综合办","HSE办公室","设备办公室","财务办公室","厂领导","净化工段","维修工段"};
+			List<EventTotal> eventTotales =new ArrayList<EventTotal>();
+			for (int i = 0; i < eventTotalNames.length; i++) {
+				EventTotal eventTotal = new EventTotal();
+				eventTotal.setDepet(eventTotalNames[i]);
+				eventTotales.add(eventTotal);
+			}
+			
+			for (int i = 0; i < eventTotales.size(); i++) {
+				for (int j = 0; j < eventTotals.size(); j++) {
+					if (eventTotals.get(j).getDepet().equals(eventTotales.get(i).getDepet())) {
+						eventTotales.set(i, eventTotals.get(j));
+					}
+				}
+			}
+			return eventTotales;
+		} catch (Exception e2) {
+			e2.printStackTrace();
+			return null;
+		}
+	}
+	
+	/**
+	 * 问题完成情况统计
+	 * @param date
+	 * @return
+	 */
+	public List<FinishedTotal> findFinishedByApplydate(String date,String startTime,String endTime){
+		try {
+			List<FinishedTotal> finishedTotalData = problemInfoMapper.findFinishedByApplydate(date,startTime,endTime);
+			List<FinishedTotal> finishedTotals = null;
+			
+			if (finishedTotalData != null && finishedTotalData.size()> 0) {
+				finishedTotals = new ArrayList<FinishedTotal>();
+				FinishedTotal finishedTotal1 = new FinishedTotal();
+				finishedTotal1.setDepet("净化工段");
+				FinishedTotal finishedTotal2 = new FinishedTotal();
+				finishedTotal2.setDepet("维修工段");
+				for (int i = 0; i < finishedTotalData.size(); i++) {
+					FinishedTotal finishedTotal = finishedTotalData.get(i);
+					if ("净化工段".equals(finishedTotal.getParent_id()) || "净化工段".equals(finishedTotal.getDepet())) {
+						finishedTotal1.setDirectfinished(finishedTotal.getDirectfinished()+finishedTotal1.getDirectfinished());
+						finishedTotal1.setFinished(finishedTotal.getFinished()+finishedTotal1.getFinished());
+						finishedTotal1.setNormalfinished(finishedTotal.getNormalfinished()+finishedTotal1.getNormalfinished());
+						finishedTotal1.setDepets(finishedTotal.getDepets()+finishedTotal1.getDepets());
+						finishedTotal1.setUnfinished(finishedTotal.getUnfinished()+finishedTotal1.getUnfinished());
+					}else if ("维修工段".equals(finishedTotal.getParent_id()) || "维修工段".equals(finishedTotal.getDepet())) {
+						finishedTotal2.setDirectfinished(finishedTotal.getDirectfinished()+finishedTotal2.getDirectfinished());
+						finishedTotal2.setFinished(finishedTotal.getFinished()+finishedTotal2.getFinished());
+						finishedTotal2.setNormalfinished(finishedTotal.getNormalfinished()+finishedTotal2.getNormalfinished());
+						finishedTotal2.setDepets(finishedTotal.getDepets()+finishedTotal2.getDepets());
+						finishedTotal2.setUnfinished(finishedTotal.getUnfinished()+finishedTotal2.getUnfinished());
+					}else {
+						finishedTotals.add(finishedTotal);
+					}
+				}
+				finishedTotals.add(finishedTotal1);
+				finishedTotals.add(finishedTotal2);
+			}
+			String[] finishedTotalNames = {"生产办公室","综合办","HSE办公室","设备办公室","财务办公室","厂领导","净化工段","维修工段"};
+			List<FinishedTotal> finishedTotales =new ArrayList<FinishedTotal>();
+			for (int i = 0; i < finishedTotalNames.length; i++) {
+				FinishedTotal finishedTotal = new FinishedTotal();
+				finishedTotal.setDepet(finishedTotalNames[i]);
+				finishedTotales.add(finishedTotal);
+			}
+			
+			for (int i = 0; i < finishedTotales.size(); i++) {
+				for (int j = 0; j < finishedTotals.size(); j++) {
+					if (finishedTotals.get(j).getDepet().equals(finishedTotales.get(i).getDepet())) {
+						finishedTotales.set(i, finishedTotals.get(j));
+					}
+				}
+			}
+			
+			
+			return finishedTotales;
+		} catch (Exception e2) {
+			e2.printStackTrace();
+			return null;
+		}
+	};
 }

@@ -21,7 +21,7 @@ public interface ProblemReportphoMapper {
 		 * @param piid 流程标识字段
 		 * @return 图片信息实体
 		 */
-	List<ProblemReportpho> findByPiid(String piid);
+	List<ProblemReportpho> findByPiid(@Param("piid")String piid,@Param("remark")String remark);
 	
 	/**   
 	 * @Title: findByRepId   
