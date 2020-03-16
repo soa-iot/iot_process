@@ -1,0 +1,24 @@
+body,.layui-table-body tr{
+	/* background-color: #FAFDFD; */
+}
+
+.layui-container .layui-form,.layui-container fieldset,.layui-form-item,.layui-table-tool,.layui-table thead tr,.layui-table-header,.layui-table-total,.layui-table-total tr{
+	/* background-color: #EDF6FA; */
+}
+
+.layui-container{
+	/* min-width: 900px;
+	width: 85%; */
+}
+
+.layui-elem-field{
+	border: 1px solid black;
+}
+
+.layui-elem-field>legend{
+	font-size: 15px;
+}
+
+.layui-container .layui-table-view{
+	margin-top: 0px;
+}

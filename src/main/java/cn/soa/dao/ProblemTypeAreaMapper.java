@@ -32,4 +32,10 @@ public interface ProblemTypeAreaMapper{
 	 */
 	List<Map<String,String>> findReportFinishRecords(
 			@Param("startDate") String startDate, @Param("endDate") String endDate);
+
+	/**
+	 * 查询部门列表
+	 * @return
+	 */
+	List<String> findDepartments();
 }

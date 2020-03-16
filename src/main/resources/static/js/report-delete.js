@@ -7,6 +7,7 @@ layui.config({
 //从cookie中获取当前登录用户
 var resavepeople = getCookie1("name").replace(/"/g,'');
 console.log("resavepeople="+resavepeople);
+resavepeople = 'admin';
 /**
  * 日期插件
  */
@@ -47,16 +48,6 @@ function GetQueryString(name)
      if(r!=null) return $.trim(decodeURI(r[2])); return null;
 }
 
-//部门 areaName
-var areaName = GetQueryString("areaName");
-//是否整改 isFinish
-var isFinish = GetQueryString("isFinish");
-//是否超期 timeOver
-var timeOver = GetQueryString("timeOver");
-//开始时间 beginTime
-var beginTime = GetQueryString("beginTime");
-//结束时间 endTime
-var endTime = GetQueryString("endTime");
 
 //加载layui内置模块
 layui.use(['jquery','form','layer','table','excel'], function(){
@@ -134,54 +125,85 @@ layui.use(['jquery','form','layer','table','excel'], function(){
 			{fixed:'right',  title:'处理过程', minWidth:105, width:'15%', align:'center', toolbar:'#barBtn'} ]]  
 	});
 	
-	if(areaName != null && beginTime != null && endTime != null){
-		problemTable.reload({
-    		url: '/iot_process/report/showproblembycondition'
-    	   ,page: {
-    		   curr: 1 //重新从第 1 页开始
-    	   }
-    	   ,where: {
-    			'problemtype': areaName,
-    			'startTime': beginTime,
-    			'endTime': endTime,
-    			'remarkthree':  timeOver, 
-    			'problemstate': isFinish
-    	   }
-    	})
-	}
-	
 	/**
 	 * 监听每一行工具事件
 	 */
 	table.on('tool(reportTrace)', function(obj){
 		console.log(obj);
 	    var data = obj.data;
-	    if(obj.event === 'process'){
-	      piid = data.piid;
-	      loadTable();
-	      layer.open({
-	    	title: '处理过程信息',
-	    	type: 1,
-	    	id: obj.event+1,
-	    	btn: ['确认'],
-	    	offset: '100px',
-	    	area: ['60%','60%'],
-	        content: $('#div-process'),
-	        yes: function(index, layero){
-	            layer.close(index); //如果设定了yes回调，需进行手工关闭
-	          }
-	      });
-	    }
+	    var piid = data.piid;
 	    if(obj.event === 'detail'){
-		   piid = data.piid;
 		   $(".problem-detail").attr({"href":"/iot_process/html/problem-detail.html?piid="+piid});
 		}
+	    if(obj.event === 'delete'){
+	    	
+	    	layer.open({
+	 	    	title: '删除上报问题信息',
+	 	    	type: 1,
+	 	    	id: obj.event+1,
+	 	    	align:'c',
+	 	    	btn: ['确认', '取消'],
+	 	    	offset: '100px',
+	 	    	area: ['600px','270px'],
+	 	        content: $('#delete-div'),
+	 	        yes: function(index, layero){
+	 	        	
+	 	        	var deleteComment = $.trim($("#deleteComment").val());
+	 	        	console.log("deleteComment="+deleteComment);
+	 	        	if(deleteComment == null || deleteComment == ''){
+	 	        		layer.msg("删除原因不能为空！",{icon: 7, time:2000, offset: '100px'});
+	 	        		return false;
+	 	        	}else{
+	 	        		
+	 	        		//判断是否已整改
+	 	        		var isFinished = data.problemstate;
+	 	        		if(isFinished == '已整改'){
+	 	        			isFinished = true;
+	 	        		}else{
+	 	        			isFinished = false;
+	 	        		}
+	 	        		
+	 	        		$.ajax({
+				    		type: 'POST',
+				    		url: '/iot_process/report/problem/delete',
+				    		data: { 
+				    			'tProblemRepId': data.tproblemRepId,
+				    			'deleteComment': deleteComment,
+				    			'piid': piid,
+				    			'resavepeople': resavepeople,
+				    			'isFinished': isFinished
+				    		},
+				    		dataType: 'JSON',
+				    		success: function(json){
+				    			if(json.state == 0){
+				    				layer.msg("删除问题上报记录成功！",{icon: 1, time:2000, offset: '100px'});
+				    				reloadTable(null, null, null);
+				    				layer.close(index); //如果设定了yes回调，需进行手工关闭
+				    			}else{
+				    				layer.msg("删除问题上报记录失败！",{icon: 2, time:2000, offset: '100px'});
+				    			}
+				    		},
+				    		error: function(){
+				    			layer.msg("连接服务器失败！",{icon: 2, time:2000, offset: '100px'});
+				    		}
+				    	})
+	 	        	}
+	 	        },
+	 	        btn2: function(index, layero){
+	 	        	layer.close(index);
+	 	        },
+	 	        success: function(layero, index){
+	 	        	$("#deleteComment").val('');
+	 	        }
+	 	    });
+	    	
+	    }
 	});
 	
 	/**
 	 * 加载处理过程展示表
 	 */
-	function loadTable(){
+	/*function loadTable(){
 		table.render({
 			elem: '#processStep'
 			,url: '/iot_process/process/nodes/all/piid/'+piid //数据接口
@@ -217,117 +239,12 @@ layui.use(['jquery','form','layer','table','excel'], function(){
 				,{field: 'start_TIME_', title: '时间', width:'24.9%',fixed: 'right'} 
 				]]
 		});
-	}
-	
-	/**
-	 * 导出表事件
-	 */
-	function exportExcel(){
-		//从后台取出表数据
-		$.ajax({
-			async: false,
-			type: "POST",
-			url: "/iot_process/report/showproblembycondition",
-			data: {
-				'welName': $("#welName").val(),
-    			'problemclass': $("#problemclass").val(),
-    			'profession': $("#profession").val(),
-    			'depet': $("#depet").val(),
-    			'problemdescribe': $("#problemdescribe").val(),
-    			'problemstate': (problemState == null || problemState == ''?$("#problemstate").val():problemState),
-    			'startTime': $("#startdate").val(),
-    			'endTime': $("#enddate").val(),
-    			'applypeople': $("#applypeople").val(),
-    			'maintenanceman': $("#maintenanceman").val(),
-    			'remark': $("#remarke").val(),
-    			'dueDate': $("#dueDate").val(),
-    			'duedateRange': $("#duedateRange").val(),
-    			'remarkthree':  $("#remarkthree").val(),
-    			'ticketNo': $("#ticketNo").val(),
-    			'piidArray': piids
-			},
-			dataType: "json",
-			success: function(json){
-				if(json.code == 0){
-					var data = json.data     
-			    	if(data != null || data != ''){
-			    		 for(var i=0;i<data.length;i++){
-			    			 data[i].applydate = data[i].applydate.replace(/T/, ' ').replace(/\..*/, '');
-			    			 data[i].problemstate = (data[i].problemstate == 'FINISHED')?'已整改':'未整改';
-			    			 data[i].rectificationperiod = 
-			    				 (data[i].rectificationperiod != null && data[i].rectificationperiod != '')?data[i].rectificationperiod.substring(0,10):'';
-			    			 if(data[i].problemclass != '不安全行为/状态'){
-			    				 data[i].remarkfive = '';
-			    				 data[i].remarksix = '';
-			    			 }
-			    		 }
-			    	}
-					// 1. 数组头部新增表头
-					data.unshift({
-						problemdescribe: '问题描述',
-						maintenanceman: '问题待处理责任人',
-						applydate: '上报日期',
-						rectificationperiod: '计划完成时间',
-						remarkthree: '是否超期',
-						applypeople: '上报人', 
-						depet: '部门',
-						remarktwo: '当前进度',
-						problemtype: '属地单位',
-						welName: '问题区域',
-						profession: '专业',
-						rfid: '设备位号',
-						problemclass: '问题类别',
-						remarkfive: '不安全行为',
-						remarksix: '具体行为',
-						problemstate: '问题状态',
-						
-					});
-					//2. 过滤多余属性
-					var exportData = excel.filterExportData(data, ['problemdescribe','maintenanceman','applydate','rectificationperiod', 'remarkthree', 'problemstate', 'applypeople', 'depet', 'remarktwo', 
-						 'problemtype', 'welName', 'profession', 'rfid', 'problemclass', 'remarkfive', 'remarksix']);
-					//2.1 设置列宽,N列为180， 其他列默认为100
-					var colConf = excel.makeColConfig({
-						'A': 250, 'B': 150, 'C': 120, 'D': 100, 'E': 100,
-						'F': 100, 'G': 100, 'H': 100, 'I': 100, 'J': 100,
-						'K': 100, 'L': 100, 'M': 100, 'N': 100, 'O': 100, 'P': 100
-					}, 100);
-					
-					// 2.2 调用设置样式的函数，传入设置的范围，支持回调
-					excel.setExportCellStyle(exportData, 'A1:P1', {
-					    s: {
-					        alignment: {
-					            horizontal: 'center',
-					            vertical: 'center'
-					        },
-					        font: {bold: true }
-					    }
-					});
-					
-					var date= new Date();
-					date = '问题上报跟踪数据'+date.toLocaleDateString().replace(/\//g, '-')+'.xlsx';
-					
-					//3. 执行导出函数，系统会弹出弹框
-					excel.exportExcel({
-			            sheet1: exportData
-			        }, date, 'xlsx',{
-			            extend: {
-			                '!cols': colConf
-			            }
-			        });
-
-					//table.exportFile(problemTable.config.id,exportData, 'xls');
-				}
-			},
-			error: function(){
-				layer.msg("获取数据失败,请检查网路情况 !", {icon:2})
-			}
-		});	
-	}
+	}*/
 	
 	/**
 	 * 打开/关闭高级搜索
 	 */
-	var isopen = 0;
+	/*var isopen = 0;
 	function opneAdvanceQuery(){
 		if(isopen){
 			$(".layui-form-hidden").css({"display":"none"});
@@ -338,7 +255,7 @@ layui.use(['jquery','form','layer','table','excel'], function(){
 			$("#advance-search").text("关闭高级搜索");
 			isopen = 1;
 		}
-	}
+	}*/
 	
 	/**
 	 * 重新加载表
@@ -363,12 +280,12 @@ layui.use(['jquery','form','layer','table','excel'], function(){
     			'applypeople': $("#applypeople").val(),
     			'dueDate': $("#dueDate").val(),
     			'duedateRange': $("#duedateRange").val(),
-    			'remarkthree':  $("#remarkthree").val(), 
-    			'remark': $("#remark").val(),
-    			'ticketNo': $("#ticketNo").val(),
+    			//'remarkthree':  $("#remarkthree").val(), 
+    			//'remark': $("#remark").val(),
+    			//'ticketNo': $("#ticketNo").val(),
     			'sortField': sortField,
     			'sortType': sortType,
-    			'piidArray': piids_
+    			//'piidArray': piids_
     	   }
     	})
 	}
@@ -380,25 +297,6 @@ layui.use(['jquery','form','layer','table','excel'], function(){
 	  table.on('toolbar(reportTrace)', function(obj){
 	     //var checkStatus = table.checkStatus(obj.config.id);
 		 console.log(obj);
-		var myself = $.trim($(".layui-input-block .layui-form-radioed").text());
-		if(myself.match("否") == null){
-			$.ajax({
-	    		  async: false,
-	    		  type: 'GET',
-	    		  url: '/iot_process/process/userId/piid',
-	    		  data: {"userId": resavepeople},
-	    		  dataType: 'json',
-	    		  success: function(json){
-	    			  if(json.state == 0){
-	    				  piids = json.data;
-	    			  }
-	    		  }
-	    	  })
-	    	  piids = (piids == null||piids == '')?['nodata']:piids;
-	    	  //isreload = true;
-		}else{
-			piids = '';
-		}
 		
 		 switch(obj.event){
 		 case 'reset':
@@ -416,12 +314,12 @@ layui.use(['jquery','form','layer','table','excel'], function(){
 				 "problemstate": "",
 				 "applypeople": "",
 				 "maintenanceman": "",
-				 "remark": "",
-				 "ticketNo": "",
+				// "remark": "",
+				 //"ticketNo": "",
 				 "dueDate": "",
 				 "duedateRange": "",
-				 "remarkthree": "",
-				 "myself": "no" 
+				 //"remarkthree": "",
+				 //"myself": "no" 
 			
 			 });
 			 form.render();
@@ -432,38 +330,6 @@ layui.use(['jquery','form','layer','table','excel'], function(){
 	    	isreload = true;
 	    	reloadTable(null, null, piids);
 	        break;
-	      case 'querydata-all':
-	    	  console.log('querydata-all');
-	    	  problemState = '';
-	    	  isreload = true;
-	    	  piids = '';
-	    	  problemTable.reload({
-	      		url: '/iot_process/report/showproblembycondition'
-	      	   ,page: {
-	      		   curr: 1 //重新从第 1 页开始
-	      	   }
-	      	   ,where: {
-	      			'welName': '',
-	      			'problemclass': '',
-	      			'profession': '',
-	      			'depet': '',
-	      			'problemdescribe': '',
-	      			'problemstate': '',
-	      			'startTime': '',
-	      			'endTime': '',
-	      			'schedule': '',
-	      			'maintenanceman': '',
-	      			'applypeople': '',
-	      			'dueDate': '',
-	      			'duedateRange': '',
-	      			'remarkthree':  '',
-	      			'ticketNo': '',
-	      			'sortField': null,
-	    			'sortType': null,
-	      			'piidArray': ''
-	      	   }
-	      	})
-	    	break;
 	      case 'finish':
 	    	  console.log('finish');
 			   console.log("count="+count+" , uncount="+uncount);
@@ -496,14 +362,14 @@ layui.use(['jquery','form','layer','table','excel'], function(){
 			      })  
 	    	  }
 		      break;
-	      case 'open-advance':
+		      /*case 'open-advance':
 	    	  console.log('open-advance');
 	    	  opneAdvanceQuery();
 	    	  break;
-	      case 'export':
+	     case 'export':
 	    	  console.log('export');
 	    	  exportExcel();
-	    	  break; 
+	    	  break; */
 	    };
 	  });
 	

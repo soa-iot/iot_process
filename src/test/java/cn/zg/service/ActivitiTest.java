@@ -42,9 +42,8 @@ public class ActivitiTest {
 	 */
 	@Test
 	public void closeProcess() {
-		runtimeService.deleteProcessInstance("80001", "过时");
-		runtimeService.deleteProcessInstance("80019", "过时");
-		runtimeService.deleteProcessInstance("110001", "过时");
+		runtimeService.deleteProcessInstance("80127", "过时");
+
 
 
 		System.out.println("--------删除成功");

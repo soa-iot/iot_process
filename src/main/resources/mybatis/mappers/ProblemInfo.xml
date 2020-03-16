@@ -90,7 +90,7 @@
 									when  PROBLEMTYPE='生产办' then  '生产办' 
 									when  PROBLEMTYPE='综合办' then  '综合办' 
 								else null end problemtype 
-  			from  CZ_TASK_PROBLEM_REPORT_NEW where piid is not null
+  			from  CZ_TASK_PROBLEM_REPORT_NEW where piid is not null AND isdownload is null
 ) problemreport
            <where>			
     	<if test ="record!=null">
@@ -121,7 +121,7 @@
 								when  PROBLEMTYPE='生产办' then  '生产办' 
 								when  PROBLEMTYPE='综合办' then  '综合办' 
 								else null end problemtype 
-  			from  CZ_TASK_PROBLEM_REPORT_NEW 
+  			from  CZ_TASK_PROBLEM_REPORT_NEW WHERE isdownload is null
   		) a
   		           <where>			
     	<if test ="record!=null">
@@ -135,6 +135,7 @@
     	  <if test='endTime!=null'>
     		and to_char(applydate,'YYYY-MM-DD') &lt;=#{endTime}
     	 </if>
+    	 
     	  </where>	
   </select>
 		<!-- lixuefeng新增用于问题条件查询，返回list -->
@@ -206,7 +207,7 @@
 		from 
 			CZ_TASK_PROBLEM_REPORT_NEW 
 		where 
-			piid = #{piid}
+			piid = #{piid} AND isdownload is null
 	</select>
 	
 	<!-- 分页查找问题上报信息  -->
@@ -391,8 +392,283 @@
 					   <if test="record.rfid != null and record.rfid != ''">
 					   		and RFID = #{record.rfid}
 					   </if>
-					   <if test="record.isdownload != null and record.isdownload != ''">
-					   		and isdownload = #{record.isdownload}
+					   <if test="record.problemnum != null">
+					   		and PROBLEMNUM = #{record.problemnum}
+					   </if>
+					   <if test="record.phoName != null and record.phoName != ''">
+					   		and pho_name = #{record.phoName}
+					   </if>
+					   <if test="record.processDesc != null and record.processDesc != ''">
+					   		and process_desc = #{record.processDesc}
+					   </if>
+					   <if test="record.phoDispiayName != null and record.phoDispiayName != ''">
+					   		and pho_dispiay_name = #{record.phoDispiayName}
+					   </if>
+					   <if test="record.rectifInstruction != null and record.rectifInstruction != ''">
+					   		and rectif_instruction = #{record.rectifInstruction}
+					   </if>
+					   <if test="record.phoAddress != null and record.phoAddress != ''">
+					   		and pho_address = #{record.phoAddress}
+					   </if>
+					   <if test="record.gdName != null and record.gdName != ''">
+					   		and gd_name = #{record.gdName}
+					   </if>
+					   <if test="record.workPermit != null and record.workPermit != ''">
+					   		and work_permit = #{record.workPermit}
+					   </if>
+					   <if test="record.workPermitNumber != null and record.workPermitNumber != ''">
+					   		and work_permit_number = #{record.workPermitNumber}
+					   </if>
+					   <if test="record.problemclass != null and record.problemclass != ''">
+					   		and PROBLEMCLASS = #{record.problemclass}
+					   </if>
+					   <if test="record.profession != null and record.profession != ''">
+					   		and PROFESSION = #{record.profession}
+					   </if>
+					   <if test="record.depet != null and record.depet != ''">
+					   		
+					   		<choose>
+					   			<when test="record.depet == '维修工段' ">
+					   				and depet IN ('电站','电工班','钳工班','仪表班','维修班','电站班','管焊班','维修工段')
+					   			</when>
+					   			<when test="record.depet == '净化工段' ">
+					   				and depet IN ('净化1班','净化4班','净化2班','净化3班','行政班','分析班')
+					   			</when>
+					   			<when test="record.depet == 'HSE办公室' ">
+					   				and depet IN ('HSE办公室')
+					   			</when>
+					   			<when test="record.depet == '设备办' ">
+					   				and depet IN ('设备办','设备办公室')
+					   			</when>
+					   			<when test="record.depet == '生产办' ">
+					   				and depet IN ('生产办','生产办公室')
+					   			</when>
+					   			<when test="record.depet == '财务经营办' ">
+					   				and depet IN ('财务经营办','财务办公室')
+					   			</when>
+					   			<when test="record.depet == '综合办' ">
+					   				and depet IN ('综合办','综合办公室')
+					   			</when>
+					   			<otherwise>
+					   				and depet = #{record.depet}
+					   			</otherwise>
+					   		</choose>
+					   </if>
+					   <if test="record.interOrOuter != null and record.interOrOuter != ''">
+					   		and inter_or_outer = #{record.interOrOuter}
+					   </if>
+					   <if test="record.outerDealDescribe != null and record.outerDealDescribe != ''">
+					   		and outer_deal_describe = #{record.outerDealDescribe}
+					   </if>
+					   <if test="record.dueDate != null and record.dueDate != ''">
+					   		and to_char(rectificationperiod,'YYYY-MM-DD') = #{record.dueDate}
+					   </if>
+					   <if test="record.duedateRange != null and record.duedateRange != ''">
+					   		and to_char(rectificationperiod,'YYYY-MM-DD') &lt;= #{record.duedateRange} and to_char(rectificationperiod,'YYYY-MM-DD') &gt;= to_char(sysdate, 'YYYY-MM-DD')
+					   </if>
+					</if>
+					<if test="startTime!=null and startTime!=''">
+			    		and to_char(applydate,'YYYY-MM-DD') &gt;=#{startTime}
+			    	</if>
+			    	<if test="endTime!=null and endTime!=''">
+			    		and to_char(applydate,'YYYY-MM-DD') &lt;=#{endTime}
+			    	</if>
+					<if test="limit != null and limit != ''">
+						and ROWNUM &lt;= (${limit}*${page})
+					</if>
+					and isdownload is null
+				</where>
+			) probleminfo 
+		<where>
+			<if test="page != null and page != ''">
+				rownum1 &gt; (${limit}*(${page}-1))
+			</if>
+		</where>
+			
+	</select>
+	
+	<!-- 分页查找问题上报信息(设备异常)  -->
+	<!-- List<ProblemInfo> findPorblemInfoByPageEqu(
+			@Param("record") ProblemInfo problemInfo,
+			@Param("page") Integer page,
+			@Param("limit") Integer limit, 
+			@Param("startTime") String startTime,
+			@Param("endTime") String endTime,
+			@Param("sortField") String sortField,
+			@Param("sortType") String sortType) -->
+	<select id="findPorblemInfoByPageEqu" resultType="cn.soa.entity.ProblemInfo">
+		SELECT
+			<include refid="problemInfoSelectSql"></include>
+		FROM
+			(
+				SELECT ROWNUM rownum1, REPORT_NEW.*
+				FROM 
+					( 
+						SELECT * FROM CZ_TASK_PROBLEM_REPORT_NEW
+						<where>
+							RFID !='其它设备'
+							<if test="record != null and record.piids != null">
+								and PIID IN 
+								<foreach collection="record.piids" index="index" item="item" open="(" separator="," close=")">
+									#{item}
+								</foreach>
+							</if>
+						</where>
+						<choose>
+								<when test="sortField != null and sortField != ''">
+									ORDER BY ${sortField} ${sortType}
+								</when>
+								<otherwise>
+									ORDER BY applydate DESC
+								</otherwise>
+						</choose>
+					) REPORT_NEW
+				<where>
+					<if test="record != null">
+					   <if test="record.tProblemRepId != null and record.tProblemRepId != ''">
+					   		T_PROBLEM_REP_ID = #{record.tProblemRepId}
+					   </if>
+					   <if test="record.piid != null and record.piid != ''">
+					   		and piid = #{record.piid}
+					   </if>
+					    <if test="record.tasId != null and record.tasId != ''">
+					   		and tas_id = #{record.tasId}
+					   </if>
+					   <if test="record.problemtype != null and record.problemtype != ''">
+					   		<choose>
+					   			<when test="record.problemtype == '维修工段'">
+					   				and PROBLEMTYPE IN ('电站', '电气', '仪表', '机械', '维修工段')
+					   			</when>
+					   			<when test="record.problemtype == '净化工段'">
+					   				and PROBLEMTYPE IN ('净化工段', '化验')
+					   			</when>
+					   			<otherwise>
+					   				and PROBLEMTYPE = #{record.problemtype}
+					   			</otherwise>
+					   		</choose>
+					   </if>
+					   <if test="record.welId != null and record.welId != ''">
+					   		and wel_id = #{record.welId}
+					   </if>
+					   <if test="record.welName != null and record.welName != ''">
+					   		and WEL_NAME = #{record.welName}
+					   </if>
+					   <if test="record.adress != null and record.adress != ''">
+					   		and adress = #{record.adress}
+					   </if>
+					   <if test="record.impacts != null and record.impacts != ''">
+					   		and impacts = #{record.impacts}
+					   </if>
+					   <if test="record.problemdescribe != null and record.problemdescribe != ''">
+					   		and PROBLEMDESCRIBE LIKE '%${record.problemdescribe}%'
+					   </if>
+					   <if test="record.resavepeople != null and record.resavepeople != ''">
+					   		and RESAVEPEOPLE = #{record.resavepeople}
+					   </if>
+					   <if test="record.applypeople != null and record.applypeople != ''">
+					   		and APPLYPEOPLE LIKE '%${record.applypeople}%'
+					   </if>
+					   <if test="record.problemstate != null and record.problemstate != ''">
+					   		and PROBLEMSTATE = #{record.problemstate}
+					   </if>
+					   <if test="record.remark != null and record.remark != ''">
+					   		and remark = #{record.remark}
+					   </if>
+					   <if test="record.remarkone != null and record.remarkone != ''">
+					   		and remarkone = #{record.remarkone}
+					   </if>
+					   <if test="record.remarktwo != null and record.remarktwo != ''">
+					   		and remarktwo = #{record.remarktwo}
+					   </if>
+					   <if test="record.remarkthree != null and record.remarkthree != ''">
+					   		and remarkthree = #{record.remarkthree}
+					   </if>
+					   <if test="record.supervisoryperson != null and record.supervisoryperson != ''">
+					   		and supervisoryperson = #{record.supervisoryperson}
+					   </if>
+					   <if test="record.maintenanceman != null and record.maintenanceman != ''">
+					   		and maintenanceman LIKE '%${record.maintenanceman}%'
+					   </if>
+					   <if test="record.rectificationmeasures != null and record.rectificationmeasures != ''">
+					   		and rectificationmeasures = #{record.rectificationmeasures}
+					   </if>
+					   <if test="record.isSms != null and record.isSms != ''">
+					   		and is_sms = #{record.isSms}
+					   </if>
+					   <if test="record.smsConment != null and record.smsConment != ''">
+					   		and sms_conment = #{record.smsConment}
+					   </if>
+					   <if test="record.taskPiid != null and record.taskPiid != ''">
+					   		and task_piid = #{record.taskPiid}
+					   </if>
+					   <if test="record.processtype != null and record.processtype != ''">
+					   		and processtype = #{record.processtype}
+					   </if>
+					   <if test="record.supervisorydesc != null and record.supervisorydesc != ''">
+					   		and supervisorydesc = #{record.supervisorydesc}
+					   </if>
+					   <if test="record.tasDistribute != null and record.tasDistribute != ''">
+					   		and tas_distribute = #{record.tasDistribute}
+					   </if>
+					   <if test="record.departOrCentral != null and record.departOrCentral != ''">
+					   		and depart_or_central = #{record.departOrCentral}
+					   </if>
+					   <if test="record.terPlace != null and record.terPlace != ''">
+					   		and ter_place = #{record.terPlace}
+					   </if>
+					   <if test="record.spId != null and record.spId != ''">
+					   		and sp_id = #{record.spId}
+					   </if>
+					   <if test="record.spName != null and record.spName != ''">
+					   		and sp_name = #{record.spName}
+					   </if>
+					   <if test="record.organizationSiteOffice != null and record.organizationSiteOffice != ''">
+					   		and organization_site_officE = #{record.organizationSiteOffice}
+					   </if>
+					   <if test="record.officeProblem != null and record.officeProblem != ''">
+					   		and office_problem = #{record.officeProblem}
+					   </if>
+					   <if test="record.materialsApplication != null and record.materialsApplication != ''">
+					   		and materials_application = #{record.materialsApplication}
+					   </if>
+					   <if test="record.applicationRemark != null and record.applicationRemark != ''">
+					   		and application_remark = #{record.applicationRemark}
+					   </if>
+					   <if test="record.controleApplication != null and record.controleApplication != ''">
+					   		and controle_application = #{record.controleApplication}
+					   </if>
+					   <if test="record.opeCmId != null and record.opeCmId != ''">
+					   		and ope_cm_id = #{record.opeCmId}
+					   </if>
+					   <if test="record.opecardNo != null and record.opecardNo != ''">
+					   		and ope_card_no = #{record.opecardNo}
+					   </if>
+					   <if test="record.handleTicket != null and record.handleTicket != ''">
+					   		and handle_ticket = #{record.handleTicket}
+					   </if>
+					   <if test="record.ticketNo != null and record.ticketNo != ''">
+					   		and ticket_no = #{record.ticketNo}
+					   </if>
+					   <if test="record.correctiveAction != null and record.correctiveAction != ''">
+					   		and corrective_action = #{record.correctiveAction}
+					   </if>
+					   <if test="record.action != null and record.action != ''">
+					   		and action = #{record.action}
+					   </if>
+					   <if test="record.others != null and record.others != ''">
+					   		and others = #{record.others}
+					   </if>
+					   <if test="record.remarkfive != null and record.remarkfive != ''">
+					   		and REMARKFIVE = #{record.remarkfive}
+					   </if>
+					   <if test="record.remarksix != null and record.remarksix != ''">
+					   		and REMARKSIX = #{record.remarksix}
+					   </if>
+					   <if test="record.remarkseven != null and record.remarkseven != ''">
+					   		and remarkseven = #{record.remarkseven}
+					   </if>
+					   <if test="record.rfid != null and record.rfid != ''">
+					   		and RFID = #{record.rfid}
 					   </if>
 					   <if test="record.problemnum != null">
 					   		and PROBLEMNUM = #{record.problemnum}
@@ -478,6 +754,7 @@
 					<if test="limit != null and limit != ''">
 						and ROWNUM &lt;= (${limit}*${page})
 					</if>
+					AND isdownload is null
 				</where>
 			) probleminfo 
 		<where>
@@ -649,8 +926,252 @@
 					   <if test="record.rfid != null and record.rfid != ''">
 					   		and RFID = #{record.rfid}
 					   </if>
-					   <if test="record.isdownload != null and record.isdownload != ''">
-					   		and isdownload = #{record.isdownload}
+					   <if test="record.problemnum != null">
+					   		and PROBLEMNUM = #{record.problemnum}
+					   </if>
+					   <if test="record.phoName != null and record.phoName != ''">
+					   		and pho_name = #{record.phoName}
+					   </if>
+					   <if test="record.processDesc != null and record.processDesc != ''">
+					   		and process_desc = #{record.processDesc}
+					   </if>
+					   <if test="record.phoDispiayName != null and record.phoDispiayName != ''">
+					   		and pho_dispiay_name = #{record.phoDispiayName}
+					   </if>
+					   <if test="record.rectifInstruction != null and record.rectifInstruction != ''">
+					   		and rectif_instruction = #{record.rectifInstruction}
+					   </if>
+					   <if test="record.phoAddress != null and record.phoAddress != ''">
+					   		and pho_address = #{record.phoAddress}
+					   </if>
+					   <if test="record.gdName != null and record.gdName != ''">
+					   		and gd_name = #{record.gdName}
+					   </if>
+					   <if test="record.workPermit != null and record.workPermit != ''">
+					   		and work_permit = #{record.workPermit}
+					   </if>
+					   <if test="record.workPermitNumber != null and record.workPermitNumber != ''">
+					   		and work_permit_number = #{record.workPermitNumber}
+					   </if>
+					   <if test="record.problemclass != null and record.problemclass != ''">
+					   		and PROBLEMCLASS = #{record.problemclass}
+					   </if>
+					   <if test="record.profession != null and record.profession != ''">
+					   		and PROFESSION = #{record.profession}
+					   </if>
+					   <if test="record.depet != null and record.depet != ''">
+					   		
+					   		<choose>
+					   			<when test="record.depet == '维修工段' ">
+					   				and depet IN ('电站','电工班','钳工班','仪表班','维修班','电站班','管焊班','维修工段')
+					   			</when>
+					   			<when test="record.depet == '净化工段' ">
+					   				and depet IN ('净化1班','净化4班','净化2班','净化3班','行政班','分析班')
+					   			</when>
+					   			<when test="record.depet == 'HSE办公室' ">
+					   				and depet IN ('HSE办公室')
+					   			</when>
+					   			<when test="record.depet == '设备办' ">
+					   				and depet IN ('设备办','设备办公室')
+					   			</when>
+					   			<when test="record.depet == '生产办' ">
+					   				and depet IN ('生产办','生产办公室')
+					   			</when>
+					   			<when test="record.depet == '财务经营办' ">
+					   				and depet IN ('财务经营办','财务办公室')
+					   			</when>
+					   			<when test="record.depet == '综合办' ">
+					   				and depet IN ('综合办','综合办公室')
+					   			</when>
+					   			<otherwise>
+					   				and depet = #{record.depet}
+					   			</otherwise>
+					   		</choose>
+					   </if>
+					   <if test="record.interOrOuter != null and record.interOrOuter != ''">
+					   		and inter_or_outer = #{record.interOrOuter}
+					   </if>
+					   <if test="record.outerDealDescribe != null and record.outerDealDescribe != ''">
+					   		and outer_deal_describe = #{record.outerDealDescribe}
+					   </if>
+					   <if test="record.dueDate != null and record.dueDate != ''">
+					   		and to_char(rectificationperiod,'YYYY-MM-DD') = #{record.dueDate}
+					   </if>
+					   <if test="record.duedateRange != null and record.duedateRange != ''">
+					   		and to_char(rectificationperiod,'YYYY-MM-DD') &lt;= #{record.duedateRange} and to_char(rectificationperiod,'YYYY-MM-DD') &gt;= to_char(sysdate, 'YYYY-MM-DD')
+					   </if>
+					</if>
+					<if test="startTime!=null and startTime!=''">
+			    		and to_char(applydate,'YYYY-MM-DD') &gt;=#{startTime}
+			    	</if>
+			    	<if test="endTime!=null and endTime!=''">
+			    		and to_char(applydate,'YYYY-MM-DD') &lt;=#{endTime}
+			    	</if>
+			    	AND isdownload is null
+				</where>
+		</select>
+		
+		<select id="PorblemCountEqu" resultType="map">
+		SELECT COUNT(1) total,COUNT(CASE when problemstate='FINISHED' THEN '1' else null end) complete
+				FROM 
+					(
+						SELECT * FROM CZ_TASK_PROBLEM_REPORT_NEW
+						<where>
+							RFID != '其它设备'
+							<if test="record != null and record.piids != null">
+								AND PIID IN 
+								<foreach collection="record.piids" index="index" item="item" open="(" separator="," close=")">
+									#{item}
+								</foreach>
+							</if>
+						</where>
+					) REPORT_NEW
+				<where>
+					<if test="record != null">
+					   <if test="record.tProblemRepId != null and record.tProblemRepId != ''">
+					   		T_PROBLEM_REP_ID = #{record.tProblemRepId}
+					   </if>
+					   <if test="record.piid != null and record.piid != ''">
+					   		and piid = #{record.piid}
+					   </if>
+					    <if test="record.tasId != null and record.tasId != ''">
+					   		and tas_id = #{record.tasId}
+					   </if>
+					   <if test="record.problemtype != null and record.problemtype != ''">
+					   		<choose>
+					   			<when test="record.problemtype == '维修工段'">
+					   				and PROBLEMTYPE IN ('电站', '电气', '仪表', '机械', '维修工段')
+					   			</when>
+					   			<when test="record.problemtype == '净化工段'">
+					   				and PROBLEMTYPE IN ('净化工段', '化验')
+					   			</when>
+					   			<otherwise>
+					   				and PROBLEMTYPE = #{record.problemtype}
+					   			</otherwise>
+					   		</choose>
+					   </if>
+					   <if test="record.welId != null and record.welId != ''">
+					   		and wel_id = #{record.welId}
+					   </if>
+					   <if test="record.welName != null and record.welName != ''">
+					   		and WEL_NAME = #{record.welName}
+					   </if>
+					   <if test="record.adress != null and record.adress != ''">
+					   		and adress = #{record.adress}
+					   </if>
+					   <if test="record.impacts != null and record.impacts != ''">
+					   		and impacts = #{record.impacts}
+					   </if>
+					   <if test="record.problemdescribe != null and record.problemdescribe != ''">
+					   		and PROBLEMDESCRIBE LIKE '%${record.problemdescribe}%'
+					   </if>
+					   <if test="record.resavepeople != null and record.resavepeople != ''">
+					   		and RESAVEPEOPLE = #{record.resavepeople}
+					   </if>
+					   <if test="record.applypeople != null and record.applypeople != ''">
+					   		and APPLYPEOPLE LIKE '%${record.applypeople}%'
+					   </if>
+					   <if test="record.problemstate != null and record.problemstate != ''">
+					   		and PROBLEMSTATE = #{record.problemstate}
+					   </if>
+					   <if test="record.remark != null and record.remark != ''">
+					   		and remark = #{record.remark}
+					   </if>
+					   <if test="record.remarkone != null and record.remarkone != ''">
+					   		and remarkone = #{record.remarkone}
+					   </if>
+					   <if test="record.remarktwo != null and record.remarktwo != ''">
+					   		and remarktwo = #{record.remarktwo}
+					   </if>
+					   <if test="record.remarkthree != null and record.remarkthree != ''">
+					   		and remarkthree = #{record.remarkthree}
+					   </if>
+					   <if test="record.supervisoryperson != null and record.supervisoryperson != ''">
+					   		and supervisoryperson = #{record.supervisoryperson}
+					   </if>
+					   <if test="record.maintenanceman != null and record.maintenanceman != ''">
+					   		and maintenanceman LIKE '%${record.maintenanceman}%'
+					   </if>
+					   <if test="record.rectificationmeasures != null and record.rectificationmeasures != ''">
+					   		and rectificationmeasures = #{record.rectificationmeasures}
+					   </if>
+					   <if test="record.isSms != null and record.isSms != ''">
+					   		and is_sms = #{record.isSms}
+					   </if>
+					   <if test="record.smsConment != null and record.smsConment != ''">
+					   		and sms_conment = #{record.smsConment}
+					   </if>
+					   <if test="record.taskPiid != null and record.taskPiid != ''">
+					   		and task_piid = #{record.taskPiid}
+					   </if>
+					   <if test="record.processtype != null and record.processtype != ''">
+					   		and processtype = #{record.processtype}
+					   </if>
+					   <if test="record.supervisorydesc != null and record.supervisorydesc != ''">
+					   		and supervisorydesc = #{record.supervisorydesc}
+					   </if>
+					   <if test="record.tasDistribute != null and record.tasDistribute != ''">
+					   		and tas_distribute = #{record.tasDistribute}
+					   </if>
+					   <if test="record.departOrCentral != null and record.departOrCentral != ''">
+					   		and depart_or_central = #{record.departOrCentral}
+					   </if>
+					   <if test="record.terPlace != null and record.terPlace != ''">
+					   		and ter_place = #{record.terPlace}
+					   </if>
+					   <if test="record.spId != null and record.spId != ''">
+					   		and sp_id = #{record.spId}
+					   </if>
+					   <if test="record.spName != null and record.spName != ''">
+					   		and sp_name = #{record.spName}
+					   </if>
+					   <if test="record.organizationSiteOffice != null and record.organizationSiteOffice != ''">
+					   		and organization_site_officE = #{record.organizationSiteOffice}
+					   </if>
+					   <if test="record.officeProblem != null and record.officeProblem != ''">
+					   		and office_problem = #{record.officeProblem}
+					   </if>
+					   <if test="record.materialsApplication != null and record.materialsApplication != ''">
+					   		and materials_application = #{record.materialsApplication}
+					   </if>
+					   <if test="record.applicationRemark != null and record.applicationRemark != ''">
+					   		and application_remark = #{record.applicationRemark}
+					   </if>
+					   <if test="record.controleApplication != null and record.controleApplication != ''">
+					   		and controle_application = #{record.controleApplication}
+					   </if>
+					   <if test="record.opeCmId != null and record.opeCmId != ''">
+					   		and ope_cm_id = #{record.opeCmId}
+					   </if>
+					   <if test="record.opecardNo != null and record.opecardNo != ''">
+					   		and ope_card_no = #{record.opecardNo}
+					   </if>
+					   <if test="record.handleTicket != null and record.handleTicket != ''">
+					   		and handle_ticket = #{record.handleTicket}
+					   </if>
+					   <if test="record.ticketNo != null and record.ticketNo != ''">
+					   		and ticket_no = #{record.ticketNo}
+					   </if>
+					   <if test="record.correctiveAction != null and record.correctiveAction != ''">
+					   		and corrective_action = #{record.correctiveAction}
+					   </if>
+					   <if test="record.action != null and record.action != ''">
+					   		and action = #{record.action}
+					   </if>
+					   <if test="record.others != null and record.others != ''">
+					   		and others = #{record.others}
+					   </if>
+					   <if test="record.remarkfive != null and record.remarkfive != ''">
+					   		and REMARKFIVE = #{record.remarkfive}
+					   </if>
+					   <if test="record.remarksix != null and record.remarksix != ''">
+					   		and REMARKSIX = #{record.remarksix}
+					   </if>
+					   <if test="record.remarkseven != null and record.remarkseven != ''">
+					   		and remarkseven = #{record.remarkseven}
+					   </if>
+					   <if test="record.rfid != null and record.rfid != ''">
+					   		and RFID = #{record.rfid}
 					   </if>
 					   <if test="record.problemnum != null">
 					   		and PROBLEMNUM = #{record.problemnum}
@@ -733,6 +1254,7 @@
 			    	<if test="endTime!=null and endTime!=''">
 			    		and to_char(applydate,'YYYY-MM-DD') &lt;=#{endTime}
 			    	</if>
+			    	AND isdownload is null
 				</where>
 		</select>
 	
@@ -745,7 +1267,7 @@
 		FROM
 			CZ_TASK_PROBLEM_REPORT_NEW
 		WHERE
-			T_PROBLEM_REP_ID = #{RepId, jdbcType=VARCHAR} AND PIID is null			
+			T_PROBLEM_REP_ID = #{RepId, jdbcType=VARCHAR} AND PIID is null AND isdownload is null			
 	</select>
 	
 	<!-- 1.3、根据当前登录人或piid查找问题报告  -->
@@ -796,13 +1318,14 @@
 	    			1 = 2
 	    		</otherwise>
 	    	</choose>
+	    	AND isdownload is null
 	    </where>			
 	</select>
 	
 	<!-- 1.4、根据问题报告主键id查找问题报告    -->
 	<!-- public Integer findMaxProblemNum() -->
 	<select id="findMaxProblemNum" resultType="java.lang.Integer">
-		SELECT MAX(PROBLEMNUM) ma FROM CZ_TASK_PROBLEM_REPORT_NEW
+		SELECT MAX(PROBLEMNUM) ma FROM CZ_TASK_PROBLEM_REPORT_NEW WHERE isdownload is null
 	</select>
 	
 	<!-- 1.5、根据用户名查找上报申请用户    -->
@@ -814,7 +1337,7 @@
 	<!-- 1.6、查询所有未完成的问题上报任务    -->
 	<select id="findUnfinished" resultType="cn.soa.entity.ProblemInfo">
 		SELECT * FROM CZ_TASK_PROBLEM_REPORT_NEW 
-		WHERE PROBLEMSTATE = 'UNFINISHED'
+		WHERE PROBLEMSTATE = 'UNFINISHED' and isdownload is null
 	</select>
 	
 	<!-- 1.6、查询所有问题状态为‘未超期’和未完成的的问题   -->
@@ -823,6 +1346,112 @@
 		WHERE REMARKTHREE like '%未超期%' 
 		and PROBLEMSTATE = 'UNFINISHED' 
 		and remark like '%指定日期%'
+		and isdownload is null
+	</select>
+	
+	<select id="selectUnfinishAndNoPosition" resultType="cn.soa.entity.ProblemInfo">
+		SELECT
+			<include refid="problemInfoSelectSql"></include>
+		FROM
+			CZ_TASK_PROBLEM_REPORT_NEW
+		where
+			RFID !='其它设备' and problemstate ='UNFINISHED'
+			and isdownload is null
+		order by APPLYDATE DESC
+	</select>
+	
+	<!-- 问题完成情况统计
+	List<FinishedTotal> findFinishedByApplydate(String date,String startTime,String endTime); -->
+	<select id="findFinishedByApplydate" resultType="cn.soa.entity.FinishedTotal">
+		SELECT 
+			DEPET,PARENT_ID,depets,FINISHED,normalfinished,DirectFINISHED,UNFINISHED 
+		from (
+			SELECT 
+				DEPET ,
+				PARENT_ID,
+				count(depet) depets,
+				sum(DECODE(PROBLEMSTATE,'FINISHED',1,0)) FINISHED,
+				sum(DECODE(PROBLEMSTATE,'UNFINISHED',1,0)) UNFINISHED
+			from 
+				CZ_TASK_PROBLEM_REPORT_NEW,IOT_USER_ORGANIZATION
+			<where>
+				CZ_TASK_PROBLEM_REPORT_NEW.DEPET = IOT_USER_ORGANIZATION.USERNUM
+				and isdownload is null
+				<if test="date != null and date != ''">
+					and TO_CHAR(APPLYDATE,'yyyy-mm') = #{date} 
+				</if>
+				<if test="startTime != null and startTime != ''">
+					and APPLYDATE &gt;= TO_DATE(#{startTime},'yyyy-mm-dd hh24:mi:ss')
+				</if>
+				<if test="endTime != null and endTime != ''">
+					and APPLYDATE &lt;= TO_DATE(#{endTime},'yyyy-mm-dd hh24:mi:ss')
+				</if>
+			</where> 
+				GROUP BY DEPET,PARENT_ID
+		) c,(
+			SELECT 
+				DEPET DEPET1 ,
+				sum(DECODE(ACT_NAME_,'作业验收',1,0)) normalfinished,
+				sum(DECODE(ACT_NAME_,'闭环流程',1,0))-sum(DECODE(ACT_NAME_,'作业验收',1,0)) DirectFINISHED  
+			FROM ACT_HI_ACTINST a, (
+				SELECT 
+					piid,
+					depet,
+					APPLYDATE 
+				FROM 
+					CZ_TASK_PROBLEM_REPORT_NEW 
+				<where>
+					PROBLEMSTATE = 'FINISHED'
+					
+					and isdownload is null
+					<if test="date != null and date != ''">
+						and TO_CHAR(APPLYDATE,'yyyy-mm') = #{date} 
+					</if>
+					<if test="startTime != null and startTime != ''">
+						and APPLYDATE &gt;= TO_DATE(#{startTime},'yyyy-mm-dd hh24:mi:ss')
+					</if>
+					<if test="endTime != null and endTime != ''">
+						and APPLYDATE &lt;= TO_DATE(#{endTime},'yyyy-mm-dd hh24:mi:ss')
+					</if>
+				</where> 
+					) b
+			<where>
+				a.PROC_INST_ID_ = b.piid 
+			</where>
+				GROUP BY DEPET
+				) d
+		<where>
+			c.DEPET = d.DEPET1
+		</where> 
+	</select>
+	
+	<!-- 事故事件情况统计
+	List<EventTotal> findEventByApplydate(String date) -->
+	<select id="findEventByApplydate" resultType="cn.soa.entity.EventTotal">
+		SELECT 
+			DEPET ,PARENT_ID,
+			sum(DECODE(TICKET_NO,'0',1,0)) ordinaryevent,
+			sum(DECODE(TICKET_NO,'1',1,0)) accidentevent,
+			sum(DECODE(TICKET_NO,'2',1,0)) risksevent,
+			sum(DECODE(PROBLEMCLASS,'不安全行为/状态',1,0)) unsafebehavior, 
+			sum(DECODE(TICKET_NO,'2',1,0)+DECODE(TICKET_NO,'1',1,0)+DECODE(TICKET_NO,'0',1,0)) total 
+		from 
+			CZ_TASK_PROBLEM_REPORT_NEW ,IOT_USER_ORGANIZATION
+			<where>
+				CZ_TASK_PROBLEM_REPORT_NEW.DEPET = IOT_USER_ORGANIZATION.USERNUM
+				and isdownload is null
+				<if test="date != null and date != ''">
+					and TO_CHAR(APPLYDATE,'yyyy-mm') = #{date} 
+				</if>
+				<if test="startTime != null and startTime != ''">
+					and APPLYDATE &gt;= TO_DATE(#{startTime},'yyyy-mm-dd hh24:mi:ss')
+				</if>
+				<if test="endTime != null and endTime != ''">
+					and APPLYDATE &lt;= TO_DATE(#{endTime},'yyyy-mm-dd hh24:mi:ss')
+				</if>
+				<!-- (TICKET_NO = 0 or TICKET_NO = 1 OR TICKET_NO = 2 OR PROBLEMCLASS = '不安全行为/状态') -->
+			</where>
+		GROUP BY DEPET,PARENT_ID
 	</select>
 	
 	<!-- ===========================2、新增===============================  -->
@@ -1397,9 +2026,6 @@
 			   <if test="rfid != null and rfid != ''">
 			   		RFID = #{rfid},
 			   </if>
-			   <if test="isdownload != null and isdownload != ''">
-			   		isdownload = #{isdownload},
-			   </if>
 			   <if test="problemnum != null">
 			   		PROBLEMNUM = #{problemnum},
 			   </if>
@@ -1446,6 +2072,16 @@
 			<where>
 				T_PROBLEM_REP_ID = #{tProblemRepId}
 			</where>
+	</update>
+	
+	<!-- 3.2 删除问题上报记录 -->
+	<!-- Integer deleteProblemInfo(String tProblemRepId); -->
+	<update id="deleteProblemInfo">
+		UPDATE 
+			CZ_TASK_PROBLEM_REPORT_NEW 
+		SET ISDOWNLOAD = '0'
+		WHERE
+			T_PROBLEM_REP_ID = #{tProblemRepId}
 	</update>
 
 	<!-- 根据流程标识字段更新问题问题评估字段 -->
