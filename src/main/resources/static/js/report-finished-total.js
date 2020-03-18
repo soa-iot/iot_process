@@ -1,16 +1,30 @@
 	layui.use(['jquery','table','form','laydate','table'], function(){
 			var layer = layui.layer,form = layui.form,
 				$ = layui.$, //重点处,使用jQuery
-				laydate = layui.laydate,table=layui.table;
+				laydate = layui.laydate,table=layui.table
+nowDate = new Date();
+			
+			var year = nowDate.getFullYear();
+			var month = (nowDate.getMonth() + 1) > 9 ? nowDate.getMonth() : "0" + (nowDate.getMonth());
+			var month1 = (nowDate.getMonth() + 1) > 9 ? nowDate.getMonth() + 1 : "0" + (nowDate.getMonth() + 1);
+			var now = (nowDate.getDate()) > 9 ? nowDate.getDate() : "0" + (nowDate.getDate());
+			var now1 = (nowDate.getDate()) > 9 ? nowDate.getDate() : "0" + (nowDate.getDate() );
+			
+			if(month == 0){
+				year -= 1;
+				month = 12;
+			}
 			
 			laydate.render({
 				  elem: '#startTime' //指定元素
 				  ,max:0
+				  ,value: year + "-" + month + "-" + now
 				});
 			
 			laydate.render({
 				  elem: '#endTime' //指定元素
 				  ,max:0
+				  ,value: nowDate.getFullYear() + "-" + month1+ "-" + now1
 				});
 			
 			laydate.render({
@@ -39,6 +53,10 @@
 					,url: '/iot_process/estimates/finished' //数据接口
 					// ,page: true //开启分页
 					,toolbar: true
+					,where:{
+						  "startTime" : year + "-" + month + "-" + now,
+							"endTime" : nowDate.getFullYear() + "-" + month1+ "-" + now1,
+					  }
 					,parseData: function(res) { //res 即为原始返回的数据
 						console.log(res.data);
 						return {
@@ -50,26 +68,24 @@
 					}
 			//,format:'yyyy-MM-dd'
 			,cols: [[ //表头
-				{field: 'depet', title: '部门', width:'15%'}
-				,{field: 'depets', title: '总录入数(件)', width:'18%'}
-				,{field: 'finished', title: '完成数量(件)', width:'18%'}
-				,{field: 'normalfinished', title: '正常闭环(件)', width:'18%'} 
-				,{field: 'directfinished', title: '直接闭环(件)', width:'18%'}
-				,{field: 'unfinished', title: '整改中(件)'}
-				]]
+				{field: 'depet', title: '部门',rowspan:2,align:'center'}
+				,{field: 'depets', title: '总录入数(件)',rowspan:2,align:'center'}
+				 ,{ title:'完成数量',colspan:2,align:'center'}
+				,{field: 'unfinished', title: '整改中(件)',rowspan:2,align:'center'}
+				],[
+				//{field: 'finished', title: '完成数量(件)', width:'18%'}
+				{field: 'normalfinished', title: '正常闭环(件)',align:'center'} 
+				,{field: 'directfinished', title: '直接闭环(件)',align:'center'}]]
 			});
 			
 			var Baroption = {
-					color: ['#003366', '#006699', '#4cabce'],
-					title: {
-		                text: '问题整改情况统计'
-		            },
+					//color: ['#003366', '#006699', '#4cabce'],
 				   grid:{
 				    	top:60,
 				    	right:50,
 				    	left:50,
 				    	bottom:30},
-				    backgroundColor: '#F3F3F3',
+				   // backgroundColor: '#F3F3F3',
 				    tooltip: {
 				        trigger: 'axis',
 				        axisPointer: {
@@ -78,18 +94,10 @@
 				    },
 				    legend: {
 				        data: ['总录入数', '完成数量', '正常闭环','直接闭环' ,  '整改中'],
-//				        textStyle: {
-//				            color: '2D547B'
-//				        }
 				    },
 				    xAxis: {
-				      //  data: category,
+				    	type: 'category',
 				    	splitNumber:7,
-				        axisLine: {
-//				            lineStyle: {
-//				                color: '#ccc'
-//				            }
-				        },
 				        splitArea:{
 				        	interval:'0'
 				        }
@@ -97,96 +105,82 @@
 				    yAxis: {
 				        splitLine: {show: false},
 				        axisLine: {
-//				            lineStyle: {
-//				                color: '#ccc'
-//				            }
 				        }
 				    },
 				    series: [  {
 				        name: '总录入数',
 				        type: 'bar',
-				        barWidth: 10,
+				        label: {
+        	                show: true,
+        	                position: 'inside'
+        	                	
+        	            },
 				        itemStyle: {
 				            normal: {
-				                barBorderRadius: 5,
-				                color: new echarts.graphic.LinearGradient(
-				                    0, 0, 0, 1,
-				                    [
-				                        {offset: 0, color: '#003366'},
-				                        {offset: 1, color: '#003366'}
-				                    ]
-				                )
+				                color: '#003366'
 				            }
 				        }
 				       
 				    }, {
 				        name: '完成数量',
 				        type: 'bar',
-				        barWidth: 10,
+				        label: {
+        	                show: true,
+        	                position: 'inside'
+        	                	
+        	            },
+				        stack: '总录入数',
 				        itemStyle: {
 				            normal: {
-				                barBorderRadius: 5,
-				                color: new echarts.graphic.LinearGradient(
-				                    0, 0, 0, 1,
-				                    [
-				                        {offset: 0, color: '#006699'},
-				                        {offset: 1, color: '#006699'}
-				                    ]
-				                )
-				            }
-				        }
-				      
-				    },{
-				        name: '正常闭环',
-				        type: 'bar',
-				        barWidth: 10,
-				        itemStyle: {
-				            normal: {
-				                barBorderRadius: 5,
-				                color: new echarts.graphic.LinearGradient(
-				                    0, 0, 0, 1,
-				                    [
-				                        {offset: 0, color: '#5FB878'},
-				                        {offset: 1, color: '#5FB878'}
-				                    ]
-				                )
-				            }
-				        }
-				      
-				    },{
-				        name: '直接闭环',
-				        type: 'bar',
-				        barWidth: 10,
-				        itemStyle: {
-				            normal: {
-				                barBorderRadius: 5,
-				                color: new echarts.graphic.LinearGradient(
-				                    0, 0, 0, 1,
-				                    [
-				                        {offset: 0, color: '#F7E005'},
-				                        {offset: 1, color: '#F7E005'}
-				                    ]
-				                )
+				                color: '#5FB878'
 				            }
 				        }
 				      
 				    },  {
 				        name: '整改中',
 				        type: 'bar',
-				        barWidth: 10,
+				        label: {
+        	                show: true,
+        	                position: 'inside'
+        	                	
+        	            },
+				        stack: '总录入数',
 				        itemStyle: {
 				            normal: {
-				                barBorderRadius: 5,
-				                color: new echarts.graphic.LinearGradient(
-				                    0, 0, 0, 1,
-				                    [
-				                        {offset: 0, color: '#4cabce'},
-				                        {offset: 1, color: '#4cabce'}
-				                    ]
-				                )
+				                color: 'red'
 				            }
 				        }
 				       
+				    },{
+				        name: '正常闭环',
+				        type: 'bar',
+				        label: {
+        	                show: true,
+        	                position: 'inside'
+        	                	
+        	            },
+				        stack: '完成数量',
+				        itemStyle: {
+				            normal: {
+				                color: 'green'
+				            }
+				        }
+				      
+				    },{
+				        name: '直接闭环',
+				        type: 'bar',
+				        label: {
+        	                show: true,
+        	                position: 'inside'
+        	                	
+        	            },
+				        stack: '完成数量',
+				        itemStyle: {
+				            normal: {
+				                color: 'yellow'
+				            }
+				        }
+				      
 				    }]
 				};
 			var myChart1 = echarts.init($('#linetu')[0]);
@@ -210,7 +204,7 @@
 				unfinished = [0,0,0,0,0,0];
 				normalfinished = [0,0,0,0,0,0];
 				directfinished = [0,0,0,0,0,0];
-				var xAxisdata = ["生产办公室","综合办","HSE办公室","设备办公室","财务办公室","厂领导","净化工段","维修工段"];
+				var xAxisdata = [];
 				
 				var data = {};
 				$.ajax({  
@@ -222,54 +216,57 @@
 					success: function( json) {
 						if (json.state == 0) {
 							data = json.data;
-							
+							for (var i = 0; i < data.length; i++) {
+								xAxisdata[xAxisdata.length] = data[i].depet;
+							}
 						}
 						
 					}  
 				});
 				
 				for (var i = 0; i < data.length; i++) {
-					switch (data[i].depet){
-					case "生产办公室":
-						setBarData(data[i],0);
-						break;
-					case "综合办":
-						setBarData(data[i],1);
-						break;
-					case "HSE办公室":
-						setBarData(data[i],2);
-						break;
-					case "设备办公室":
-						setBarData(data[i],3);
-						break;
-					case "财务办公室":
-						setBarData(data[i],4);
-						break;
-					case "厂领导":
-						setBarData(data[i],5);
-						break;
-					case "净化工段":
-						setBarData(data[i],6);
-						break;
-					case "维修工段":
-						setBarData(data[i],7);
-						break;
-					}
+//					switch (data[i].depet){
+//					case "生产办公室":
+						setBarData(data[i],i);
+//						break;
+//					case "综合办":
+//						setBarData(data[i],1);
+//						break;
+//					case "HSE办公室":
+//						setBarData(data[i],2);
+//						break;
+//					case "设备办公室":
+//						setBarData(data[i],3);
+//						break;
+//					case "财务办公室":
+//						setBarData(data[i],4);
+//						break;
+//					case "厂领导":
+//						setBarData(data[i],5);
+//						break;
+//					case "净化工段":
+//						setBarData(data[i],6);
+//						break;
+//					case "维修工段":
+//						setBarData(data[i],7);
+//						break;
+//					}
 				}
-				console.log("++++++++++++++++++++++++++++")
 				Baroption.xAxis.data=xAxisdata;
 				Baroption.series[0].data=total;
 				Baroption.series[1].data=finished;
-				Baroption.series[2].data=normalfinished;
+				Baroption.series[2].data=unfinished;
 				Baroption.series[3].data=directfinished;
-				Baroption.series[4].data=unfinished;
+				Baroption.series[4].data=normalfinished;
 				myChart1.setOption(Baroption);
 			}
-			dataAnalysis({});
+			dataAnalysis({"startTime" : year + "-" + month + "-" + now,
+				"endTime" : nowDate.getFullYear() + "-" + month1+ "-" + now1,
+			  });
 			
 			$("#generateTestData").click(function(){
 				if ($("#endTime").val() != '' && $("#endTime").val()<$("#startTime").val()) {
-					layer.msg("请选择正确的截至日期！",{time: 3000,icon:7,offset:"100px"});
+					layer.msg("请选择正确的截止日期！",{time: 3000,icon:7,offset:"100px"});
 					return;
 				}
 				

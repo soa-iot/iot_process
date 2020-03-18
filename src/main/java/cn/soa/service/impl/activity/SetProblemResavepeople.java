@@ -84,7 +84,11 @@ public class SetProblemResavepeople implements ExecutionListener{
 
 			}
 			name = StringUtils.join(candidateNames, ",");
-
+			
+		}
+		
+		if(name != null) {
+			name = name.replaceAll("^\\[|\\]$", "");
 		}
 		
 		ProblemInfoSI problemInfoS= SpringUtils.getObject(ProblemInfoSI.class);

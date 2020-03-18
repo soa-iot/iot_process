@@ -223,6 +223,7 @@ layui.use(['form','tree','jquery','upload','layer','table'], function(){
 				 console.log("图片上传成功，开始流程。。。。。。")
 				 finishTask();
 			  }
+			  $("#finish_task").removeAttr("disabled");
          }
           //上传失败时，回调函数
          ,error: function(index, upload){

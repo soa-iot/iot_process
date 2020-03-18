@@ -8,6 +8,7 @@ import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
 import cn.soa.entity.EventTotal;
+import cn.soa.entity.EventTotalData;
 import cn.soa.entity.FinishedTotal;
 import cn.soa.entity.ProblemInfo;
 import cn.soa.entity.ProblemInfoVO;
@@ -238,7 +239,7 @@ public interface ProblemInfoMapper {
 	 * @param date
 	 * @return
 	 */
-	List<EventTotal> findEventByApplydate(@Param("date")String date,
+	List<EventTotalData> findEventByApplydate(@Param("date")String date,
 			@Param("startTime")String startTime,
 			@Param("endTime")String endTime);
 	
@@ -257,4 +258,11 @@ public interface ProblemInfoMapper {
 	 * @return: int        
 	 */
 	Integer deleteProblemInfo(String tProblemRepId);
+	
+	/**   
+	 * @Title: getDepet   
+	 * @Description: 获取人员组织部门
+	 * @return: String        
+	 */
+	List<String> getDepet();
 }

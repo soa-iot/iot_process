@@ -3,7 +3,6 @@ package cn.soa.service.inter;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Service;
 
 import cn.soa.entity.EventTotal;
