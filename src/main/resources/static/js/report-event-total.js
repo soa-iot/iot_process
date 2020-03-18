@@ -95,9 +95,17 @@
 				    legend: {
 				        data: [ '一般事件(不安全)','一般事件(其他)', '事故事件(不安全)', '事故事件(其他)','隐患事件(不安全)','隐患事件(其他)' ],
 				    },
+				    tooltip: {
+	        	        trigger: 'axis',
+	        	        axisPointer: {            // 坐标轴指示器，坐标轴触发有效
+	        	            type: 'shadow'        // 默认为直线，可选为：'line' | 'shadow'
+	        	        }
+	        	    },
 				    xAxis: {
+				    	type: 'value'
 				    },
 				    yAxis: {
+				    	 type: 'category',
 				    },
 				    series: [  {
 				        name: '一般事件(不安全)',
@@ -210,7 +218,7 @@
 				accidentevent = [0,0,0,0,0,0,0,0];
 				riskseventUnsafebehavior = [0,0,0,0,0,0,0,0];
 				risksevent = [0,0,0,0,0,0,0,0];
-				var yAxisdata = ["生产办公室","综合办","HSE办公室","设备办公室","财务办公室","厂领导","净化工段","维修工段"];
+				var yAxisdata = [];
 				
 				var data = {};
 				$.ajax({  
@@ -222,39 +230,41 @@
 					success: function( json) {
 						if (json.state == 0) {
 							data = json.data;
-							
+							for (var i = 0; i < data.length; i++) {
+								yAxisdata[yAxisdata.length] = data[i].depet;
+							}
 						}
 						
 					}  
 				});
 				
 				for (var i = 0; i < data.length; i++) {
-					switch (data[i].depet){
-					case "生产办公室":
-						setBarData(data[i],0);
-						break;
-					case "综合办":
-						setBarData(data[i],1);
-						break;
-					case "HSE办公室":
-						setBarData(data[i],2);
-						break;
-					case "设备办公室":
-						setBarData(data[i],3);
-						break;
-					case "财务办公室":
-						setBarData(data[i],4);
-						break;
-					case "厂领导":
-						setBarData(data[i],5);
-						break;
-					case "净化工段":
-						setBarData(data[i],6);
-						break;
-					case "维修工段":
-						setBarData(data[i],7);
-						break;
-					}
+//					switch (data[i].depet){
+//					case "生产办公室":
+						setBarData(data[i],i);
+//						break;
+//					case "综合办":
+//						setBarData(data[i],1);
+//						break;
+//					case "HSE办公室":
+//						setBarData(data[i],2);
+//						break;
+//					case "设备办公室":
+//						setBarData(data[i],3);
+//						break;
+//					case "财务办公室":
+//						setBarData(data[i],4);
+//						break;
+//					case "厂领导":
+//						setBarData(data[i],5);
+//						break;
+//					case "净化工段":
+//						setBarData(data[i],6);
+//						break;
+//					case "维修工段":
+//						setBarData(data[i],7);
+//						break;
+//					}
 				}
 				console.log("++++++++++++++++++++++++++++")
 				Baroption.yAxis.data=yAxisdata;

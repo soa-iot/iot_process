@@ -37,7 +37,7 @@
 			@Param("startDate") String startDate, @Param("endDate") String endDate); -->
 	<select id="findReportFinishRecords" resultType="map"> 
 		SELECT
-			org.department departName, COUNT(1) total, COUNT(CASE WHEN rep.PROBLEMSTATE='FINISHED' THEN 1 ELSE NULL END) finished, COUNT(CASE WHEN rep.PROBLEMSTATE='UNFINISHED' THEN 1 ELSE NULL END) unFinished
+			org.department departName, COUNT(rep.PROBLEMSTATE) total, COUNT(CASE WHEN rep.PROBLEMSTATE='FINISHED' THEN 1 ELSE NULL END) finished, COUNT(CASE WHEN rep.PROBLEMSTATE='UNFINISHED' THEN 1 ELSE NULL END) unFinished
 		FROM
 					(
 						SELECT
@@ -56,35 +56,35 @@
 									AND to_char(applydate,'YYYY-MM-DD') &lt;=#{endDate}
 								</if>
 							</where>
-					) rep JOIN 
+					) rep RIGHT JOIN 
 					(
 						SELECT
 							org.*,
 							(
-								CASE  when  org.PARENT_ID='化验班' then  '净化工段' 
-											when  org.PARENT_ID='分析班' then  '净化工段'
-											when  org.PARENT_ID='行政班' then  '净化工段'
-											when  org.PARENT_ID='净化1班' then  '净化工段'
-											when  org.PARENT_ID='净化2班' then  '净化工段' 
-											when  org.PARENT_ID='净化3班' then  '净化工段' 
-											when  org.PARENT_ID='净化4班' then  '净化工段' 
-											when  org.PARENT_ID='电站' 	 then  '维修工段' 
-											when  org.PARENT_ID='电站班' then  '维修工段'
-											when  org.PARENT_ID='维修班' then  '维修工段' 
-											when  org.PARENT_ID='仪表班' then  '维修工段'
-											when  org.PARENT_ID='钳工班' then  '维修工段'  
-											when  org.PARENT_ID='管焊班' then  '维修工段' 
-											when  org.PARENT_ID='电工班' then  '维修工段' 
-											else org.PARENT_ID end
+								CASE  when  org.PARENT_ID in (SELECT USERNUM FROM IOT_USER_ORGANIZATION WHERE PARENT_ID LIKE '%净化厂%') then PARENT_ID 
+											else (SELECT PARENT_ID FROM IOT_USER_ORGANIZATION WHERE USERNUM = org.PARENT_ID) end
 							) department
 						FROM
 							IOT_USER_ORGANIZATION org
+						WHERE
+							IS_PARENT = 1 AND USERNUM != 'admin'
 					)org ON rep.OWNER=org.NAME
 		GROUP BY
 			org.department
 		ORDER BY total DESC
 	</select>
-
+	
+	<!-- 1.2、查询部门列表	-->
+	<!-- List<String> findDepartments(); -->
+	<select id="findDepartments" resultType="string">
+		SELECT
+			USERNUM
+		FROM
+			IOT_USER_ORGANIZATION
+		WHERE
+			PARENT_ID LIKE '%净化厂%'
+	</select>
+	
 	<!-- ===========================2、新增===============================  -->
 	
 	<!-- ===========================3、修改===============================  -->

@@ -259,10 +259,10 @@
 					   <if test="record.problemtype != null and record.problemtype != ''">
 					   		<choose>
 					   			<when test="record.problemtype == '维修工段'">
-					   				and PROBLEMTYPE IN ('电站', '电气', '仪表', '机械', '维修工段')
+					   				and PROBLEMTYPE IN ('电站', '电气', '仪表', '机械', '维修工段', '维修1班')
 					   			</when>
 					   			<when test="record.problemtype == '净化工段'">
-					   				and PROBLEMTYPE IN ('净化工段', '化验')
+					   				and PROBLEMTYPE IN ('净化工段', '化验', '净化1班')
 					   			</when>
 					   			<otherwise>
 					   				and PROBLEMTYPE = #{record.problemtype}
@@ -429,7 +429,7 @@
 					   		
 					   		<choose>
 					   			<when test="record.depet == '维修工段' ">
-					   				and depet IN ('电站','电工班','钳工班','仪表班','维修班','电站班','管焊班','维修工段')
+					   				and depet IN ('电站','电工班','钳工班','仪表班','维修1班','电站班','管焊班','维修工段')
 					   			</when>
 					   			<when test="record.depet == '净化工段' ">
 					   				and depet IN ('净化1班','净化4班','净化2班','净化3班','行政班','分析班')
@@ -537,7 +537,7 @@
 					   <if test="record.problemtype != null and record.problemtype != ''">
 					   		<choose>
 					   			<when test="record.problemtype == '维修工段'">
-					   				and PROBLEMTYPE IN ('电站', '电气', '仪表', '机械', '维修工段')
+					   				and PROBLEMTYPE IN ('电站', '电气', '仪表', '机械', '维修1班', '维修工段')
 					   			</when>
 					   			<when test="record.problemtype == '净化工段'">
 					   				and PROBLEMTYPE IN ('净化工段', '化验')
@@ -707,16 +707,10 @@
 					   		
 					   		<choose>
 					   			<when test="record.depet == '维修工段' ">
-					   				and depet IN ('电站','电工班','钳工班','仪表班','维修班','电站班','管焊班','维修工段')
+					   				and depet IN ('电站','电工班','钳工班','仪表班','维修1班','电站班','管焊班','维修工段')
 					   			</when>
 					   			<when test="record.depet == '净化工段' ">
 					   				and depet IN ('净化1班','净化4班','净化2班','净化3班','行政班','分析班')
-					   			</when>
-					   			<when test="record.depet == 'HSE办公室' ">
-					   				and depet IN ('HSE办公室')
-					   			</when>
-					   			<when test="record.depet == '设备办' ">
-					   				and depet IN ('设备办','设备办公室')
 					   			</when>
 					   			<when test="record.depet == '生产办' ">
 					   				and depet IN ('生产办','生产办公室')
@@ -793,10 +787,10 @@
 					   <if test="record.problemtype != null and record.problemtype != ''">
 					   		<choose>
 					   			<when test="record.problemtype == '维修工段'">
-					   				and PROBLEMTYPE IN ('电站', '电气', '仪表', '机械', '维修工段')
+					   				and PROBLEMTYPE IN ('电站', '电气', '仪表', '机械', '维修工段', '维修1班')
 					   			</when>
 					   			<when test="record.problemtype == '净化工段'">
-					   				and PROBLEMTYPE IN ('净化工段', '化验')
+					   				and PROBLEMTYPE IN ('净化工段', '化验', '净化1班')
 					   			</when>
 					   			<otherwise>
 					   				and PROBLEMTYPE = #{record.problemtype}
@@ -963,7 +957,7 @@
 					   		
 					   		<choose>
 					   			<when test="record.depet == '维修工段' ">
-					   				and depet IN ('电站','电工班','钳工班','仪表班','维修班','电站班','管焊班','维修工段')
+					   				and depet IN ('电站','电工班','钳工班','仪表班','维修1班','电站班','管焊班','维修工段')
 					   			</when>
 					   			<when test="record.depet == '净化工段' ">
 					   				and depet IN ('净化1班','净化4班','净化2班','净化3班','行政班','分析班')
@@ -1040,10 +1034,10 @@
 					   <if test="record.problemtype != null and record.problemtype != ''">
 					   		<choose>
 					   			<when test="record.problemtype == '维修工段'">
-					   				and PROBLEMTYPE IN ('电站', '电气', '仪表', '机械', '维修工段')
+					   				and PROBLEMTYPE IN ('电站', '电气', '仪表', '机械', '维修工段', '维修1班')
 					   			</when>
 					   			<when test="record.problemtype == '净化工段'">
-					   				and PROBLEMTYPE IN ('净化工段', '化验')
+					   				and PROBLEMTYPE IN ('净化工段', '化验', '净化1班')
 					   			</when>
 					   			<otherwise>
 					   				and PROBLEMTYPE = #{record.problemtype}
@@ -1210,7 +1204,7 @@
 					   		
 					   		<choose>
 					   			<when test="record.depet == '维修工段' ">
-					   				and depet IN ('电站','电工班','钳工班','仪表班','维修班','电站班','管焊班','维修工段')
+					   				and depet IN ('电站','电工班','钳工班','仪表班','维修1班','电站班','管焊班','维修工段')
 					   			</when>
 					   			<when test="record.depet == '净化工段' ">
 					   				and depet IN ('净化1班','净化4班','净化2班','净化3班','行政班','分析班')
@@ -1371,26 +1365,20 @@
 			sum(DirectFINISHED) DirectFINISHED,
 			sum(UNFINISHED) UNFINISHED 
 		from (
-			SELECT 
-				CASE  
-			 		when  d.DEPET='化验班' then  '净化工段' 
-					when  d.DEPET='分析班' then  '净化工段'
-					when  d.DEPET='行政班' then  '净化工段'
-					when  d.DEPET='净化1班' then  '净化工段'
-					when  d.DEPET='净化2班' then  '净化工段' 
-					when  d.DEPET='净化3班' then  '净化工段' 
-					when  d.DEPET='净化4班' then  '净化工段' 
-					when  d.DEPET='电站' 	 then  '维修工段' 
-					when  d.DEPET='电站班' then  '维修工段'
-					when  d.DEPET='维修班' then  '维修工段' 
-					when  d.DEPET='仪表班' then  '维修工段'
-					when  d.DEPET='钳工班' then  '维修工段'  
-					when  d.DEPET='管焊班' then  '维修工段' 
-					when  d.DEPET='电工班' then  '维修工段'
-					when  d.DEPET='生产办公室' then  '生产办'
-					when  d.DEPET='财务办公室' then  '财务经营办'  
-					when  d.DEPET='设备办公室' then  '设备办'  
-					else d.DEPET end DEPET,
+			SELECT (CASE  when  d.DEPET in  (
+					SELECT 
+						USERNUM 
+					FROM 
+						IOT_USER_ORGANIZATION 
+					WHERE 
+						PARENT_ID LIKE '%净化厂%'
+					) then d.DEPET else (
+						SELECT 
+							PARENT_ID 
+						FROM 
+							IOT_USER_ORGANIZATION 
+						WHERE USERNUM = d.DEPET 
+						) end ) DEPET,
 				depets,
 				FINISHED,
 				normalfinished,
@@ -1457,26 +1445,20 @@
 		select 
 			DEPET,TICKET_NO,PROBLEMCLASS,count(1) coun 
 		from (
-			SELECT 
-			 	CASE  
-			 		when  DEPET='化验班' then  '净化工段' 
-					when  DEPET='分析班' then  '净化工段'
-					when  DEPET='行政班' then  '净化工段'
-					when  DEPET='净化1班' then  '净化工段'
-					when  DEPET='净化2班' then  '净化工段' 
-					when  DEPET='净化3班' then  '净化工段' 
-					when  DEPET='净化4班' then  '净化工段' 
-					when  DEPET='电站' 	 then  '维修工段' 
-					when  DEPET='电站班' then  '维修工段'
-					when  DEPET='维修班' then  '维修工段' 
-					when  DEPET='仪表班' then  '维修工段'
-					when  DEPET='钳工班' then  '维修工段'  
-					when  DEPET='管焊班' then  '维修工段' 
-					when  DEPET='电工班' then  '维修工段'
-					when  DEPET='生产办公室' then  '生产办'
-					when  DEPET='财务办公室' then  '财务经营办'  
-					when  DEPET='设备办公室' then  '设备办'  
-					else DEPET end DEPET ,
+			SELECT (CASE  when  DEPET in (
+					SELECT 
+						USERNUM 
+					FROM 
+						IOT_USER_ORGANIZATION 
+					WHERE 
+						PARENT_ID LIKE '%净化厂%'
+					) then DEPET else (
+						SELECT 
+							PARENT_ID 
+						FROM 
+							IOT_USER_ORGANIZATION 
+						WHERE USERNUM = DEPET
+					) end ) DEPET ,
 					piid,TICKET_NO,
 				CASE  when  PROBLEMCLASS='不安全行为/状态' then  '不安全行为/状态' 
 					else '其他' end PROBLEMCLASS
@@ -2430,6 +2412,19 @@
 		delete from CZ_TASK_PROBLEM_REPORT_NEW
 		where T_PROBLEM_REP_ID=#{repid}
 	</delete>
+	
+	<!-- 获取人员组织部门
+	List<String> getDepet(); -->
+	<select id="getDepet"
+		resultType="java.lang.String">
+		SELECT 
+			NAME 
+		FROM 
+			IOT_USER_ORGANIZATION 
+		<where>
+			PARENT_ID LIKE '%净化厂%'  and NAME not like '%56498847.0%'
+		</where>
+	</select>
 </mapper>
  
 

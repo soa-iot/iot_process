@@ -258,4 +258,11 @@ public interface ProblemInfoMapper {
 	 * @return: int        
 	 */
 	Integer deleteProblemInfo(String tProblemRepId);
+	
+	/**   
+	 * @Title: getDepet   
+	 * @Description: 获取人员组织部门
+	 * @return: String        
+	 */
+	List<String> getDepet();
 }

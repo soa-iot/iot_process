@@ -459,10 +459,10 @@ public class ProblemInfoS implements ProblemInfoSI {
 			List<EventTotalData> eventTotalDatas = problemInfoMapper.findEventByApplydate(date,startTime,endTime);
 			List<EventTotal> eventTotals = new ArrayList<EventTotal>();
 			
-			String[] eventTotalNames = {"生产办","综合办","HSE办公室","设备办","财务经营办","厂领导","净化工段","维修工段"};
-			for (int i = 0; i < eventTotalNames.length; i++) {
+			 List<String> eventTotalNames = problemInfoMapper.getDepet();
+			for (int i = 0; i < eventTotalNames.size(); i++) {
 				EventTotal eventTotal = new EventTotal();
-				eventTotal.setDepet(eventTotalNames[i]);
+				eventTotal.setDepet(eventTotalNames.get(i));
 				eventTotals.add(eventTotal);
 			}
 			
@@ -533,11 +533,11 @@ public class ProblemInfoS implements ProblemInfoSI {
 			List<FinishedTotal> finishedTotalData = problemInfoMapper.findFinishedByApplydate(date,startTime,endTime);
 			
 			
-			String[] finishedTotalNames = {"生产办","综合办","HSE办公室","设备办","财务经营办","厂领导","净化工段","维修工段"};
+			 List<String> finishedTotalNames = problemInfoMapper.getDepet();
 			List<FinishedTotal> finishedTotales =new ArrayList<FinishedTotal>();
-			for (int i = 0; i < finishedTotalNames.length; i++) {
+			for (int i = 0; i < finishedTotalNames.size(); i++) {
 				FinishedTotal finishedTotal = new FinishedTotal();
-				finishedTotal.setDepet(finishedTotalNames[i]);
+				finishedTotal.setDepet(finishedTotalNames.get(i));
 				finishedTotales.add(finishedTotal);
 			}
 			
