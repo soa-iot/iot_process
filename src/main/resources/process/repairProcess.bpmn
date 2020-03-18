@@ -83,6 +83,7 @@
     <sequenceFlow id="flow11" name="分支1流向1" sourceRef="node1" targetRef="pure">
       <conditionExpression xsi:type="tFormalExpression"><![CDATA[${isIngroup=='1' }]]></conditionExpression>
     </sequenceFlow>
+    <sequenceFlow id="flow104" name="审核到生产办" sourceRef="verify" targetRef="pure"></sequenceFlow>
   </process>
   <bpmndi:BPMNDiagram id="BPMNDiagram_processPure2">
     <bpmndi:BPMNPlane bpmnElement="processPure2" id="BPMNPlane_processPure2">
@@ -184,6 +185,15 @@
         <omgdi:waypoint x="610.0" y="187.0"></omgdi:waypoint>
         <bpmndi:BPMNLabel>
           <omgdc:Bounds height="14.0" width="60.0" x="550.0" y="187.0"></omgdc:Bounds>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow104" id="BPMNEdge_flow104">
+        <omgdi:waypoint x="1002.0" y="80.0"></omgdi:waypoint>
+        <omgdi:waypoint x="1001.0" y="40.0"></omgdi:waypoint>
+        <omgdi:waypoint x="662.0" y="40.0"></omgdi:waypoint>
+        <omgdi:waypoint x="662.0" y="160.0"></omgdi:waypoint>
+        <bpmndi:BPMNLabel>
+          <omgdc:Bounds height="14.0" width="100.0" x="1002.0" y="80.0"></omgdc:Bounds>
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
     </bpmndi:BPMNPlane>

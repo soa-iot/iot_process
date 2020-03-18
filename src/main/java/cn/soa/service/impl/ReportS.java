@@ -8,6 +8,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.activiti.engine.ActivitiObjectNotFoundException;
+import org.activiti.engine.RuntimeService;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -53,6 +55,8 @@ public class ReportS implements ReportSI {
 	private ImportExcelUtil importExcelUtil;
 	@Autowired
 	private RestTemplate restTemplate;
+	@Autowired
+	private RuntimeService runtimeService;
 	
 	/**   
 	 * @Title: addOne   
@@ -303,15 +307,11 @@ public class ReportS implements ReportSI {
 		log.info("-----开始删除问题上报记录-----");
 		try {
 			
-			//已整改的话就不用闭环流程
+			//已整改的话就不用删除流程
 			if(!isFinished) {
-				//闭环流程
-				String result = activityS.endProcessByPiidInComment(piid, deleteComment, resavepeople, "删除");
-				log.info("------result: {}", result);
-				if(result == null) {
-					log.info("-----删除问题上报记录失败-----");
-					return false;
-				}
+				//删除流程
+				//String result = activityS.endProcessByPiidInComment(piid, deleteComment, resavepeople, "删除");
+				runtimeService.deleteProcessInstance(piid, deleteComment);
 			}
 			
 			//删除问题上报表记录
@@ -319,6 +319,10 @@ public class ReportS implements ReportSI {
 			
 			log.info("-----删除问题上报记录成功-----");
 			return true;
+		}catch(ActivitiObjectNotFoundException e) {
+			log.info("-----删除流程记录失败-----");
+			log.info("-{}", e);
+			throw new RuntimeException("删除流程记录发生错误");
 		}catch (Exception e) {
 			log.info("-----删除问题上报记录发生错误-----");
 			log.info("-{}", e);

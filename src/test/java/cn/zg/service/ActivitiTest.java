@@ -42,10 +42,22 @@ public class ActivitiTest {
 	 */
 	@Test
 	public void closeProcess() {
-		runtimeService.deleteProcessInstance("80127", "过时");
-
-
-
+		//runtimeService.deleteProcessInstance("95034", "过时");
+		//runtimeService.deleteProcessInstance("90049", "过时");
+		//runtimeService.deleteProcessInstance("125001", "过时");
+		//runtimeService.deleteProcessInstance("127501", "过时");
+		//runtimeService.deleteProcessInstance("97522", "过时");
+		//runtimeService.deleteProcessInstance("127594", "过时");
+		//runtimeService.deleteProcessInstance("127661", "过时");
+		//runtimeService.deleteProcessInstance("90001", "过时");
+		//runtimeService.deleteProcessInstance("80127", "过时");
+		//runtimeService.deleteProcessInstance("80019", "过时");
+		runtimeService.deleteProcessInstance("80325", "过时");
+		runtimeService.deleteProcessInstance("127501", "过时");
+		runtimeService.deleteProcessInstance("90049", "过时");
+		runtimeService.deleteProcessInstance("127594", "过时");
+		runtimeService.deleteProcessInstance("127661", "过时");
+		
 		System.out.println("--------删除成功");
 	}
 }

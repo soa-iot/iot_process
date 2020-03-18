@@ -1,6 +1,5 @@
 package cn.soa.service.impl;
 
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -15,12 +14,11 @@ import org.springframework.stereotype.Service;
 
 import cn.soa.dao.EquipmentInfoMapper;
 import cn.soa.dao.ProblemInfoMapper;
-import cn.soa.dao.ProblemTypeAreaMapper;
 import cn.soa.dao.activity.HisActMapper;
 import cn.soa.entity.EventTotal;
+import cn.soa.entity.EventTotalData;
 import cn.soa.entity.FinishedTotal;
 import cn.soa.entity.ProblemInfo;
-import cn.soa.entity.ProblemTypeArea;
 import cn.soa.entity.UserOrganization;
 import cn.soa.entity.activity.HistoryAct;
 import cn.soa.service.inter.ProblemInfoSI;
@@ -51,12 +49,10 @@ public class ProblemInfoS implements ProblemInfoSI {
 	 */
 	@Override
 	public List<ProblemInfo> queryProblempro(ProblemInfo problemInfo, Integer page, Integer pageSize,String startTime,String endTime) {
-		// TODO Auto-generated method stub
 		return problemInfoMapper.queryProblempro(problemInfo, page, pageSize,startTime,endTime);
 	}
 	@Override
 	public int count(ProblemInfo problemInfo,String startTime,String endTime) {
-		// TODO Auto-generated method stub
 		return problemInfoMapper.count(problemInfo,startTime,endTime);
 	}
 	/**
@@ -460,53 +456,67 @@ public class ProblemInfoS implements ProblemInfoSI {
 	@Override
 	public List<EventTotal> findEventByApplydate(String date,String startTime,String endTime){
 		try {
-			List<EventTotal> eventTotalData = problemInfoMapper.findEventByApplydate(date,startTime,endTime);
-			List<EventTotal> eventTotals = null;
+			List<EventTotalData> eventTotalDatas = problemInfoMapper.findEventByApplydate(date,startTime,endTime);
+			List<EventTotal> eventTotals = new ArrayList<EventTotal>();
 			
-			if (eventTotalData != null && eventTotalData.size()> 0) {
-				eventTotals = new ArrayList<EventTotal>();
-				EventTotal eventTotal1 = new EventTotal();
-				eventTotal1.setDepet("净化工段");
-				EventTotal eventTotal2 = new EventTotal();
-				eventTotal2.setDepet("维修工段");
-				for (int i = 0; i < eventTotalData.size(); i++) {
-					EventTotal eventTotal = eventTotalData.get(i);
-					if ("净化工段".equals(eventTotal.getParent_id()) || "净化工段".equals(eventTotal.getDepet())) {
-						eventTotal1.setAccidentevent(eventTotal.getAccidentevent()+eventTotal1.getAccidentevent());
-						eventTotal1.setOrdinaryevent(eventTotal.getOrdinaryevent()+eventTotal1.getOrdinaryevent());
-						eventTotal1.setRisksevent(eventTotal.getRisksevent()+eventTotal1.getRisksevent());
-						eventTotal1.setTotal(eventTotal.getTotal()+eventTotal1.getTotal());
-						eventTotal1.setUnsafebehavior(eventTotal.getUnsafebehavior()+eventTotal1.getUnsafebehavior());
-					}else if ("维修工段".equals(eventTotal.getParent_id()) || "维修工段".equals(eventTotal.getDepet())) {
-						eventTotal2.setAccidentevent(eventTotal.getAccidentevent()+eventTotal2.getAccidentevent());
-						eventTotal2.setOrdinaryevent(eventTotal.getOrdinaryevent()+eventTotal2.getOrdinaryevent());
-						eventTotal2.setRisksevent(eventTotal.getRisksevent()+eventTotal2.getRisksevent());
-						eventTotal2.setTotal(eventTotal.getTotal()+eventTotal2.getTotal());
-						eventTotal2.setUnsafebehavior(eventTotal.getUnsafebehavior()+eventTotal2.getUnsafebehavior());
-					}else {
-						eventTotals.add(eventTotal);
-					}
-				}
-				eventTotals.add(eventTotal1);
-				eventTotals.add(eventTotal2);
-			}
-			
-			String[] eventTotalNames = {"生产办公室","综合办","HSE办公室","设备办公室","财务办公室","厂领导","净化工段","维修工段"};
-			List<EventTotal> eventTotales =new ArrayList<EventTotal>();
-			for (int i = 0; i < eventTotalNames.length; i++) {
+			 List<String> eventTotalNames = problemInfoMapper.getDepet();
+			for (int i = 0; i < eventTotalNames.size(); i++) {
 				EventTotal eventTotal = new EventTotal();
-				eventTotal.setDepet(eventTotalNames[i]);
-				eventTotales.add(eventTotal);
+				eventTotal.setDepet(eventTotalNames.get(i));
+				eventTotals.add(eventTotal);
 			}
 			
-			for (int i = 0; i < eventTotales.size(); i++) {
-				for (int j = 0; j < eventTotals.size(); j++) {
-					if (eventTotals.get(j).getDepet().equals(eventTotales.get(i).getDepet())) {
-						eventTotales.set(i, eventTotals.get(j));
+			for (int i = 0; i < eventTotals.size(); i++) {
+				
+				for (int j = 0; j < eventTotalDatas.size(); j++) {
+					
+					EventTotal eventTotal = eventTotals.get(i);
+					EventTotalData eventTotalData = eventTotalDatas.get(j);
+					
+					int ticket_no = eventTotalData.getTicket_no();
+					String problemclass = eventTotalData.getProblemclass();
+					int con = eventTotalData.getCoun();
+					
+					if (eventTotal.getDepet().equals(eventTotalData.getDepet())) {
+						
+						eventTotal.setTotal(eventTotal.getTotal() + con);
+						if (ticket_no == 0) {
+							if ("其他".equals(problemclass)) {
+								eventTotal.setOrdinaryevent(con);
+							}else {
+								eventTotal.setOrdinaryeventUnsafebehavior(con);
+							}
+						}else if (ticket_no == 1) {
+							if ("其他".equals(problemclass)) {
+								eventTotal.setAccidentevent(con);
+							}else {
+								eventTotal.setAccidenteventUnsafebehavior(con);
+							}
+						}else if (ticket_no == 2) {
+							if ("其他".equals(problemclass)) {
+								eventTotal.setRisksevent(con);
+							}else {
+								eventTotal.setRiskseventUnsafebehavior(con);
+							}
+						}
+					}
+					
+				}
+			}
+			
+			EventTotal eventTotal = null;
+			
+			for (int i = 0; i < eventTotals.size(); i++) {
+				for (int j = i; j < eventTotals.size(); j++) {
+					eventTotal = eventTotals.get(i);
+					if (eventTotals.get(i).getTotal() < eventTotals.get(j).getTotal()) {
+						eventTotals.set(i, eventTotals.get(j));
+						eventTotals.set(j, eventTotal);
 					}
 				}
 			}
-			return eventTotales;
+
+			return eventTotals;
 		} catch (Exception e2) {
 			e2.printStackTrace();
 			return null;
@@ -521,52 +531,34 @@ public class ProblemInfoS implements ProblemInfoSI {
 	public List<FinishedTotal> findFinishedByApplydate(String date,String startTime,String endTime){
 		try {
 			List<FinishedTotal> finishedTotalData = problemInfoMapper.findFinishedByApplydate(date,startTime,endTime);
-			List<FinishedTotal> finishedTotals = null;
 			
-			if (finishedTotalData != null && finishedTotalData.size()> 0) {
-				finishedTotals = new ArrayList<FinishedTotal>();
-				FinishedTotal finishedTotal1 = new FinishedTotal();
-				finishedTotal1.setDepet("净化工段");
-				FinishedTotal finishedTotal2 = new FinishedTotal();
-				finishedTotal2.setDepet("维修工段");
-				for (int i = 0; i < finishedTotalData.size(); i++) {
-					FinishedTotal finishedTotal = finishedTotalData.get(i);
-					if ("净化工段".equals(finishedTotal.getParent_id()) || "净化工段".equals(finishedTotal.getDepet())) {
-						finishedTotal1.setDirectfinished(finishedTotal.getDirectfinished()+finishedTotal1.getDirectfinished());
-						finishedTotal1.setFinished(finishedTotal.getFinished()+finishedTotal1.getFinished());
-						finishedTotal1.setNormalfinished(finishedTotal.getNormalfinished()+finishedTotal1.getNormalfinished());
-						finishedTotal1.setDepets(finishedTotal.getDepets()+finishedTotal1.getDepets());
-						finishedTotal1.setUnfinished(finishedTotal.getUnfinished()+finishedTotal1.getUnfinished());
-					}else if ("维修工段".equals(finishedTotal.getParent_id()) || "维修工段".equals(finishedTotal.getDepet())) {
-						finishedTotal2.setDirectfinished(finishedTotal.getDirectfinished()+finishedTotal2.getDirectfinished());
-						finishedTotal2.setFinished(finishedTotal.getFinished()+finishedTotal2.getFinished());
-						finishedTotal2.setNormalfinished(finishedTotal.getNormalfinished()+finishedTotal2.getNormalfinished());
-						finishedTotal2.setDepets(finishedTotal.getDepets()+finishedTotal2.getDepets());
-						finishedTotal2.setUnfinished(finishedTotal.getUnfinished()+finishedTotal2.getUnfinished());
-					}else {
-						finishedTotals.add(finishedTotal);
-					}
-				}
-				finishedTotals.add(finishedTotal1);
-				finishedTotals.add(finishedTotal2);
-			}
-			String[] finishedTotalNames = {"生产办公室","综合办","HSE办公室","设备办公室","财务办公室","厂领导","净化工段","维修工段"};
+			
+			 List<String> finishedTotalNames = problemInfoMapper.getDepet();
 			List<FinishedTotal> finishedTotales =new ArrayList<FinishedTotal>();
-			for (int i = 0; i < finishedTotalNames.length; i++) {
+			for (int i = 0; i < finishedTotalNames.size(); i++) {
 				FinishedTotal finishedTotal = new FinishedTotal();
-				finishedTotal.setDepet(finishedTotalNames[i]);
+				finishedTotal.setDepet(finishedTotalNames.get(i));
 				finishedTotales.add(finishedTotal);
 			}
 			
 			for (int i = 0; i < finishedTotales.size(); i++) {
-				for (int j = 0; j < finishedTotals.size(); j++) {
-					if (finishedTotals.get(j).getDepet().equals(finishedTotales.get(i).getDepet())) {
-						finishedTotales.set(i, finishedTotals.get(j));
+				for (int j = 0; j < finishedTotalData.size(); j++) {
+					if (finishedTotalData.get(j).getDepet().equals(finishedTotales.get(i).getDepet())) {
+						finishedTotales.set(i, finishedTotalData.get(j));
 					}
 				}
 			}
 			
-			
+			 FinishedTotal eventTotal = null;
+			for (int i = 0; i < finishedTotales.size(); i++) {
+				for (int j = i; j < finishedTotales.size(); j++) {
+					eventTotal = finishedTotales.get(i);
+					if (finishedTotales.get(i).getDepets() < finishedTotales.get(j).getDepets()) {
+						finishedTotales.set(i, finishedTotales.get(j));
+						finishedTotales.set(j, eventTotal);
+					}
+				}
+			}
 			return finishedTotales;
 		} catch (Exception e2) {
 			e2.printStackTrace();

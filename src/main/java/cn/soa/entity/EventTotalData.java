@@ -4,7 +4,6 @@ import java.io.Serializable;
 
 import org.springframework.validation.annotation.Validated;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -17,13 +16,9 @@ import lombok.experimental.Accessors;
 @Data
 @Accessors( chain=true )
 @Validated
-public class EventTotal implements Serializable {
+public class EventTotalData implements Serializable {
 	private String depet ;
-	private int ordinaryeventUnsafebehavior;
-	private int ordinaryevent ;
-	private int accidenteventUnsafebehavior ;
-	private int accidentevent ;
-	private int riskseventUnsafebehavior ;
-	private int risksevent ;
-	private int total ;
-}	
+	private Integer ticket_no ;
+	private String problemclass ;
+	private int coun;
+}

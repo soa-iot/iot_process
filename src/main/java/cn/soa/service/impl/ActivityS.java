@@ -637,10 +637,13 @@ public class ActivityS implements ActivitySI{
 		if( task == null ) {
 			logger.info( "--S---------获取流程的最后节点失败---tsid为null" );
 		}
+		
+		logger.info( "--S---------task.getProcessDefinitionId--" + task.getProcessDefinitionId() );
 		ProcessDefinitionEntity processDefEntity = ( ProcessDefinitionEntity )
 				repositoryService.createProcessDefinitionQuery()
 				.processDefinitionId( task.getProcessDefinitionId() )
 				.singleResult();
+		
 		logger.info( "--S---------流程所有节点---" + processDefEntity.toString() );
 		logger.info( "--S---------流程所有节点---" + processDefEntity.getActivities().toString() );
 		for (ActivityImpl activityImpl : processDefEntity.getActivities() ) {  
@@ -650,7 +653,7 @@ public class ActivityS implements ActivitySI{
 			if ( pvmTransitionList.isEmpty() ) {  
 				return activityImpl;  
 			}  
-		}  
+		} 
 		return null;
 	}
     

@@ -259,10 +259,10 @@
 					   <if test="record.problemtype != null and record.problemtype != ''">
 					   		<choose>
 					   			<when test="record.problemtype == '维修工段'">
-					   				and PROBLEMTYPE IN ('电站', '电气', '仪表', '机械', '维修工段')
+					   				and PROBLEMTYPE IN ('电站', '电气', '仪表', '机械', '维修工段', '维修1班')
 					   			</when>
 					   			<when test="record.problemtype == '净化工段'">
-					   				and PROBLEMTYPE IN ('净化工段', '化验')
+					   				and PROBLEMTYPE IN ('净化工段', '化验', '净化1班')
 					   			</when>
 					   			<otherwise>
 					   				and PROBLEMTYPE = #{record.problemtype}
@@ -429,7 +429,7 @@
 					   		
 					   		<choose>
 					   			<when test="record.depet == '维修工段' ">
-					   				and depet IN ('电站','电工班','钳工班','仪表班','维修班','电站班','管焊班','维修工段')
+					   				and depet IN ('电站','电工班','钳工班','仪表班','维修1班','电站班','管焊班','维修工段')
 					   			</when>
 					   			<when test="record.depet == '净化工段' ">
 					   				and depet IN ('净化1班','净化4班','净化2班','净化3班','行政班','分析班')
@@ -537,7 +537,7 @@
 					   <if test="record.problemtype != null and record.problemtype != ''">
 					   		<choose>
 					   			<when test="record.problemtype == '维修工段'">
-					   				and PROBLEMTYPE IN ('电站', '电气', '仪表', '机械', '维修工段')
+					   				and PROBLEMTYPE IN ('电站', '电气', '仪表', '机械', '维修1班', '维修工段')
 					   			</when>
 					   			<when test="record.problemtype == '净化工段'">
 					   				and PROBLEMTYPE IN ('净化工段', '化验')
@@ -707,16 +707,10 @@
 					   		
 					   		<choose>
 					   			<when test="record.depet == '维修工段' ">
-					   				and depet IN ('电站','电工班','钳工班','仪表班','维修班','电站班','管焊班','维修工段')
+					   				and depet IN ('电站','电工班','钳工班','仪表班','维修1班','电站班','管焊班','维修工段')
 					   			</when>
 					   			<when test="record.depet == '净化工段' ">
 					   				and depet IN ('净化1班','净化4班','净化2班','净化3班','行政班','分析班')
-					   			</when>
-					   			<when test="record.depet == 'HSE办公室' ">
-					   				and depet IN ('HSE办公室')
-					   			</when>
-					   			<when test="record.depet == '设备办' ">
-					   				and depet IN ('设备办','设备办公室')
 					   			</when>
 					   			<when test="record.depet == '生产办' ">
 					   				and depet IN ('生产办','生产办公室')
@@ -793,10 +787,10 @@
 					   <if test="record.problemtype != null and record.problemtype != ''">
 					   		<choose>
 					   			<when test="record.problemtype == '维修工段'">
-					   				and PROBLEMTYPE IN ('电站', '电气', '仪表', '机械', '维修工段')
+					   				and PROBLEMTYPE IN ('电站', '电气', '仪表', '机械', '维修工段', '维修1班')
 					   			</when>
 					   			<when test="record.problemtype == '净化工段'">
-					   				and PROBLEMTYPE IN ('净化工段', '化验')
+					   				and PROBLEMTYPE IN ('净化工段', '化验', '净化1班')
 					   			</when>
 					   			<otherwise>
 					   				and PROBLEMTYPE = #{record.problemtype}
@@ -963,7 +957,7 @@
 					   		
 					   		<choose>
 					   			<when test="record.depet == '维修工段' ">
-					   				and depet IN ('电站','电工班','钳工班','仪表班','维修班','电站班','管焊班','维修工段')
+					   				and depet IN ('电站','电工班','钳工班','仪表班','维修1班','电站班','管焊班','维修工段')
 					   			</when>
 					   			<when test="record.depet == '净化工段' ">
 					   				and depet IN ('净化1班','净化4班','净化2班','净化3班','行政班','分析班')
@@ -1040,10 +1034,10 @@
 					   <if test="record.problemtype != null and record.problemtype != ''">
 					   		<choose>
 					   			<when test="record.problemtype == '维修工段'">
-					   				and PROBLEMTYPE IN ('电站', '电气', '仪表', '机械', '维修工段')
+					   				and PROBLEMTYPE IN ('电站', '电气', '仪表', '机械', '维修工段', '维修1班')
 					   			</when>
 					   			<when test="record.problemtype == '净化工段'">
-					   				and PROBLEMTYPE IN ('净化工段', '化验')
+					   				and PROBLEMTYPE IN ('净化工段', '化验', '净化1班')
 					   			</when>
 					   			<otherwise>
 					   				and PROBLEMTYPE = #{record.problemtype}
@@ -1210,7 +1204,7 @@
 					   		
 					   		<choose>
 					   			<when test="record.depet == '维修工段' ">
-					   				and depet IN ('电站','电工班','钳工班','仪表班','维修班','电站班','管焊班','维修工段')
+					   				and depet IN ('电站','电工班','钳工班','仪表班','维修1班','电站班','管焊班','维修工段')
 					   			</when>
 					   			<when test="record.depet == '净化工段' ">
 					   				and depet IN ('净化1班','净化4班','净化2班','净化3班','行政班','分析班')
@@ -1363,47 +1357,42 @@
 	<!-- 问题完成情况统计
 	List<FinishedTotal> findFinishedByApplydate(String date,String startTime,String endTime); -->
 	<select id="findFinishedByApplydate" resultType="cn.soa.entity.FinishedTotal">
-		SELECT 
-			DEPET,PARENT_ID,depets,FINISHED,normalfinished,DirectFINISHED,UNFINISHED 
+	
+		SELECT  
+			DEPET,sum(depets) depets,
+			sum(FINISHED) FINISHED,
+			sum(normalfinished) normalfinished,
+			sum(DirectFINISHED) DirectFINISHED,
+			sum(UNFINISHED) UNFINISHED 
 		from (
-			SELECT 
-				DEPET ,
-				PARENT_ID,
-				count(depet) depets,
-				sum(DECODE(PROBLEMSTATE,'FINISHED',1,0)) FINISHED,
-				sum(DECODE(PROBLEMSTATE,'UNFINISHED',1,0)) UNFINISHED
-			from 
-				CZ_TASK_PROBLEM_REPORT_NEW,IOT_USER_ORGANIZATION
-			<where>
-				CZ_TASK_PROBLEM_REPORT_NEW.DEPET = IOT_USER_ORGANIZATION.USERNUM
-				and isdownload is null
-				<if test="date != null and date != ''">
-					and TO_CHAR(APPLYDATE,'yyyy-mm') = #{date} 
-				</if>
-				<if test="startTime != null and startTime != ''">
-					and APPLYDATE &gt;= TO_DATE(#{startTime},'yyyy-mm-dd hh24:mi:ss')
-				</if>
-				<if test="endTime != null and endTime != ''">
-					and APPLYDATE &lt;= TO_DATE(#{endTime},'yyyy-mm-dd hh24:mi:ss')
-				</if>
-			</where> 
-				GROUP BY DEPET,PARENT_ID
-		) c,(
-			SELECT 
-				DEPET DEPET1 ,
-				sum(DECODE(ACT_NAME_,'作业验收',1,0)) normalfinished,
-				sum(DECODE(ACT_NAME_,'闭环流程',1,0))-sum(DECODE(ACT_NAME_,'作业验收',1,0)) DirectFINISHED  
-			FROM ACT_HI_ACTINST a, (
+			SELECT (CASE  when  d.DEPET in  (
+					SELECT 
+						USERNUM 
+					FROM 
+						IOT_USER_ORGANIZATION 
+					WHERE 
+						PARENT_ID LIKE '%净化厂%'
+					) then d.DEPET else (
+						SELECT 
+							PARENT_ID 
+						FROM 
+							IOT_USER_ORGANIZATION 
+						WHERE USERNUM = d.DEPET 
+						) end ) DEPET,
+				depets,
+				FINISHED,
+				normalfinished,
+				DirectFINISHED,UNFINISHED
+			from (
 				SELECT 
-					piid,
-					depet,
-					APPLYDATE 
-				FROM 
-					CZ_TASK_PROBLEM_REPORT_NEW 
+					DEPET ,
+					count(depet) depets,
+					sum(DECODE(PROBLEMSTATE,'FINISHED',1,0)) FINISHED,
+					sum(DECODE(PROBLEMSTATE,'UNFINISHED',1,0)) UNFINISHED
+				from 
+					CZ_TASK_PROBLEM_REPORT_NEW
 				<where>
-					PROBLEMSTATE = 'FINISHED'
-					
-					and isdownload is null
+					isdownload is null
 					<if test="date != null and date != ''">
 						and TO_CHAR(APPLYDATE,'yyyy-mm') = #{date} 
 					</if>
@@ -1413,45 +1402,82 @@
 					<if test="endTime != null and endTime != ''">
 						and APPLYDATE &lt;= TO_DATE(#{endTime},'yyyy-mm-dd hh24:mi:ss')
 					</if>
-				</where> 
-					) b
-			<where>
-				a.PROC_INST_ID_ = b.piid 
-			</where>
+				</where>
 				GROUP BY DEPET
-				) d
-		<where>
-			c.DEPET = d.DEPET1
-		</where> 
+			) d LEFT JOIN (
+				SELECT  
+				 	DEPET ,
+					sum(DECODE(ACT_NAME_,'作业验收',1,0)) normalfinished,
+					sum(DECODE(ACT_NAME_,'闭环流程',1,0))-sum(DECODE(ACT_NAME_,'作业验收',1,0)) DirectFINISHED  
+				FROM 
+					ACT_HI_ACTINST a, (
+						SELECT 
+						piid,
+						depet,
+						APPLYDATE 
+					FROM 
+						CZ_TASK_PROBLEM_REPORT_NEW 
+					<where>
+						PROBLEMSTATE = 'FINISHED'
+						and isdownload is null
+						<if test="date != null and date != ''">
+							and TO_CHAR(APPLYDATE,'yyyy-mm') = #{date} 
+						</if>
+						<if test="startTime != null and startTime != ''">
+							and APPLYDATE &gt;= TO_DATE(#{startTime},'yyyy-mm-dd hh24:mi:ss')
+						</if>
+						<if test="endTime != null and endTime != ''">
+							and APPLYDATE &lt;= TO_DATE(#{endTime},'yyyy-mm-dd hh24:mi:ss')
+						</if>
+					</where>
+					) b
+				<where>
+					a.PROC_INST_ID_ = b.piid
+				</where>
+					GROUP BY DEPET) c ON d.DEPET = c.DEPET)
+	GROUP BY DEPET
+
 	</select>
 	
 	<!-- 事故事件情况统计
 	List<EventTotal> findEventByApplydate(String date) -->
-	<select id="findEventByApplydate" resultType="cn.soa.entity.EventTotal">
-		SELECT 
-			DEPET ,PARENT_ID,
-			sum(DECODE(TICKET_NO,'0',1,0)) ordinaryevent,
-			sum(DECODE(TICKET_NO,'1',1,0)) accidentevent,
-			sum(DECODE(TICKET_NO,'2',1,0)) risksevent,
-			sum(DECODE(PROBLEMCLASS,'不安全行为/状态',1,0)) unsafebehavior, 
-			sum(DECODE(TICKET_NO,'2',1,0)+DECODE(TICKET_NO,'1',1,0)+DECODE(TICKET_NO,'0',1,0)) total 
-		from 
-			CZ_TASK_PROBLEM_REPORT_NEW ,IOT_USER_ORGANIZATION
-			<where>
-				CZ_TASK_PROBLEM_REPORT_NEW.DEPET = IOT_USER_ORGANIZATION.USERNUM
-				and isdownload is null
-				<if test="date != null and date != ''">
-					and TO_CHAR(APPLYDATE,'yyyy-mm') = #{date} 
-				</if>
-				<if test="startTime != null and startTime != ''">
-					and APPLYDATE &gt;= TO_DATE(#{startTime},'yyyy-mm-dd hh24:mi:ss')
-				</if>
-				<if test="endTime != null and endTime != ''">
-					and APPLYDATE &lt;= TO_DATE(#{endTime},'yyyy-mm-dd hh24:mi:ss')
-				</if>
-				<!-- (TICKET_NO = 0 or TICKET_NO = 1 OR TICKET_NO = 2 OR PROBLEMCLASS = '不安全行为/状态') -->
-			</where>
-		GROUP BY DEPET,PARENT_ID
+	<select id="findEventByApplydate" resultType="cn.soa.entity.EventTotalData">
+		select 
+			DEPET,TICKET_NO,PROBLEMCLASS,count(1) coun 
+		from (
+			SELECT (CASE  when  DEPET in (
+					SELECT 
+						USERNUM 
+					FROM 
+						IOT_USER_ORGANIZATION 
+					WHERE 
+						PARENT_ID LIKE '%净化厂%'
+					) then DEPET else (
+						SELECT 
+							PARENT_ID 
+						FROM 
+							IOT_USER_ORGANIZATION 
+						WHERE USERNUM = DEPET
+					) end ) DEPET ,
+					piid,TICKET_NO,
+				CASE  when  PROBLEMCLASS='不安全行为/状态' then  '不安全行为/状态' 
+					else '其他' end PROBLEMCLASS
+			from 
+				CZ_TASK_PROBLEM_REPORT_NEW 
+				<where>
+					isdownload is null and TICKET_NO is not null
+					<if test="date != null and date != ''">
+						and TO_CHAR(APPLYDATE,'yyyy-mm') = #{date} 
+					</if>
+					<if test="startTime != null and startTime != ''">
+						and APPLYDATE &gt;= TO_DATE(#{startTime},'yyyy-mm-dd hh24:mi:ss')
+					</if>
+					<if test="endTime != null and endTime != ''">
+						and APPLYDATE &lt;= TO_DATE(#{endTime},'yyyy-mm-dd hh24:mi:ss')
+					</if>
+				</where>) 
+		GROUP BY DEPET,TICKET_NO,PROBLEMCLASS
+
 	</select>
 	
 	<!-- ===========================2、新增===============================  -->
@@ -2386,6 +2412,19 @@
 		delete from CZ_TASK_PROBLEM_REPORT_NEW
 		where T_PROBLEM_REP_ID=#{repid}
 	</delete>
+	
+	<!-- 获取人员组织部门
+	List<String> getDepet(); -->
+	<select id="getDepet"
+		resultType="java.lang.String">
+		SELECT 
+			NAME 
+		FROM 
+			IOT_USER_ORGANIZATION 
+		<where>
+			PARENT_ID LIKE '%净化厂%'  and NAME not like '%56498847.0%'
+		</where>
+	</select>
 </mapper>
  
 
