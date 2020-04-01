@@ -21,9 +21,11 @@ import cn.soa.dao.MonitorMapper;
 import cn.soa.entity.Monitor;
 import cn.soa.entity.TodoTask;
 import cn.soa.entity.User;
+import cn.soa.entity.UserOrganization;
 import cn.soa.entity.activity.IdentityLink;
 import cn.soa.entity.bo.MQIdempotent;
 import cn.soa.service.inter.AcitivityIdentitySI;
+import cn.soa.service.inter.RemoteRuquestSI;
 import cn.soa.service.inter.RollBackProcessInter;
 import cn.soa.utils.JavaUtils;
 import cn.soa.utils.SpringUtils;
@@ -51,6 +53,9 @@ public class RollBackProcessS implements RollBackProcessInter{
 	@Autowired
     private IdempotentMapper idempotentMapper;
 	
+	@Autowired
+    private UserManagerS userManagerS;
+	
 	
 	/**   
 	 * @Title: rollBackByUserid   
@@ -75,7 +80,7 @@ public class RollBackProcessS implements RollBackProcessInter{
 		}
 		log.info("---S--unfinishedTasks-" + unfinishedTasks);
 			
-		//task过滤(规则：1、两个人执行的不会退； 2、一个人执行的+上一个节点执行人只有他)
+		//task过滤(规则：1、两个人执行的不会退； 2、本节点一个人执行的+上一个节点执行人只有他)
 		List<String> backPiids = new ArrayList<String>();
 		try {
 			backPiids = filter( unfinishedTasks, user );
@@ -112,18 +117,27 @@ public class RollBackProcessS implements RollBackProcessInter{
 	 */  
 	List<String> filter( List<TodoTask> unfinishedTasks, User user ){
 		List<String> backPiids = new ArrayList<String>();
+		List<String> beforeoOurworkPiids = new ArrayList<String>();
 		unfinishedTasks.forEach(t -> {
 			AcitivityIdentitySI acitivityIdentityS = SpringUtils.getObject(AcitivityIdentitySI.class);
 			List<IdentityLink> identitys = acitivityIdentityS.findCandidateByTsid(t.getTsid());
 			if( identitys.size() == 1 ) {
 				//查询上一个节点执行人情况
 				HistoricTaskInstance historyTasks = activityS.getBeforeTasksByTsid(t.getTsid());
-				if( historyTasks.getAssignee() != user.getName() ) {
+				String beforTaskAssignee = historyTasks.getAssignee();
+				//检查任务执行人是否在职状态
+				Integer state = 0;
+				try {
+					state = checkState( beforTaskAssignee );
+					log.info("回退上一个节点的执行人："+ beforTaskAssignee+"的状态为"+ state);
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+				if( beforTaskAssignee != user.getName() && state == 1) {//在职
 					backPiids.add(t.getPiid());
 				}else {
-					//如果前一个节点还是当前离职人员，则回退两次
-					backPiids.add(t.getPiid());
-					backPiids.add(t.getPiid());
+					//记录上一个节点的回退人已离职，记录此流程进行手动回退
+					beforeoOurworkPiids.add(t.getPiid());					
 				}			
 			}else if(  identitys.size() == 0 ){
 				log.info("---S--删除人员后的该人员的任务流程回退异常，候选执行人为空--" + identitys.toString() );
@@ -131,10 +145,31 @@ public class RollBackProcessS implements RollBackProcessInter{
 				log.info("---S--删除人员后的该人员的任务流程回退,问题{}为多人执行的组任务，不用回退", t.getPiid());
 			}			
 		});
+		
+		/*
+		 * 记录上一个节点执行人已离职的情况
+		 */
+		try {
+			log.info("上一个节点执行人已离职的piid={}",backPiids.toString());
+			saveRollBackErrorProcess( beforeoOurworkPiids, user);
+		} catch (Exception e2) {
+			e2.printStackTrace();
+			log.error("保存上一个节点执行人已离职流程到数据库失败");
+		}
 		log.info("需要执行回退的piid={}",backPiids.toString());
 		return backPiids;
 	}
 	
+	/**   
+	 * @Title: checkState   
+	 * @Description: 查看指定人的在职状态  
+	 * @return: Integer        
+	 */  
+	private Integer checkState(String currentTaskAssignee) {
+		UserOrganization user = userManagerS.findUserPostByName1(currentTaskAssignee);		
+		return user.getState();
+	}
+
 	/**   
 	 * @Title: check   
 	 * @Description:  检查等 

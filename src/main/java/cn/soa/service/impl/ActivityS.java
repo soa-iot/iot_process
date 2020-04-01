@@ -863,8 +863,7 @@ public class ActivityS implements ActivitySI{
 		}else {
 			logger.info( "---S--------全局流程变量area为空-------------" );
 		}
-		
-    	
+		   	
     	/*
     	 * 流程跳转
     	 */

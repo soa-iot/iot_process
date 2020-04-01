@@ -152,6 +152,26 @@ public class UserManagerS implements UserManagerSI {
 	
 	
 	/**   
+	 * @Title: findUserPostByName   
+	 * @Description: 根据用户的名称查询用户的信息  
+	 * @return: String        
+	 */  
+	@Override
+	public UserOrganization findUserPostByName1( String username ) {
+		HashMap<String, String> map = new HashMap<>();
+		String url = "http://" + ip + ":" + port + "/iot_usermanager/role/name/users";
+		ResponseEntity<ResultJson> organ = restTemplate.getForEntity( url, ResultJson.class, map);
+		ResultJson r = organ.getBody();
+		if( r.getState() == 1 || r.getData() != null ) {
+			return null;
+		}		
+		UserOrganization user = (UserOrganization) r.getData(); 
+		logger.debug( user.toString() );		
+		return user;
+	}
+	
+	
+	/**   
 	 * @Title: findUserByArea   
 	 * @Description:  根据一个名称（String，一个配置表中的名称） ，获取对应的角色下所有用户
 	 * @return: List<UserOrganization>        

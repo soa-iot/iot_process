@@ -66,4 +66,6 @@ public interface UserManagerSI {
 	 * @return 用户编号
 	 */
 	String getUsernumByName(String name);
+
+	UserOrganization findUserPostByName1(String username);
 }
