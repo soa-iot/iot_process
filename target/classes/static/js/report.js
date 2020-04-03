@@ -677,6 +677,11 @@ layui.use(['jquery','form','upload','layer','layedit'], function(){
 	   */
 	  $("#rfid-btn").click(function(){
 		  console.log("rfid");
+		  //获取问题区域选择的值
+		 var welName =  $.trim($("#welName").val());
+		 console.log("welName: "+ welName);
+		  $.cookie('welName', welName, { path: '/' }); 
+		  
 		  layer.open({
 		    	title: '设备定位',
 		    	type: 2,
