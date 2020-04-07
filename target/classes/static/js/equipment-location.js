@@ -17,6 +17,38 @@ layui.use(['jquery','form','layer','table','excel'], function(){
 	secondclassequipment();
 	tequmemoone();
 	
+	//读取问题区域选择的值
+	var welName = $.cookie('welName');
+	console.log("-------"+welName);
+	if(welName != null || welName != ''){
+		switch(welName){
+		case '主体装置一列':
+			$("#welName").val('主体装置Ⅰ列');
+			break;
+		case '主体装置二列':
+			$("#welName").val('主体装置Ⅱ列');
+			break;
+		case '主体装置三列':
+			$("#welName").val('主体装置Ⅲ列');
+			break;
+		case '主体装置四列':
+			$("#welName").val('主体装置Ⅳ列');
+			break;
+		case '主体装置五列':
+			$("#welName").val('主体装置Ⅴ列');
+			break;
+		case '主体装置六列':
+			$("#welName").val('主体装置Ⅵ列');
+			break;
+		case '主体装置七列':
+			$("#welName").val('主体装置Ⅶ列');
+		default:
+			break;
+		}
+	}
+	//删除cookie
+	$.cookie('welName', null, { path: '/' });
+	
 	/**
 	 * 设备信息展示表
 	 */
@@ -29,6 +61,9 @@ layui.use(['jquery','form','layer','table','excel'], function(){
 		totalRow: true,
 		page: true,   //开启分页
 		cellMinWidth: 130,
+		where: {
+			'welName': $('#welName').val()
+		},
 		request: {
 		    pageName: 'page' //页码的参数名称，默认：page
 		    ,limitName: 'limit' //每页数据量的参数名，默认：limit
