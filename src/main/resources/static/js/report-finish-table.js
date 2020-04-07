@@ -86,31 +86,7 @@ layui.use(['jquery','form','layer','table','excel','laydate'], function(){
 	    },
 		parseData: function(res){ //res 即为原始返回的数据
 			var data = res.data;
-			var departName = ['维修工段','净化工段','生产办公室','HSE办公室','设备办公室','财务办公室','综合办'];
-			if(data != null || data.length < 7){
-				for(var i=0;i<departName.length;i++){
-					for(var j=0;j<data.length;j++){
-						if(departName[i] == data[j].DEPARTNAME){
-							departName.splice(i,1,null);
-							break;
-						}
-					}
-				}
-				
-				if(data.length == 0) data = [];
-				
-				for(var i=0;i<departName.length;i++){
-					if(departName[i] != null){
-						var sample = {
-								"DEPARTNAME": departName[i],
-								"UNFINISHED": 0,
-								"FINISHED": 0,
-								"TOTAL": 0
-						}
-						data.push(sample);
-					}
-				}
-			}
+
 			initEchart(data);
 		    return {
 		      "code": res.state, //解析接口状态

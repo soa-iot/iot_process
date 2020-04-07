@@ -190,4 +190,6 @@ public class EstimateC {
 			return new ResultJson<List<FinishedTotal>>(1,"查询数据为空",finishedTotals);
 		}
 	}
+	
+	
 }

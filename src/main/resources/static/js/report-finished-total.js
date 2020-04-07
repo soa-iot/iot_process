@@ -204,7 +204,7 @@ nowDate = new Date();
 				unfinished = [0,0,0,0,0,0];
 				normalfinished = [0,0,0,0,0,0];
 				directfinished = [0,0,0,0,0,0];
-				var xAxisdata = ["生产办公室","综合办","HSE办公室","设备办公室","财务办公室","厂领导","净化工段","维修工段"];
+				var xAxisdata = [];
 				
 				var data = {};
 				$.ajax({  
@@ -216,39 +216,41 @@ nowDate = new Date();
 					success: function( json) {
 						if (json.state == 0) {
 							data = json.data;
-							
+							for (var i = 0; i < data.length; i++) {
+								xAxisdata[xAxisdata.length] = data[i].depet;
+							}
 						}
 						
 					}  
 				});
 				
 				for (var i = 0; i < data.length; i++) {
-					switch (data[i].depet){
-					case "生产办公室":
-						setBarData(data[i],0);
-						break;
-					case "综合办":
-						setBarData(data[i],1);
-						break;
-					case "HSE办公室":
-						setBarData(data[i],2);
-						break;
-					case "设备办公室":
-						setBarData(data[i],3);
-						break;
-					case "财务办公室":
-						setBarData(data[i],4);
-						break;
-					case "厂领导":
-						setBarData(data[i],5);
-						break;
-					case "净化工段":
-						setBarData(data[i],6);
-						break;
-					case "维修工段":
-						setBarData(data[i],7);
-						break;
-					}
+//					switch (data[i].depet){
+//					case "生产办公室":
+						setBarData(data[i],i);
+//						break;
+//					case "综合办":
+//						setBarData(data[i],1);
+//						break;
+//					case "HSE办公室":
+//						setBarData(data[i],2);
+//						break;
+//					case "设备办公室":
+//						setBarData(data[i],3);
+//						break;
+//					case "财务办公室":
+//						setBarData(data[i],4);
+//						break;
+//					case "厂领导":
+//						setBarData(data[i],5);
+//						break;
+//					case "净化工段":
+//						setBarData(data[i],6);
+//						break;
+//					case "维修工段":
+//						setBarData(data[i],7);
+//						break;
+//					}
 				}
 				Baroption.xAxis.data=xAxisdata;
 				Baroption.series[0].data=total;
