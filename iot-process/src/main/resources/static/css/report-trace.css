@@ -1,0 +1,68 @@
+body,.layui-table-body tr{
+	background-color: #FAFDFD;
+}
+
+.layui-container .layui-form,.layui-form-item,.layui-table-tool,.layui-table thead tr,.layui-table-header,.layui-table-total,.layui-table-total tr{
+	background-color: #EDF6FA;
+}
+
+.layui-container{
+	padding: 0px;
+	/* border:1px solid red; */
+	min-width: 900px;
+	width: 95%;
+}
+
+.layui-layer-page{
+	padding: 0px 10px;
+}
+
+.layui-table-tool-temp{
+	padding-right: 40px;  
+}
+
+.layui-container>form{
+	margin-top: 0px;
+	padding: 10px 0px 0px 0px;
+	/* border: 1px solid red; */
+	background-color: #f2f2f2;
+	font-size: small;
+}
+
+/* .layui-inline .layui-form-label{
+	width: 50px;
+	padding-left: 0px;
+} */
+
+.layui-inline .layui-input-inline{
+	margin-right: 0px;
+
+}
+
+.layui-input-inline .layui-input{
+	height: 30px;
+}
+
+.layui-input-inline{
+	margin-top: 3px;
+}
+
+.layui-form-item {
+	margin-bottom: 5px;
+}
+
+.layui-form-hidden{
+	display: none;
+}
+
+#layui-div-finish{
+	width: 145px;
+}
+
+#div-btn-toolbar button{
+	float: right;
+}
+
+.layui-table-col-special .layui-table-cell{
+	padding: 0 5px;
+}

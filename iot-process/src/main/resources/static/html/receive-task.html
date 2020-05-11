@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<title>接收作业</title>
+<link rel="stylesheet" href="../jsPackage/layui-v2.4.2/css/layui.css" media="all">
+<link rel="stylesheet" href="../css/estimate.css" media="all">
+<link rel="stylesheet" href="../css/receive-task.css" media="all">
+</head>
+<body>
+
+	<!-- 接收作业 -->
+	<div class="pro-div layui-form"  lay-filter="receive-task">
+
+		<!-- 问题处理 -->
+		<div class="layui-collapse" lay-accordion="">
+			<div class="layui-colla-item">
+				<h2 class="layui-colla-title h2c" id="pro">问题处理</h2>
+				
+				<div class="hbtn h2c">
+					<button id="back_previous" class="layui-btn layui-btn-normal layui-btn-sm btn problem_describe" lay-submit lay-filter="back_previous"><span class="layui-icon">&#xe65a;</span>&nbsp;回退</button>
+					<button id="next_step" class="layui-btn layui-btn-normal layui-btn-sm btn"  lay-submit lay-filter="next_step">下一步&nbsp;<span class="layui-icon">&#xe65b;</span></button>
+				</div>
+				<div class="layui-colla-content layui-show">
+
+					<div class="layui-form-item">
+						<div class="layui-inline layui-col-md4">
+							<label class="layui-form-label labelr">事件/隐患标记</label>
+							<div class="layui-input-inline layui-input-top">
+								<input name="incident_sign" type="text"
+										class="layui-input layui-input-one"   disabled="disabled">
+							</div>
+
+						</div>
+					</div>
+					<div class="layui-form-item">
+						<div class="layui-inline layui-col-md4">
+							<label class="layui-form-label labelr">整改日期</label>
+							<div class="layui-input-inline layui-input-top">
+								<input name="remark" type="text"
+									class="layui-input layui-input-one" disabled="disabled">
+							</div>
+						</div>
+						<div class="layui-inline layui-col-md4" id="sdate-div" style="display: none;">
+							<label class="layui-form-label">指定日期</label>
+							<div class="layui-input-inline  layui-input-top">
+								<input type="text" class="layui-input layui-input-one" id="sdate" name="sdate"
+									placeholder="yyyy-MM-dd" disabled="disabled">
+							</div>
+						</div>
+					</div>
+
+					<div class="layui-form-item layui-form-text layui-col-md10">
+						<label class="layui-form-label">处理说明</label>
+						<div class="layui-input-block right-marg">
+							<textarea name="comment" id="comment_receive" placeholder="请输入内容"
+								class="layui-textarea"></textarea>
+
+						</div>
+					</div>
+
+					<div class="layui-col-md10">
+						<label class="layui-form-label">处理过程</label>
+						<div class="layui-input-block right-marg">
+							<table id="process-table"></table>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div class="layui-collapse layui-col-md12" lay-filter="test">
+			<div class="layui-colla-item">
+				<h2 class="layui-colla-title h2c">问题信息</h2>
+				<div class="layui-colla-content">
+
+					<div class="layui-form-item">
+						<div class="layui-inline layui-col-md4">
+							<label class="layui-form-label">上&nbsp;报&nbsp;人</label>
+							<div class="layui-input-inline layui-input-top">
+								<input name="applypeople" type="text"
+									class="layui-input layui-input-one"  disabled="disabled">
+							</div>
+						</div>
+						<div class="layui-inline layui-col-md4">
+							<label class="layui-form-label">属地单位</label>
+							<div class="layui-input-inline layui-input-top">
+								<input type="text" name="problemtype"
+									class="layui-input  layui-input-one" disabled="disabled">
+							</div>
+						</div>
+					</div>
+
+					<div class="layui-form-item">
+						<div class="layui-inline layui-col-md4">
+							<label class="layui-form-label">问题区域</label>
+							<div class="layui-input-inline layui-input-top">
+								<input type="text" name="welName" class="layui-input layui-input-one"
+									disabled="disabled">
+							</div>
+						</div>
+						<div class="layui-inline layui-col-md4">
+							<label class="layui-form-label">所属专业</label>
+							<div class="layui-input-inline layui-input-top">
+								<input type="text" name="profession" 
+									class="layui-input  layui-input-one" disabled="disabled">
+							</div>
+						</div>
+					</div>
+
+					<div class="layui-form-item">
+						<div class="layui-inline layui-col-md4">
+							<label class="layui-form-label">设备定位</label>
+							<div class="layui-input-inline layui-input-top layui-row">
+								<input type="text" name="rfid" class="layui-input layui-input-one" disabled="disabled">
+								<!-- <button class="layui-btn layui-btn-xs layui-col-md4 layui-col-md-offset1" style="height: 25px;">定位设备</button> -->
+							</div>
+				
+						</div>
+						<div class="layui-inline layui-col-md4">
+							<label class="layui-form-label">问题类别</label>
+							<div class="layui-input-inline layui-input-top">
+								<input type="text" name="problemclass" 
+									class="layui-input  layui-input-one" disabled="disabled">
+							</div>
+						</div>
+					</div>
+					
+					<div class="layui-form-item" id="div-notsafe" style="display: none">
+						<div class="layui-inline layui-col-md4">
+							<label class="layui-form-label">不安全行为</label>
+							<div class="layui-input-inline layui-input-top layui-row">
+								<input type="text" name="remarkfive" class="layui-input layui-input-one" disabled="disabled" >
+								<!-- <button class="layui-btn layui-btn-xs layui-col-md4 layui-col-md-offset1" style="height: 25px;">定位设备</button> -->
+							</div>
+				
+						</div>
+						<div class="layui-inline layui-col-md4">
+							<label class="layui-form-label">具体行为</label>
+							<div class="layui-input-inline layui-input-top">
+								<input type="text" name="remarksix" 
+									class="layui-input  layui-input-one" disabled="disabled">
+							</div>
+						</div>
+					</div>
+
+					<div class="layui-form-item layui-form-text layui-col-md10">
+						<label class="layui-form-label">问题描述</label>
+						<div class="layui-input-block right-marg">
+							<textarea name="problem_describe" id="problem_describe" disabled class="layui-textarea"></textarea>
+						</div>
+					</div>
+
+					<div class="layui-form-item layui-form-text bott layui-col-md10">
+						<label class="layui-form-label">问题图片</label>
+						<div class="layui-input-block">
+							<div class="layui-carousel" id="div-img">
+								<div carousel-item="" id="imag"  style="height: 150px;">
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<!-- <div class="layui-collapse" lay-accordion="">
+			<div class="layui-colla-item">
+				<h2 class="layui-colla-title h2c">工单信息</h2>
+				<div class="layui-colla-content layui-show">
+					<div class="btn-div">
+						<a class="pbtn problem_describe staging-requisition" target="_blank" href="#">脚手架搭拆申请单</a>
+						<a class="pbtn problem_describe anticor-requisition" target="_blank" href="#">防腐（保温）申请单</a>
+					</div>
+				</div>
+			</div>
+		</div> -->
+
+	</div>
+	<script type="text/javascript" src="../jsPackage/js/jquery-1.9.1.min.js"></script>
+	<script type="text/javascript" src="../jsPackage/js/jquery.cookie.js"></script>
+	<script src="../jsPackage/own/universal.js"></script>
+	<script type="text/javascript" src="../js/url_param.js"></script>
+	<script src="../jsPackage/layui-v2.4.2/layui.js" charset="utf-8"></script>
+	<script type="text/javascript" src="../js/receive-task.js"></script>
+
+	
+</body>
+</html>

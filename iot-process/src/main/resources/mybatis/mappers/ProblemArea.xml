@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+ 
+<mapper namespace="cn.soa.dao.ProblemTypeAreaMapper">
+
+	<!-- ===========================1、查询===============================  -->
+	<!-- 1.1、查找问题属地对应区域	-->
+	<!-- List<ProblemTypeArea> findAll() -->
+	
+	<resultMap type="cn.soa.entity.ProblemTypeArea" id="ProblemTypeAreaMap">
+		<id property="problemID"  column="problem_id2"/>
+		<result property="problemName"  column="problem_name2"/>
+		<result property="isParent"  column="is_parent2"/>
+		<result property="parentID"  column="parent_id2"/>
+		<collection property="problemAreas" ofType="cn.soa.entity.ProblemTypeArea">
+			<id property="problemID"  column="problem_id1"/>
+			<result property="problemName"  column="problem_name1"/>
+			<result property="isParent"  column="is_parent1"/>
+			<result property="parentID"  column="parent_id1"/>
+		</collection>
+	</resultMap>
+	
+	<select id="findAll"  resultMap="ProblemTypeAreaMap">
+		SELECT
+			pta1.problem_id problem_id1, pta1.problem_name problem_name1, pta1.is_parent is_parent1, pta1.parent_id parent_id1,
+			pta2.problem_id problem_id2, pta2.problem_name problem_name2, pta2.is_parent is_parent2, pta2.parent_id parent_id2
+		FROM
+			CZ_PROBLEM_TYPE_AREA pta1 RIGHT JOIN (SELECT * FROM CZ_PROBLEM_TYPE_AREA WHERE is_parent = 1) pta2
+
+			ON pta1.parent_id = pta2.problem_id ORDER BY pta2.problem_id DESC, pta1.problem_id ASC
+
+	</select>
+	
+	<!-- 1.2、查询问题完成情况统计	-->
+	<!-- List<Map<String,String>> findReportFinishRecords(
+			@Param("startDate") String startDate, @Param("endDate") String endDate); -->
+	<select id="findReportFinishRecords" resultType="map"> 
+		SELECT
+			org.department departName, COUNT(rep.PROBLEMSTATE) total, COUNT(CASE WHEN rep.PROBLEMSTATE='FINISHED' THEN 1 ELSE NULL END) finished, COUNT(CASE WHEN rep.PROBLEMSTATE='UNFINISHED' THEN 1 ELSE NULL END) unFinished
+		FROM
+					(
+						SELECT
+							rep.*, 
+							(case when INSTR(rep.MAINTENANCEMAN, ',')>0 then SUBSTR(rep.MAINTENANCEMAN,0,(INSTR(rep.MAINTENANCEMAN, ',')-1))
+								else rep.MAINTENANCEMAN
+								END) OWNER
+							FROM 
+								CZ_TASK_PROBLEM_REPORT_NEW rep
+							<where>
+								rep.ISDOWNLOAD is NULL
+								<if test="startDate != null and startDate != ''">
+									AND to_char(applydate,'YYYY-MM-DD') &gt;=#{startDate}
+								</if>
+								<if test="endDate != null and endDate != ''">
+									AND to_char(applydate,'YYYY-MM-DD') &lt;=#{endDate}
+								</if>
+							</where>
+					) rep RIGHT JOIN 
+					(
+						SELECT
+							org.*,
+							(
+								CASE  when  org.PARENT_ID in (SELECT USERNUM FROM IOT_USER_ORGANIZATION WHERE PARENT_ID LIKE '%净化厂%') then PARENT_ID 
+											else (SELECT PARENT_ID FROM IOT_USER_ORGANIZATION WHERE USERNUM = org.PARENT_ID) end
+							) department
+						FROM
+							IOT_USER_ORGANIZATION org
+						WHERE
+							IS_PARENT = 1 AND USERNUM != 'admin'
+					)org ON rep.OWNER=org.NAME
+		GROUP BY
+			org.department
+		ORDER BY total DESC
+	</select>
+	
+	<!-- 1.2、查询部门列表	-->
+	<!-- List<String> findDepartments(); -->
+	<select id="findDepartments" resultType="string">
+		SELECT
+			USERNUM
+		FROM
+			IOT_USER_ORGANIZATION
+		WHERE
+			PARENT_ID LIKE '%净化厂%'
+	</select>
+	
+	<!-- ===========================2、新增===============================  -->
+	
+	<!-- ===========================3、修改===============================  -->
+	
+	<!-- ===========================4、删除===============================  -->
+			
+	
+</mapper>
+ 
+
